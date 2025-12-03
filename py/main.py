@@ -27,7 +27,8 @@ if __name__ == "__main__":
     Image.fromarray((enhanced2_inv * 255).astype(np.uint8), mode="RGB").save(over_ex_img)
     
     # ---- add here ----- #
-    # arr, enhance1, enhance2
-    # matrix C, S, V
+    # please implement:
+    # 3 image fusion arr, enhance1, enhance2
+    # how to calculate matrix C, S, V?
     
     
