@@ -44,6 +44,7 @@ if __name__ == "__main__":
             
             # enhanced1_patch(32x32x3)
             enhanced1_patch = run_lime(out_dir=out_dir, img_in=patch_img, k0=30, gamma= 0.7)
+            # enhanced1_img
             enhanced1_img[i*valid_size:(i+1)*valid_size, j*valid_size:(j+1)*valid_size, 0:3] = enhanced1_patch[border:border+valid_size, border:border+valid_size, 0:3]
             
             arr_inv = 1 - patch_img
@@ -56,6 +57,8 @@ if __name__ == "__main__":
             enhanced2_inv[i*valid_size:(i+1)*valid_size, j*valid_size:(j+1)*valid_size, 0:3] = enhanced2_patch_inv[border:border+valid_size, border:border+valid_size, 0:3]
             
             # function input enhanced1_patch, enhanced2_patch, arr
+            # output 32x32x3 matrix
+            
 
     # --------------------------------------------------------- #
     under_ex_img = out_dir/"underexposure_enhanced_image.bmp"
