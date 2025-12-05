@@ -16,7 +16,7 @@ def maked_alt(m: int) -> np.ndarray:
 
 def multiplyd(T: np.ndarray) -> np.ndarray:
     """
-    Multiply D with T to get gradient (matches MATLAB multiplyd.m).
+    Multiply D with T to get gradient.
     Returns shape (2*m, n) stacked [Dx; Dy] in column-major order.
     """
     m, n = T.shape
@@ -45,7 +45,7 @@ def multiplyd(T: np.ndarray) -> np.ndarray:
 
 def multiplydtrans(G: np.ndarray) -> np.ndarray:
     """
-    Multiply D^T with G (matches MATLAB multiplydtrans.m).
+    Multiply D^T with G.
     G shape is (2*m, n); returns (m, n).
     """
     # (2m, n) = (p, n)
@@ -86,7 +86,7 @@ def multiplydtrans(G: np.ndarray) -> np.ndarray:
 
 
 def Tdenom(m: int, n: int, mu: float) -> np.ndarray:
-    """Denominator used in updateT (matches MATLAB Tdenom.m)."""
+    """Denominator used in updateT."""
     dxe = np.zeros((m, n), dtype=np.float64)
     dye = np.zeros((m, n), dtype=np.float64)
     dxe[1, 1] = -1.0
@@ -140,7 +140,7 @@ def make_weight_matrix(Ti: np.ndarray, ker_size: int = 5) -> np.ndarray:
 
 
 def updateT(Ti: np.ndarray, mu: float, G: np.ndarray, U: np.ndarray) -> np.ndarray:
-    """Update T sub-problem (matches MATLAB updateT.m)."""
+    """Update T sub-problem."""
     X = G - U # (G - Z/μ) -> matrix size = (2m,n) 
     delX = multiplydtrans(X)
     Tnum = 2 * Ti + mu * delX
@@ -154,7 +154,7 @@ def updateT(Ti: np.ndarray, mu: float, G: np.ndarray, U: np.ndarray) -> np.ndarr
 
 def lime_trial(Ti: np.ndarray, alpha: float, mu0: float, rho: float, k0: int = 50) -> np.ndarray:
     """
-    ADMM/ALM solver matching MATLAB lime_trial.m.
+    ADMM/ALM solver.
     Ti: initial illumination map (2D)
     alpha, mu0, rho: solver hyperparameters
     k0: iterations
