@@ -120,7 +120,7 @@ def gaussian_kernel(size: int, sigma: float = 2.0) -> np.ndarray:
 
 
 def make_weight_matrix(Ti: np.ndarray, ker_size: int = 5) -> np.ndarray:
-    """Weight matrix using gradients of Ti (matches MATLAB make_weight_matrix.m)."""
+    """Weight matrix using gradients of Ti."""
     m, n = Ti.shape
     p = m * n
     delTi = multiplyd(Ti)

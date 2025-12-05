@@ -37,20 +37,36 @@ if __name__ == "__main__":
     enhanced2_img = np.zeros((out_size, out_size, 3), dtype=np.float64)
     enhanced2_inv = np.zeros((out_size, out_size, 3), dtype=np.float64)
     clip_orig_img = np.zeros((out_size, out_size, 3), dtype=np.float64)
+    iteration_cnt = 0
     
     for i in range(patch_num):
         for j in range (patch_num):
             patch_img = arr[i*valid_size:i*valid_size + patch_size , j*valid_size: j*valid_size+patch_size, 0:3]
+            patch_label = f"patch_{i}_{j}"
             
             # enhanced1_patch(32x32x3)
-            enhanced1_patch = run_lime(out_dir=out_dir, img_in=patch_img, k0=30, gamma= 0.7)
+            out_dir = root / "imgs_lime1"
+            enhanced1_patch = run_lime(
+                out_dir=out_dir,
+                img_in=patch_img,
+                k0=30,
+                gamma=0.7,
+                save_label=f"{patch_label}_under",
+            )
             # enhanced1_img(24x24x3)
             enhanced1_img[i*valid_size:(i+1)*valid_size, j*valid_size:(j+1)*valid_size, 0:3] = enhanced1_patch[border:border+valid_size, border:border+valid_size, 0:3]
             
             arr_inv = 1 - patch_img
 
             # enhanced2_patch(32x32x3)
-            enhanced2_patch = run_lime(out_dir=out_dir, img_in=arr_inv, k0=30, gamma= 0.7)
+            out_dir = root / "imgs_lime2"
+            enhanced2_patch = run_lime(
+                out_dir=out_dir,
+                img_in=arr_inv,
+                k0=30,
+                gamma=0.7,
+                save_label=f"{patch_label}_over",
+            )
             # enhanced2_img(24x24x3)
             enhanced2_img[i*valid_size:(i+1)*valid_size, j*valid_size:(j+1)*valid_size, 0:3] = enhanced2_patch[border:border+valid_size, border:border+valid_size, 0:3]
             
@@ -64,6 +80,7 @@ if __name__ == "__main__":
             note: you may use 25x25x3 matrix to calculate the 24x24x3 C matrix
             output one 24x24x3 matrix(I will combine these matrix block)
             '''
+            print("iteration", i, "-", j, " complete")
             
             
 

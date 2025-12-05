@@ -18,11 +18,20 @@ def run_lime(
     rho: float = 1.2,
     gamma: float = 0.8,
     k0: int = 1,
+    save_label: str | None = None,
 ) -> np.ndarray:
     t0 = time.perf_counter()
 
+    out_dir.mkdir(parents=True, exist_ok=True)
+    label = save_label or "run"
+
+    def stage_path(stage: str) -> Path:
+        stage_dir = out_dir / stage
+        stage_dir.mkdir(parents=True, exist_ok=True)
+        return stage_dir / f"{label}.bmp"
+
     # also save the normalized input back (for reference)
-    in_img = out_dir / "imput_image.bmp"
+    in_img = stage_path("input_image")
     Image.fromarray((np.clip(img_in, 0, 1) * 255).astype(np.uint8), mode="RGB").save(in_img)
 
     # print("image size: ", img_in.shape)
@@ -30,7 +39,7 @@ def run_lime(
     # ----- initialize illumination map ----- #
     illum = initial_map(img_in)
     #print("initial illu map size: ", illum.shape)
-    illum_out = out_dir / "initial_illum_map.bmp"
+    illum_out = stage_path("initial_illum_map")
     Image.fromarray((illum * 255).astype(np.uint8), mode="L").save(illum_out)
 
     # ----- Augmented Lagrange Multiplier (lime_trial) ----- #
@@ -38,18 +47,18 @@ def run_lime(
 
     # refine to [0,1], save
     Tout_clipped = np.clip(np.abs(Tout), 0, 1)
-    illum_refined_out = out_dir / "refined_illum_map.bmp"
+    illum_refined_out = stage_path("refined_illum_map")
     Image.fromarray((Tout_clipped * 255).astype(np.uint8), mode="L").save(illum_refined_out)
 
     # ----- Gamma Correction ----- #
     Tout_gamma = gamma_corr(Tout_clipped, gamma)
-    illum_gamma_out = out_dir / "gamma_illum_map.bmp"
+    illum_gamma_out = stage_path("gamma_illum_map")
     Image.fromarray((np.clip(Tout_gamma, 0, 1) * 255).astype(np.uint8), mode="L").save(illum_gamma_out)
 
     # ----- Enhance image by dividing input with gamma-corrected illumination ----- #
     T3 = np.stack([np.clip(Tout_gamma, 1e-6, 1.0)] * 3, axis=2)
     img_enhanced = np.clip(img_in / T3, 0, 1)  # dot division RGB channel image
-    enhanced_out = out_dir / "enhanced_image.bmp"
+    enhanced_out = stage_path("enhanced_image")
     Image.fromarray((img_enhanced * 255).astype(np.uint8), mode="RGB").save(enhanced_out)
 
     t1 = time.perf_counter()
