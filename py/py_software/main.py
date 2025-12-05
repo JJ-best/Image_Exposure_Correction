@@ -5,7 +5,7 @@ import numpy as np
 
 if __name__ == "__main__":
     # get absolute path of this file
-    root = Path(__file__).resolve().parents[1] 
+    root = Path(__file__).resolve().parent
     img = root / "imgs" / "building.bmp"
     out_dir = root / "imgs_lime1"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -27,8 +27,7 @@ if __name__ == "__main__":
     Image.fromarray((enhanced2_inv * 255).astype(np.uint8), mode="RGB").save(over_ex_img)
     
     # ---- add here ----- #
-    # please implement:
-    # 3 image fusion arr, enhance1, enhance2
-    # how to calculate matrix C, S, V?
+    # arr, enhance1, enhance2
+    # matrix C, S, V
     
     
