@@ -51,3 +51,31 @@ Loop i{
 
 ### SRAM A
 Used to store a patch of input image(32x32 pixel, each pixel have (R,G,B), range from (0,255) 8-bit), so the sram size is 32x32x24-bit = 3072-byte(discard the 54-byte head).
+
+SRAM A is devide into 4-bank. The data allocate as:
+
+bmp image = 32x32x3 byte 
+
+Matrix(row, col), each element(pixel) is 3-byte(RGB): 
+( 0,0) ( 0,1) ... ( 0,31)
+( 1,0) ( 1,1) ... ( 1,31)
+( 2,0) ( 2,1) ... ( 2,31)
+...
+(31,0) (31,1) ... (31,31)
+
+addr-0: 
+    bank0: ( 0,0)
+    bank1: ( 0,1)
+    bank2: ( 0,2)
+    bank3: ( 0,3)
+addr-1:
+    bank0: ( 0,4)
+    bank1: ( 0,5)
+    bank2: ( 0,6)
+    bank3: ( 0,7)
+...
+addr-255:
+    bank0: (31,28)
+    bank1: (31,29)
+    bank2: (31,30)
+    bank3: (31,31)
