@@ -57,12 +57,14 @@ SRAM A is devide into 4-bank. The data allocate as:
 bmp image = 32x32x3 byte 
 
 Matrix(row, col), each element(pixel) is 3-byte(RGB): 
+```
 ( 0,0) ( 0,1) ... ( 0,31)
 ( 1,0) ( 1,1) ... ( 1,31)
 ( 2,0) ( 2,1) ... ( 2,31)
 ...
 (31,0) (31,1) ... (31,31)
-
+```
+```
 addr-0: 
     bank0: ( 0,0)
     bank1: ( 0,1)
@@ -79,6 +81,62 @@ addr-255:
     bank1: (31,29)
     bank2: (31,30)
     bank3: (31,31)
+```
+
+### SRAM B
+Used to store init layer (32x32 pixel, each pixel have one channel, fp64 format , so the sram size is 32x32x64-bit = 65536-bit).
+
+SRAM B is devide into 4-bank. The data allocate as:
+
+bmp image = 32x32x8 byte 
+
+Matrix(row, col), each element(pixel) is 8-byte(fp64): 
+```
+( 0,0) ( 0,1) ... ( 0,31)
+( 1,0) ( 1,1) ... ( 1,31)
+( 2,0) ( 2,1) ... ( 2,31)
+...
+(31,0) (31,1) ... (31,31)
+```
+```
+addr-0: 
+    bank0: ( 0,0)
+    bank1: ( 0,1)
+    bank2: ( 0,2)
+    bank3: ( 0,3)
+addr-1:
+    bank0: ( 0,4)
+    bank1: ( 0,5)
+    bank2: ( 0,6)
+    bank3: ( 0,7)
+...
+addr-255:
+    bank0: (31,28)
+    bank1: (31,29)
+    bank2: (31,30)
+    bank3: (31,31)
+```
+
+
+## Preparing Pattern Files
+### 1. Create the directory
+```
+./sim/pat
+```
+### 2. Copy all images from the following folders into ./sim/pat:
+```
+py/py_overlap_partition/imgs_lime1
+py/py_overlap_partition/imgs_lime2
+```
+### 3. Rename all image files: Pad both indices to two digits
+For example
+```
+0_0 -> 00_00
+```
+### 4. Run simulation
+```
+sh run_sim.sh
+```
 
 
 ## Dataflow

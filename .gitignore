@@ -4,3 +4,10 @@ py/**/imgs_lime2/
 # Python cache
 **/__pycache__/
 *.py[cod]
+# Sim pat
+sim/pat/imgs_lime1/
+sim/pat/imgs_lime2/
+
+*.fsdb
+*.ucli.key
+**/simv.daidir
