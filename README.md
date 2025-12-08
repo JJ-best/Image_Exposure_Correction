@@ -134,8 +134,16 @@ For example
 0_0 -> 00_00
 ```
 ### 4. Run simulation
-```
-sh run_sim.sh
+```shell
+1. upload the this repo into mobaxterm
+2. > cd Image_Exposure_correction/py/py_overlap
+3. > python3 -m pip install --user pillow numpy
+4. > python3 main.py
+5. > cd Image_Exposure_correction/sim
+6. > vim run_sim.sh
+7. > :set ff=unix
+8. > :wq
+9. > sh run_sim.sh
 ```
 
 

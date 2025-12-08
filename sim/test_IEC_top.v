@@ -371,7 +371,7 @@ task load_golden;
 
     integer row, col, addr, file_in;
     integer i;
-    reg [128*8-1:0] bmp_filepath;
+    reg [196*8-1:0] bmp_filepath;
     reg [7:0] r, g, b;  // RGB components
     reg [23:0] pixel_data;
     reg [7:0] patch_i_str [0:1];
@@ -387,32 +387,32 @@ begin
    // filepath
     if(PAT == "1") begin // PAT == "1" (imgs_lime1)
         case(LAYER)
-            1: $sformat(bmp_filepath, "./pat/imgs_lime1/input_image/patch_%c%c_%c%c_under.bmp",
+            1: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime1/input_image/patch_%c%c_%c%c_under.bmp",
                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            2: $sformat(bmp_filepath, "./pat/imgs_lime1/initial_illum_map/patch_%c%c_%c%c_under.bmp",
+            2: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime1/initial_illum_map/patch_%c%c_%c%c_under.bmp",
                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            3: $sformat(bmp_filepath, "./pat/imgs_lime1/refined_illum_map/patch_%c%c_%c%c_under.bmp",
+            3: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime1/refined_illum_map/patch_%c%c_%c%c_under.bmp",
                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            4: $sformat(bmp_filepath, "./pat/imgs_lime1/gamma_illum_map/patch_%c%c_%c%c_under.bmp",
+            4: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime1/gamma_illum_map/patch_%c%c_%c%c_under.bmp",
                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            5: $sformat(bmp_filepath, "./pat/imgs_lime1/enhanced_image/patch_%c%c_%c%c_under.bmp",
+            5: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime1/enhanced_image/patch_%c%c_%c%c_under.bmp",
                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            default: $sformat(bmp_filepath, "./pat/imgs_lime1/unknown_layer/patch_%c%c_%c%c_under.bmp",
+            default: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime1/unknown_layer/patch_%c%c_%c%c_under.bmp",
                               patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
         endcase
     end else begin  // PAT == "2" (imgs_lime2)
         case(LAYER)
-            1: $sformat(bmp_filepath, "./pat/imgs_lime2/input_image/patch_%c%c_%c%c_over.bmp",
+            1: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime2/input_image/patch_%c%c_%c%c_over.bmp",
                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            2: $sformat(bmp_filepath, "./pat/imgs_lime2/initial_illum_map/patch_%c%c_%c%c_over.bmp",
+            2: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime2/initial_illum_map/patch_%c%c_%c%c_over.bmp",
                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            3: $sformat(bmp_filepath, "./pat/imgs_lime2/refined_illum_map/patch_%c%c_%c%c_over.bmp",
+            3: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime2/refined_illum_map/patch_%c%c_%c%c_over.bmp",
                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            4: $sformat(bmp_filepath, "./pat/imgs_lime2/gamma_illum_map/patch_%c%c_%c%c_over.bmp",
+            4: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime2/gamma_illum_map/patch_%c%c_%c%c_over.bmp",
                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            5: $sformat(bmp_filepath, "./pat/imgs_lime2/enhanced_image/patch_%c%c_%c%c_over.bmp",
+            5: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime2/enhanced_image/patch_%c%c_%c%c_over.bmp",
                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            default: $sformat(bmp_filepath, "./pat/imgs_lime2/unknown_layer/patch_%c%c_%c%c_over.bmp",
+            default: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime2/unknown_layer/patch_%c%c_%c%c_over.bmp",
                               patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
         endcase
     end

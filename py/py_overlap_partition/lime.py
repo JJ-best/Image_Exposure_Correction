@@ -8,6 +8,7 @@ import numpy as np
 from init_map import initial_map
 from alm import lime_trial
 from gamma_corr import gamma_corr
+from typing import Optional
 
 
 def run_lime(
@@ -18,7 +19,7 @@ def run_lime(
     rho: float = 1.2,
     gamma: float = 0.8,
     k0: int = 1,
-    save_label: str | None = None,
+    save_label: Optional[str] = None,
 ) -> np.ndarray:
     t0 = time.perf_counter()
 

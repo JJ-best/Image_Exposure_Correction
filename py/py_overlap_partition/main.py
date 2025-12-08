@@ -42,7 +42,7 @@ if __name__ == "__main__":
     for i in range(patch_num):
         for j in range (patch_num):
             patch_img = arr[i*valid_size:i*valid_size + patch_size , j*valid_size: j*valid_size+patch_size, 0:3]
-            patch_label = f"patch_{i}_{j}"
+            patch_label = f"patch_{i:02d}_{j:02d}"
             
             # enhanced1_patch(32x32x3)
             out_dir = root / "imgs_lime1"
