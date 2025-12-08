@@ -79,3 +79,16 @@ addr-255:
     bank1: (31,29)
     bank2: (31,30)
     bank3: (31,31)
+
+
+## Dataflow
+
+### Step1: Initial Illumination Map
+
+Input image(680x680x3 pixel), divided into 28x28 overlap patch and store in SRAM-A. The SRAM-A store one patch(32x32x3 pixel) with 4-bank.
+
+Compare R,G,B in one pixel, choose the largest value and multiply with 255^-1. Then store in SRAM-B, the SRAM-B size is  32x32x1 pixel, 64-bit/pexel, SRAM-B have 4-bank too.
+
+### Step2: ALM
+
+Solve the ALM with iteration(fsm will have feedback state).
