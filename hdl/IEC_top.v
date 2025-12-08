@@ -2,7 +2,12 @@ module IEC_top #(
     parameter BW_PER_ADDR_A = 24,
     parameter BW_PER_ADDR_B = 64,
     parameter ADDR_WIDTH_A = 8,
-    parameter ADDR_WIDTH_B = 8
+    parameter ADDR_WIDTH_B = 8,
+    parameter alpha = 64'h3fb47ae147ae147b, // alpha = 0.08
+    parameter mu0 = 64'h3f847ae147ae147b,   // mu0 = 0.01
+    parameter rho = 64'h3ff3333333333333,   // rho = 1.2
+    parameter gamma = 64'h3fe999999999999a, // gamma = 0.8
+    parameter k0 = 8'd50                    // iteration time
 )(
     input clk,
     input rst_n,

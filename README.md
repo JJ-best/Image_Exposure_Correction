@@ -119,6 +119,9 @@ addr-255:
 
 
 ## Preparing Pattern Files
+
+*note: start from step4
+
 ### 1. Create the directory
 ```
 ./sim/pat

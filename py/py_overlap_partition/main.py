@@ -67,11 +67,9 @@ if __name__ == "__main__":
                 gamma=0.7,
                 save_label=f"{patch_label}_over",
             )
-            # enhanced2_img(24x24x3)
-            enhanced2_img[i*valid_size:(i+1)*valid_size, j*valid_size:(j+1)*valid_size, 0:3] = enhanced2_patch[border:border+valid_size, border:border+valid_size, 0:3]
-            
             enhanced2_patch_inv = 1- enhanced2_patch
-            enhanced2_inv[i*valid_size:(i+1)*valid_size, j*valid_size:(j+1)*valid_size, 0:3] = enhanced2_patch_inv[border:border+valid_size, border:border+valid_size, 0:3]
+            # enhanced2_img(24x24x3)
+            enhanced2_img[i*valid_size:(i+1)*valid_size, j*valid_size:(j+1)*valid_size, 0:3] = enhanced2_patch_inv[border:border+valid_size, border:border+valid_size, 0:3]
             
             '''
             todo: 
@@ -85,6 +83,7 @@ if __name__ == "__main__":
             
 
     # --------------------------------------------------------- #
+    out_dir = root / "imgs_lime1"
     under_ex_img = out_dir/"underexposure_enhanced_image.bmp"
     Image.fromarray((enhanced1_img * 255).astype(np.uint8), mode="RGB").save(under_ex_img)
     
@@ -94,7 +93,7 @@ if __name__ == "__main__":
     # img_inv = out_dir / "original_image_inverse.bmp"
     # Image.fromarray((arr_inv * 255).astype(np.uint8), mode="RGB").save(img_inv)
     over_ex_img = out_dir/"overexposure_enhanced_image.bmp"
-    Image.fromarray((enhanced2_inv * 255).astype(np.uint8), mode="RGB").save(over_ex_img)
+    Image.fromarray((enhanced2_img * 255).astype(np.uint8), mode="RGB").save(over_ex_img)
     
     clip_orig_img = arr[0:out_size, 0:out_size, 0:3]
     '''
