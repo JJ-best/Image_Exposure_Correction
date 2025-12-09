@@ -1,5 +1,7 @@
 # Multiplier
 
+I have revised the datapath of multiplier, so ignore the comment in the rtl-code.
+
 ## Function IO
 ```verilog
 module mul #(
