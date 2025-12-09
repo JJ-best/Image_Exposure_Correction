@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import numpy as np
 
+from fft import fft2_iterative_radix2, ifft2_iterative_radix2
+
 
 def maked_alt(m: int) -> np.ndarray:
     """Create forward-difference matrix D of shape (m, m+1)."""
@@ -93,40 +95,6 @@ def multiplydtrans(G: np.ndarray) -> np.ndarray:
     
     return delGx + delGy
 
-
-def Tdenom(m: int, n: int, mu: float) -> np.ndarray:
-    """Denominator used in updateT."""
-    dxe = np.zeros((m, n), dtype=np.float64)
-    dye = np.zeros((m, n), dtype=np.float64)
-    dxe[1, 1] = -1.0
-    dxe[1, 2 % n] = 1.0
-    dye[1, 1] = -1.0
-    dye[2 % m, 1] = 1.0
-
-    dxf = np.fft.fftshift(np.fft.fft2(dxe))
-    dxc = np.conj(dxf)
-    dx_mod = dxc * dxf
-
-    dyf = np.fft.fftshift(np.fft.fft2(dye))
-    dyc = np.conj(dyf)
-    dy_mod = dyc * dyf
-
-    return 2.0 + mu * (dx_mod + dy_mod)
-
-def Tdenom_no_shift(m: int, n: int, mu: float) -> np.ndarray:
-    """Denominator without fftshift; for use with unshifted spectra."""
-    dxe = np.zeros((m, n), dtype=np.float64)
-    dye = np.zeros((m, n), dtype=np.float64)
-    dxe[1, 1] = -1.0
-    dxe[1, 2 % n] = 1.0
-    dye[1, 1] = -1.0
-    dye[2 % m, 1] = 1.0
-
-    dxf = np.fft.fft2(dxe)
-    dyf = np.fft.fft2(dye)
-    return 2.0 + mu * (np.conj(dxf) * dxf + np.conj(dyf) * dyf)
-
-
 def shrinkage(A: np.ndarray, X: np.ndarray) -> np.ndarray:
     """Soft thresholding."""
     return np.sign(X) * np.maximum(np.abs(X) - A, 0.0)
@@ -160,6 +128,25 @@ def make_weight_matrix(Ti: np.ndarray, ker_size: int = 5) -> np.ndarray:
     W_vec = np.concatenate((W_x, W_y))
     return W_vec.reshape((2 * m, n), order="F")
 
+# ===== shift fft ===== #
+def Tdenom(m: int, n: int, mu: float) -> np.ndarray:
+    """Denominator used in updateT."""
+    dxe = np.zeros((m, n), dtype=np.float64)
+    dye = np.zeros((m, n), dtype=np.float64)
+    dxe[1, 1] = -1.0
+    dxe[1, 2 % n] = 1.0
+    dye[1, 1] = -1.0
+    dye[2 % m, 1] = 1.0
+
+    dxf = np.fft.fftshift(np.fft.fft2(dxe))
+    dxc = np.conj(dxf)
+    dx_mod = dxc * dxf
+
+    dyf = np.fft.fftshift(np.fft.fft2(dye))
+    dyc = np.conj(dyf)
+    dy_mod = dyc * dyf
+
+    return 2.0 + mu * (dx_mod + dy_mod)
 
 def updateT(Ti: np.ndarray, mu: float, G: np.ndarray, U: np.ndarray) -> np.ndarray:
     """Update T sub-problem."""
@@ -172,7 +159,21 @@ def updateT(Ti: np.ndarray, mu: float, G: np.ndarray, U: np.ndarray) -> np.ndarr
     Td = Tdenom(m, n, mu)
     Tnd = Tn / Td
     return np.real(np.fft.ifft2(np.fft.ifftshift(Tnd)))
+# ===== shift fft ===== #
 
+# ===== unshift fft ===== #
+def Tdenom_no_shift(m: int, n: int, mu: float) -> np.ndarray:
+    """Denominator without fftshift; for use with unshifted spectra."""
+    dxe = np.zeros((m, n), dtype=np.float64)
+    dye = np.zeros((m, n), dtype=np.float64)
+    dxe[1, 1] = -1.0
+    dxe[1, 2 % n] = 1.0
+    dye[1, 1] = -1.0
+    dye[2 % m, 1] = 1.0
+
+    dxf = np.fft.fft2(dxe)
+    dyf = np.fft.fft2(dye)
+    return 2.0 + mu * (np.conj(dxf) * dxf + np.conj(dyf) * dyf)
 
 def updateT_no_shift(Ti: np.ndarray, mu: float, G: np.ndarray, U: np.ndarray) -> np.ndarray:
     """Update T sub-problem without fftshift/ifftshift (Td is unshifted to match)."""
@@ -185,7 +186,40 @@ def updateT_no_shift(Ti: np.ndarray, mu: float, G: np.ndarray, U: np.ndarray) ->
     Td = Tdenom_no_shift(m, n, mu)
     Tnd = Tn / Td
     return np.real(np.fft.ifft2(Tnd))
+# ===== unshift fft ===== #
 
+# ===== selfdefined fft ===== #
+def updateT_selfdefined(Ti: np.ndarray, mu: float, G: np.ndarray, U: np.ndarray) -> np.ndarray:
+    """
+    Update T using the self-defined radix-2 iterative FFT/ifft (unshifted spectrum).
+    Matrix dimensions must be powers of two (e.g., 32x32).
+    """
+    X = G - U
+    delX = multiplydtrans(X)
+    Tnum = 2 * Ti + mu * delX
+    Tn = fft2_iterative_radix2(Tnum)
+
+    m, n = Ti.shape
+    Td = Tdenom_selfdefined(m, n, mu)  # unshifted denominator to match unshifted spectrum
+    Tnd = Tn / Td
+    Tout = ifft2_iterative_radix2(Tnd)
+    return np.real(Tout)
+
+def Tdenom_selfdefined(m: int, n: int, mu: float) -> np.ndarray:
+    """
+    Denominator using self-defined radix-2 FFT (unshifted spectrum, power-of-two dims).
+    """
+    dxe = np.zeros((m, n), dtype=np.float64)
+    dye = np.zeros((m, n), dtype=np.float64)
+    dxe[1, 1] = -1.0
+    dxe[1, 2 % n] = 1.0
+    dye[1, 1] = -1.0
+    dye[2 % m, 1] = 1.0
+
+    dxf = fft2_iterative_radix2(dxe)
+    dyf = fft2_iterative_radix2(dye)
+    return 2.0 + mu * (np.conj(dxf) * dxf + np.conj(dyf) * dyf)
+# ===== selfdefined fft ===== #
 
 def lime_trial(Ti: np.ndarray, alpha: float, mu0: float, rho: float, k0: int = 50) -> np.ndarray:
     """
@@ -210,7 +244,7 @@ def lime_trial(Ti: np.ndarray, alpha: float, mu0: float, rho: float, k0: int = 5
     while k < k0:
         U = Z / mu                  # Z / μ
         A = alpha * W / mu          # Threshold matrix of each element
-        T = updateT_no_shift(Ti, mu, G, U)   # T(t+1) = ...
+        T = updateT_selfdefined(Ti, mu, G, U)   # T(t+1) = ...
         delT = multiplyd(T)         # ∇T
         G = shrinkage(A, delT + U)  # G(t+1) = Shrinkage(∇T + Z / μ)
         B = delT - G                # ∇T - G

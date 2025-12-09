@@ -52,4 +52,28 @@ module IEC_top #(
 
 );
 
+// ===== top state ===== //
+localparam IDLE = 7'd0;
+localparam R_SRAMA = 7'd1;
+
+
+reg [6:0] top_state;
+reg [6:0] top_state_n;
+
+// ===== init illumination map ===== //
+// read original RGB data(3-byte) from SRAM-A
+
+// find max{R,G,B} * 255^-1 and store into SRAM-B
+// find (1-min{R,G,B}) * 255^-1 and store into SRAM-C
+
+// read SRAM-A --> find max and min --> write into SRAM-B and SRAM-C 
+// --> read SRAM-C --> 1-min --> write SRAM-C
+
+// Memory Size
+// SRAM-A: 32x32x3x1-byte
+// SRAM-B: 32x32x1x8-byte
+// SRAM-C: 32x32x1x8-byte
+// Each SRAM has 4-bank, please refer to readme file
+
+
 endmodule

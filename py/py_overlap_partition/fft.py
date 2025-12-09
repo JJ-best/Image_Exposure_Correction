@@ -33,8 +33,8 @@ def fft_iterative_radix2(x: np.ndarray) -> np.ndarray:
         half = m // 2
         w_m = np.exp(-2j * np.pi * np.arange(half) / m)
         for k in range(0, n, m):
-            u = out[k : k + half]
-            v = w_m * out[k + half : k + m]
+            u = out[k : k + half].copy()          # copy to avoid in-place overwrite
+            v = w_m * out[k + half : k + m].copy()
             out[k : k + half] = u + v
             out[k + half : k + m] = u - v
         m *= 2
@@ -42,7 +42,33 @@ def fft_iterative_radix2(x: np.ndarray) -> np.ndarray:
 
 
 def ifft_iterative_radix2(x: np.ndarray) -> np.ndarray:
-    """Inverse FFT using conjugate trick on the forward implementation."""
+    """
+    Inverse FFT implemented using the conjugate trick.
+
+    The mathematical definition of the IFFT is:
+        x[n] = (1/N) * sum_{k=0}^{N-1} X[k] * exp(+j*2π*k*n/N)
+
+    However, our FFT implementation is defined as:
+        FFT(x) = sum_{n=0}^{N-1} x[n] * exp(-j*2π*k*n/N)
+
+    Using the following identity (conjugate trick):
+        IFFT(X) = (1/N) * conj( FFT( conj(X) ) )
+
+    This identity is derived from these properties:
+        1. exp(+jθ) = conj( exp(-jθ) )
+        2. conj(a * b) = conj(a) * conj(b)
+        3. conj( sum a_k ) = sum conj(a_k)
+
+    Therefore:
+    - Instead of conjugating the exponential kernel exp(+jθ),
+      we conjugate the input sequence X.
+    - We then reuse the same forward FFT implementation.
+    - Finally, we conjugate the FFT result and divide by N.
+
+    This approach allows the IFFT to be implemented without
+    writing a separate inverse butterfly network, which is
+    especially important for hardware and high-performance designs.
+    """
     n = x.shape[0]
     tmp = fft_iterative_radix2(np.conjugate(x))
     return np.conjugate(tmp) / n
@@ -56,8 +82,10 @@ def fft2_iterative_radix2(mat: np.ndarray) -> np.ndarray:
 
     out = np.asarray(mat, dtype=np.complex128).copy()
     for i in range(m):
+        # do fft row by row
         out[i, :] = fft_iterative_radix2(out[i, :])
     for j in range(n):
+        # do fft col by col
         out[:, j] = fft_iterative_radix2(out[:, j])
     return out
 
