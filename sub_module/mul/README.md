@@ -2,6 +2,10 @@
 
 I have revised the datapath of multiplier, so ignore the comment in the rtl-code.
 
+To implement **DIT-FFT**, you may need this module `mul`, and module `hdl/fp_add`.
+
+Try to use **two** mul, since our datapath have two mul. So that it may calculate two pair of butterfly simultaneously. (one-butterfly only needs one mul!)
+
 ## Function IO
 ```verilog
 module mul #(
