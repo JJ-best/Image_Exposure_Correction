@@ -1,0 +1,95 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : mul
+Version: R-2020.09-SP5
+Date   : Mon Dec  8 17:30:20 2025
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: PVT_1P08V_125C   Library: slow_vdd1v2
+Wire Load Model Mode: enclosed
+
+  Startpoint: fp_add_02/pip4_frac_reg_27_
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: fp_add_02/pip5_frac_reg_34_
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  mul                Large                 slow_vdd1v2
+  fp_add_mydesign_3  Small                 slow_vdd1v2
+  LOD_64_mydesign_6  Small                 slow_vdd1v2
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                 0.0000     0.0000
+  clock network delay (ideal)                           0.0000     0.0000
+  fp_add_02/pip4_frac_reg_27_/CK (DFFRHQX1)             0.0000 #   0.0000 r
+  fp_add_02/pip4_frac_reg_27_/Q (DFFRHQX1)              0.1217     0.1217 f
+  fp_add_02/LOD_02/A_38_ (LOD_64_mydesign_6)            0.0000     0.1217 f
+  fp_add_02/LOD_02/U48/Y (NOR4X1)                       0.0968     0.2185 r
+  fp_add_02/LOD_02/U79/Y (NAND4XL)                      0.1239     0.3425 f
+  fp_add_02/LOD_02/U80/Y (NOR2XL)                       0.0757     0.4182 r
+  fp_add_02/LOD_02/U82/Y (AOI21XL)                      0.0790     0.4972 f
+  fp_add_02/LOD_02/U85/Y (BUFX2)                        0.0714     0.5686 f
+  fp_add_02/LOD_02/U91/Y (OAI22XL)                      0.0365     0.6051 r
+  fp_add_02/LOD_02/U66/Y (NAND2BXL)                     0.0695     0.6746 f
+  fp_add_02/LOD_02/U68/Y (NOR2XL)                       0.0470     0.7217 r
+  fp_add_02/LOD_02/U92/Y (NAND4XL)                      0.0832     0.8049 f
+  fp_add_02/LOD_02/U96/Y (NOR3BXL)                      0.0771     0.8820 r
+  fp_add_02/LOD_02/U97/Y (BUFX2)                        0.0747     0.9567 r
+  fp_add_02/LOD_02/U33/Y (AOI21XL)                      0.0522     1.0089 f
+  fp_add_02/LOD_02/U74/Y (OAI211XL)                     0.0419     1.0508 r
+  fp_add_02/LOD_02/U40/Y (NOR4BXL)                      0.0524     1.1032 f
+  fp_add_02/LOD_02/U101/Y (INVXL)                       0.0436     1.1468 r
+  fp_add_02/LOD_02/U107/Y (OAI211X1)                    0.0871     1.2339 f
+  fp_add_02/LOD_02/U39/Y (AOI21X1)                      0.0761     1.3100 r
+  fp_add_02/LOD_02/position_0_ (LOD_64_mydesign_6)      0.0000     1.3100 r
+  fp_add_02/U954/Y (OAI211XL)                           0.0867     1.3967 f
+  fp_add_02/U1099/Y (OAI2BB1XL)                         0.0612     1.4579 r
+  fp_add_02/U937/Y (OAI21XL)                            0.0535     1.5115 f
+  fp_add_02/U939/Y (OAI211XL)                           0.0448     1.5563 r
+  fp_add_02/U470/Y (NAND2BXL)                           0.0562     1.6124 r
+  fp_add_02/U903/Y (NAND2BXL)                           0.0421     1.6545 f
+  fp_add_02/U918/Y (AND3XL)                             0.0545     1.7090 f
+  fp_add_02/U437/Y (NOR2BXL)                            0.0344     1.7434 r
+  fp_add_02/U1101/Y (OAI211XL)                          0.0793     1.8227 f
+  fp_add_02/U953/Y (NAND2BXL)                           0.0717     1.8944 f
+  fp_add_02/U1102/Y (INVXL)                             0.0361     1.9304 r
+  fp_add_02/U406/Y (INVXL)                              0.0402     1.9706 f
+  fp_add_02/U2105/Y (OAI22X1)                           0.0738     2.0444 r
+  fp_add_02/U2123/Y (INVX1)                             0.0696     2.1140 f
+  fp_add_02/U912/Y (NAND2BX2)                           0.0820     2.1960 f
+  fp_add_02/U947/Y (INVX1)                              0.0689     2.2649 r
+  fp_add_02/U2195/Y (AOI22XL)                           0.0888     2.3537 f
+  fp_add_02/U2196/Y (OAI211XL)                          0.0673     2.4210 r
+  fp_add_02/U536/Y (NOR2BXL)                            0.0605     2.4815 f
+  fp_add_02/U2247/Y (AOI2BB1XL)                         0.0449     2.5263 r
+  fp_add_02/U2248/Y (OAI21XL)                           0.0644     2.5907 f
+  fp_add_02/U2522/Y (AOI22XL)                           0.0698     2.6605 r
+  fp_add_02/U509/Y (OAI211XL)                           0.0986     2.7591 f
+  fp_add_02/U2523/Y (OAI22XL)                           0.0834     2.8425 r
+  fp_add_02/U39/Y (NOR2BXL)                             0.0751     2.9176 r
+  fp_add_02/pip5_frac_reg_34_/D (DFFRHQX1)              0.0158     2.9334 r
+  data arrival time                                                2.9334
+
+  clock clk (rise edge)                                 3.0000     3.0000
+  clock network delay (ideal)                           0.0000     3.0000
+  fp_add_02/pip5_frac_reg_34_/CK (DFFRHQX1)             0.0000     3.0000 r
+  library setup time                                   -0.0665     2.9335
+  data required time                                               2.9335
+  --------------------------------------------------------------------------
+  data required time                                               2.9335
+  data arrival time                                               -2.9334
+  --------------------------------------------------------------------------
+  slack (MET)                                                      0.0001
+
+
+1

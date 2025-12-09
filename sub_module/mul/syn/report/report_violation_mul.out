@@ -1,0 +1,60 @@
+ 
+****************************************
+Report : constraint
+        -all_violators
+Design : mul
+Version: R-2020.09-SP5
+Date   : Mon Dec  8 17:30:38 2025
+****************************************
+
+
+   max_transition
+
+                             Required        Actual
+   Net                      Transition     Transition        Slack
+   -----------------------------------------------------------------
+   fp_add_03/n1530              0.28           0.30          -0.02  (VIOLATED)
+       PIN :   fp_add_03/U2356/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   fp_add_03/U2357/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   fp_add_03/U2358/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   fp_add_03/U2359/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   fp_add_03/U2360/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   fp_add_03/U2361/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   fp_add_03/U2362/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   fp_add_03/U2363/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   fp_add_03/U2364/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   fp_add_03/U2365/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   fp_add_03/U2366/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   fp_add_03/U2367/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   fp_add_03/U904/A
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   fp_add_03/U905/A
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   fp_add_03/U895/Y
+                                0.28           0.30          -0.02  (VIOLATED)
+
+   -----------------------------------------------------------------
+   Total                      1                  -0.02  
+
+   max_area
+
+                             Required        Actual
+   Design                      Area           Area           Slack
+   -----------------------------------------------------------------
+   mul                          0.00       279848.34      -279848.34
+                                                                    (VIOLATED)
+
+
+1

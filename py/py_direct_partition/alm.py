@@ -140,7 +140,7 @@ def make_weight_matrix(Ti: np.ndarray, ker_size: int = 5) -> np.ndarray:
 
 
 def updateT(Ti: np.ndarray, mu: float, G: np.ndarray, U: np.ndarray) -> np.ndarray:
-    """Update T sub-problem (matches MATLAB updateT.m)."""
+    """Update T sub-problem."""
     X = G - U # (G - Z/μ) -> matrix size = (2m,n) 
     delX = multiplydtrans(X)
     Tnum = 2 * Ti + mu * delX
