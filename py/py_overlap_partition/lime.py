@@ -17,7 +17,7 @@ def run_lime(
     alpha: float = 0.08,
     mu0: float = 0.01,
     rho: float = 1.2,
-    gamma: float = 0.8,
+    gamma: float = 0.5,
     k0: int = 1,
     save_label: Optional[str] = None,
 ) -> np.ndarray:
