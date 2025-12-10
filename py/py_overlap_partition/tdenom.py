@@ -2,6 +2,11 @@ from pathlib import Path
 import numpy as np
 from fft import fft2_iterative_radix2
 
+"""
+since T denominator is a constant matrix, we dont 
+need to calculate the fft in the hw, we use this
+py to generate the parameter matrix.
+"""
 
 def tdenom_mat(m: int, n: int):
     """Generate the parameter matrix of T denominator."""

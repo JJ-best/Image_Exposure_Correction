@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import numpy as np
+from pathlib import Path
 
 from fft import fft2_iterative_radix2, ifft2_iterative_radix2
 from tdenom import tdenom_mat
@@ -128,7 +129,7 @@ def make_weight_matrix(Ti: np.ndarray, ker_size: int = 5) -> np.ndarray:
     W_vec = np.concatenate((W_x, W_y))
     return W_vec.reshape((2 * m, n), order="F")
 
-# ===== shift fft ===== #
+# ===== 1. shift fft ===== #
 def Tdenom(m: int, n: int, mu: float) -> np.ndarray:
     """Denominator used in updateT."""
     dxe = np.zeros((m, n), dtype=np.float64)
@@ -159,9 +160,9 @@ def updateT(Ti: np.ndarray, mu: float, G: np.ndarray, U: np.ndarray) -> np.ndarr
     Td = Tdenom(m, n, mu)
     Tnd = Tn / Td
     return np.real(np.fft.ifft2(np.fft.ifftshift(Tnd)))
-# ===== shift fft ===== #
+# ===== 1. shift fft ===== #
 
-# ===== unshift fft ===== #
+# ===== 2. unshift fft ===== #
 def Tdenom_no_shift(m: int, n: int, mu: float) -> np.ndarray:
     """Denominator without fftshift; for use with unshifted spectra."""
     dxe = np.zeros((m, n), dtype=np.float64)
@@ -186,9 +187,9 @@ def updateT_no_shift(Ti: np.ndarray, mu: float, G: np.ndarray, U: np.ndarray) ->
     Td = Tdenom_no_shift(m, n, mu)
     Tnd = Tn / Td
     return np.real(np.fft.ifft2(Tnd))
-# ===== unshift fft ===== #
+# ===== 2. unshift fft ===== #
 
-# ===== selfdefined fft ===== #
+# ===== 3. selfdefined fft ===== #
 def updateT_selfdefined(Ti: np.ndarray, mu: float, G: np.ndarray, U: np.ndarray) -> np.ndarray:
     """
     Update T using the self-defined radix-2 iterative FFT/ifft (unshifted spectrum).
@@ -219,9 +220,9 @@ def Tdenom_selfdefined(m: int, n: int, mu: float) -> np.ndarray:
     dxf = fft2_iterative_radix2(dxe)
     dyf = fft2_iterative_radix2(dye)
     return 2.0 + mu * (np.conj(dxf) * dxf + np.conj(dyf) * dyf)
-# ===== selfdefined fft ===== #
+# ===== 3. selfdefined fft ===== #
 
-# ===== fft with parameterized denominator ===== #
+# ===== 4. fft with parameterized denominator ===== #
 def updateT_param(Ti: np.ndarray, mu: float, G: np.ndarray, U: np.ndarray) -> np.ndarray:
     """
     Update T using the self-defined radix-2 iterative FFT/ifft (unshifted spectrum).
@@ -246,7 +247,55 @@ def Tdenom_param(m: int, n: int, mu: float) -> np.ndarray:
     # tdenom_mat will reture a 32x32 matrix
     # each element is complex number
     return 2.0 + mu * T_mat
-# ===== fft with parameterized denominator ===== #
+# ===== 4. fft with parameterized denominator ===== #
+
+# ===== 5. fft with data file ===== # 
+def updateT_dat(Ti: np.ndarray, mu: float, G: np.ndarray, U: np.ndarray) -> np.ndarray:
+    """
+    Update T using the self-defined radix-2 iterative FFT/ifft (unshifted spectrum).
+    Matrix dimensions must be powers of two (e.g., 32x32).
+    """
+    X = G - U
+    delX = multiplydtrans(X)
+    Tnum = 2 * Ti + mu * delX
+    Tn = fft2_iterative_radix2(Tnum)
+
+    m, n = Ti.shape
+    Td = Tdenom_dat(m, n, mu)  # load precomputed denominator from file
+    Tnd = Tn / Td
+    Tout = ifft2_iterative_radix2(Tnd)
+    return np.real(Tout)
+
+def load_tdenom_hex(path: str, m: int, n: int) -> np.ndarray:
+    """
+    Load precomputed T denominator (row-major) from hex file: REAL_IMAG per line.
+    """
+    re_list, im_list = [], []
+    with open(path, "r", encoding="ascii") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            r_hex, i_hex = line.split("_")
+            re_list.append(int(r_hex, 16))
+            im_list.append(int(i_hex, 16))
+
+    arr_re = np.array(re_list, dtype=np.uint64).view(np.float64)
+    arr_im = np.array(im_list, dtype=np.uint64).view(np.float64)
+    return (arr_re + 1j * arr_im).reshape((m, n), order="C")
+
+def Tdenom_dat(m: int, n: int, mu: float) -> np.ndarray:
+    """
+    Denominator using self-defined radix-2 FFT, loaded from precomputed hex file.
+    Expects file at ./dat/tdenom_{m}x{n}_hex.txt with REAL_IMAG per line (row-major).
+    """
+    root = Path(__file__).resolve().parent
+    dat_dir = root / "dat"
+    fname = dat_dir / f"tdenom_{m}x{n}_hex.txt"
+    T_mat = load_tdenom_hex(fname, m, n)
+    # each element is complex number
+    return 2.0 + mu * T_mat
+# ===== 5. fft with data file ===== # 
 
 def lime_trial(Ti: np.ndarray, alpha: float, mu0: float, rho: float, k0: int = 50) -> np.ndarray:
     """
@@ -271,7 +320,7 @@ def lime_trial(Ti: np.ndarray, alpha: float, mu0: float, rho: float, k0: int = 5
     while k < k0:
         U = Z / mu                  # Z / μ
         A = alpha * W / mu          # Threshold matrix of each element
-        T = updateT_selfdefined(Ti, mu, G, U)   # T(t+1) = ...
+        T = updateT_dat(Ti, mu, G, U)   # T(t+1) = ...
         delT = multiplyd(T)         # ∇T
         G = shrinkage(A, delT + U)  # G(t+1) = Shrinkage(∇T + Z / μ)
         B = delT - G                # ∇T - G

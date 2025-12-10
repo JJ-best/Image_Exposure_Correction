@@ -44,7 +44,6 @@ if __name__ == "__main__":
     out_size = figure_size - 2 * border
     enhanced1_img = np.zeros((out_size, out_size, 3), dtype=np.float64)
     enhanced2_img = np.zeros((out_size, out_size, 3), dtype=np.float64)
-    enhanced2_inv = np.zeros((out_size, out_size, 3), dtype=np.float64)
     clip_orig_img = np.zeros((out_size, out_size, 3), dtype=np.float64)
     fused_full_img = np.zeros((out_size, out_size, 3), dtype=np.float64)
     iteration_cnt = 0
@@ -106,7 +105,7 @@ if __name__ == "__main__":
     
     # 2. Over-exposure Fixed
     over_ex_img_path = out_dir_lime2 / "overexposure_enhanced_image.bmp"
-    Image.fromarray((enhanced2_inv * 255).astype(np.uint8), mode="RGB").save(over_ex_img_path)
+    Image.fromarray((enhanced2_img * 255).astype(np.uint8), mode="RGB").save(over_ex_img_path)
     
     # ### NEW: Save Fusion Result ###
     fusion_img_path = out_dir_fusion / "final_fused_image.bmp"
@@ -116,6 +115,6 @@ if __name__ == "__main__":
     clip_orig_img = arr[0:out_size, 0:out_size, 0:3]
     '''
     enhanced1_img is underexposure fix image(672x672x3)
-    enhanced2_inv is overexposure fix image(672x672x3)
+    enhanced2_img is overexposure fix image(672x672x3)
     clip_orig)img is cliped original image(672x672x3)
     '''
