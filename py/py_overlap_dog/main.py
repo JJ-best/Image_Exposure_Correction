@@ -8,7 +8,7 @@ import numpy as np
 if __name__ == "__main__":
     # get absolute path of this file's directory (py_hardware)
     root = Path(__file__).resolve().parent
-    img = root / "imgs" / "lake.bmp"
+    img = root / "imgs" / "building.bmp"
     
     # output file path
     out_dir_lime1 = root / "imgs_lime1"
@@ -92,7 +92,7 @@ if __name__ == "__main__":
                 enhanced1_patch, 
                 enhanced2_patch_inv, 
                 patch_img,
-                save_dir=out_dir_dat_debug, # Patch 相關的 Debug DAT 放在這裡
+                save_dir=out_dir_dat_debug,
                 patch_label=patch_label
             )
 
