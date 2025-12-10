@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 
 from fft import fft2_iterative_radix2, ifft2_iterative_radix2
-
+from tdenom import tdenom_mat
 
 def maked_alt(m: int) -> np.ndarray:
     """Create forward-difference matrix D of shape (m, m+1)."""
@@ -221,6 +221,33 @@ def Tdenom_selfdefined(m: int, n: int, mu: float) -> np.ndarray:
     return 2.0 + mu * (np.conj(dxf) * dxf + np.conj(dyf) * dyf)
 # ===== selfdefined fft ===== #
 
+# ===== fft with parameterized denominator ===== #
+def updateT_param(Ti: np.ndarray, mu: float, G: np.ndarray, U: np.ndarray) -> np.ndarray:
+    """
+    Update T using the self-defined radix-2 iterative FFT/ifft (unshifted spectrum).
+    Matrix dimensions must be powers of two (e.g., 32x32).
+    """
+    X = G - U
+    delX = multiplydtrans(X)
+    Tnum = 2 * Ti + mu * delX
+    Tn = fft2_iterative_radix2(Tnum)
+
+    m, n = Ti.shape
+    Td = Tdenom_param(m, n, mu)  # unshifted denominator to match unshifted spectrum
+    Tnd = Tn / Td
+    Tout = ifft2_iterative_radix2(Tnd)
+    return np.real(Tout)
+
+def Tdenom_param(m: int, n: int, mu: float) -> np.ndarray:
+    """
+    Denominator using self-defined radix-2 FFT (unshifted spectrum, power-of-two dims).
+    """
+    T_mat = tdenom_mat(m, n)
+    # tdenom_mat will reture a 32x32 matrix
+    # each element is complex number
+    return 2.0 + mu * T_mat
+# ===== fft with parameterized denominator ===== #
+
 def lime_trial(Ti: np.ndarray, alpha: float, mu0: float, rho: float, k0: int = 50) -> np.ndarray:
     """
     ADMM/ALM solver.
@@ -244,7 +271,7 @@ def lime_trial(Ti: np.ndarray, alpha: float, mu0: float, rho: float, k0: int = 5
     while k < k0:
         U = Z / mu                  # Z / μ
         A = alpha * W / mu          # Threshold matrix of each element
-        T = updateT(Ti, mu, G, U)   # T(t+1) = ...
+        T = updateT_selfdefined(Ti, mu, G, U)   # T(t+1) = ...
         delT = multiplyd(T)         # ∇T
         G = shrinkage(A, delT + U)  # G(t+1) = Shrinkage(∇T + Z / μ)
         B = delT - G                # ∇T - G
