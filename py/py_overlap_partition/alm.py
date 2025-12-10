@@ -109,9 +109,33 @@ def gaussian_kernel(size: int, sigma: float = 2.0) -> np.ndarray:
     g /= g.sum()
     return g.reshape(-1, 1)
 
+# ===== strategy II ===== #
+def make_weight_matrix_2(Ti: np.ndarray, ker_size: int = 5) -> np.ndarray:
+    """
+    Weight matrix using gradients of Ti.
+    With strategy 2 from lime paper
+    """
+    m, n = Ti.shape
+    p = m * n
+    delTi = multiplyd(Ti)
+    dtvec = delTi.reshape(2 * p, order="F")
 
+    dtx = dtvec[:p]
+    dty = dtvec[p:]
+    
+    W_x = 1.0 / (np.abs(dtx) + 1e-4)
+    W_y = 1.0 / (np.abs(dty) + 1e-4)
+
+    W_vec = np.concatenate((W_x, W_y))
+    return W_vec.reshape((2 * m, n), order="F")
+# ===== strategy II ===== #
+
+# ===== strategy III ===== #
 def make_weight_matrix(Ti: np.ndarray, ker_size: int = 5) -> np.ndarray:
-    """Weight matrix using gradients of Ti."""
+    """
+    Weight matrix using gradients of Ti.
+    With strategy 3 from lime paper
+    """
     m, n = Ti.shape
     p = m * n
     delTi = multiplyd(Ti)
@@ -128,6 +152,7 @@ def make_weight_matrix(Ti: np.ndarray, ker_size: int = 5) -> np.ndarray:
 
     W_vec = np.concatenate((W_x, W_y))
     return W_vec.reshape((2 * m, n), order="F")
+# ===== strategy III ===== #
 
 # ===== 1. shift fft ===== #
 def Tdenom(m: int, n: int, mu: float) -> np.ndarray:
@@ -313,7 +338,7 @@ def lime_trial(Ti: np.ndarray, alpha: float, mu0: float, rho: float, k0: int = 5
     G = np.zeros((2 * m, n), dtype=np.float64) # 2m by n matrix
     # print(f"matrix G: {2 * m} by {n}")
     # print(G)
-    W = make_weight_matrix(Ti, ker_size=5)
+    W = make_weight_matrix_2(Ti, ker_size=5)
     # print("matrix W:")
     # print(W)
     
