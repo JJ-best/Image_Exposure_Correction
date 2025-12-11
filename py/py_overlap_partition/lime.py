@@ -12,24 +12,30 @@ from typing import Optional
 
 
 def run_lime(
-    out_dir: Path,
+    out_dir: Path,          
     img_in: np.ndarray,
     alpha: float = 0.08,
     mu0: float = 0.01,
     rho: float = 1.2,
     gamma: float = 0.8,
     k0: int = 1,
-    save_label: Optional[str] = None,
+    save_label: Optional[str] = None, 
+    dump_alm: bool = False, # default value
 ) -> np.ndarray:
+    '''
+    Run a Low-light Image Enhancement
+    out_dir: imgs_lime1 or imgs_lime2
+    save_label: patch number
+    dump_alm: if true, dump the golden data for alm
+    '''
     t0 = time.perf_counter()
 
     out_dir.mkdir(parents=True, exist_ok=True)
-    label = save_label or "run"
 
     def stage_path(stage: str) -> Path:
         stage_dir = out_dir / stage
         stage_dir.mkdir(parents=True, exist_ok=True)
-        return stage_dir / f"{label}.bmp"
+        return stage_dir / f"{save_label}.bmp"
 
     # also save the normalized input back (for reference)
     in_img = stage_path("input_image")
@@ -44,7 +50,23 @@ def run_lime(
     Image.fromarray((illum * 255).astype(np.uint8), mode="L").save(illum_out)
 
     # ----- Augmented Lagrange Multiplier (lime_trial) ----- #
-    Tout = lime_trial(illum, alpha=alpha, mu0=mu0, rho=rho, k0=k0)
+    debug_dir = None
+    if dump_alm:
+        alm_root = Path(__file__).resolve().parent / "alm"
+        alm_root.mkdir(parents=True, exist_ok=True)
+        debug_dir = alm_root / save_label  # use save_label for folder name
+        debug_dir.mkdir(parents=True, exist_ok=True)
+
+    Tout = lime_trial(
+        illum,
+        alpha=alpha,
+        mu0=mu0,
+        rho=rho,
+        k0=k0,
+        save_label=save_label,
+        dump_alm=dump_alm,
+        debug_dir=debug_dir,
+    )
 
     # refine to [0,1], save
     Tout_clipped = np.clip(np.abs(Tout), 0, 1)

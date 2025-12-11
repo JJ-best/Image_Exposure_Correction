@@ -13,8 +13,8 @@ from gamma_corr import gamma_corr
 def run_lime(
     out_dir: Path,
     img_in: np.ndarray,
-    alpha: float = 0.08,
-    mu0: float = 0.01,
+    alpha: float = 0.5,
+    mu0: float = 0.5,
     rho: float = 1.2,
     gamma: float = 0.8,
     k0: int = 1,

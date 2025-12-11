@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import numpy as np
 from pathlib import Path
+from typing import Optional
 
 from fft import fft2_iterative_radix2, ifft2_iterative_radix2
 from tdenom import tdenom_mat
+from helper import dump_iteration_mats
 
 def maked_alt(m: int) -> np.ndarray:
     """Create forward-difference matrix D of shape (m, m+1)."""
@@ -322,7 +324,17 @@ def Tdenom_dat(m: int, n: int, mu: float) -> np.ndarray:
     return 2.0 + mu * T_mat
 # ===== 5. fft with data file ===== # 
 
-def lime_trial(Ti: np.ndarray, alpha: float, mu0: float, rho: float, k0: int = 50) -> np.ndarray:
+
+def lime_trial(
+    Ti: np.ndarray, 
+    alpha: float, 
+    mu0: float, 
+    rho: float, 
+    k0: int = 50,
+    save_label: Optional[str] = None,
+    dump_alm: bool = False,
+    debug_dir: Optional[Path] = None,
+    ) -> np.ndarray:
     """
     ADMM/ALM solver.
     Ti: initial illumination map (2D)
@@ -330,6 +342,12 @@ def lime_trial(Ti: np.ndarray, alpha: float, mu0: float, rho: float, k0: int = 5
     k0: iterations
     """
     m, n = Ti.shape
+    label = save_label or "run"
+    if dump_alm:
+        if debug_dir is None:
+            root = Path(__file__).resolve().parent
+            debug_dir = root / "alm" / label
+        debug_dir.mkdir(parents=True, exist_ok=True)
     k = 0
     mu = mu0
     Z = np.zeros((2 * m, n), dtype=np.float64) # 2m by n matrix
@@ -349,8 +367,23 @@ def lime_trial(Ti: np.ndarray, alpha: float, mu0: float, rho: float, k0: int = 5
         delT = multiplyd(T)         # ∇T
         G = shrinkage(A, delT + U)  # G(t+1) = Shrinkage(∇T + Z / μ)
         B = delT - G                # ∇T - G
-        Z = mu * (B + U)            # Z(t+1) = μ(t) * (∇T - G)
+        Q = mu * (B ) + Z           # previos ver: Z(t+1) = μ(t) * (∇T - G + Z(t)/μ(t))
+        Z = Q                       # Z(t+1) = μ(t) * (∇T - G) + Z(t)
         mu *= rho                   # μ(t+1) = μ(t)
+        
+        if dump_alm and debug_dir is not None:
+            dump_iteration_mats(
+                debug_dir,
+                k,
+                {
+                    "U": U,
+                    "A": A,
+                    "T": T,
+                    "delT": delT,
+                    "G": G,
+                    "Z": Z
+                },
+            )
         # print(f"===== iteration {k} ===== ")
         # print("Matrix U: \n", U)
         # print("Matrix A: \n", A)
