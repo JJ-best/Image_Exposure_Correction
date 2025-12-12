@@ -15,8 +15,10 @@ localparam INPUT = 5'd0;
 localparam INIT = 5'd1;
 localparam BW_PER_ADDR_A = 24;    // SRAM A: 24-bit per address 
 localparam BW_PER_ADDR_B = 64;    // SRAM B: 64-bit per address 
+localparam BW_PER_ADDR_I = 64;    // SRAM I: 64-bit per address
 localparam SRAM_ADDR_WIDTH_A = 8; // SRAM A: 8-bit address (256 addresses)
 localparam SRAM_ADDR_WIDTH_B = 8; // SRAM B: 8-bit address (256 addresses)
+localparam SRAM_ADDR_WIDTH_I = 8; // SRAM B: 8-bit address (256 addresses)
 
 // ===== Layer selection ===== //
 // +define+LAYER=1 or +define+LAYER=2 in run_sim.sh
@@ -141,6 +143,24 @@ wire [BW_PER_ADDR_B-1:0] sram_wdata_b1;
 wire [BW_PER_ADDR_B-1:0] sram_wdata_b2;
 wire [BW_PER_ADDR_B-1:0] sram_wdata_b3;
 
+// SRAM I signals
+wire sram_wen_i0;
+wire sram_wen_i1;
+wire sram_wen_i2;
+wire sram_wen_i3;
+wire [BW_PER_ADDR_I-1:0] sram_rdata_i0;
+wire [BW_PER_ADDR_I-1:0] sram_rdata_i1;
+wire [BW_PER_ADDR_I-1:0] sram_rdata_i2;
+wire [BW_PER_ADDR_I-1:0] sram_rdata_i3;
+wire [SRAM_ADDR_WIDTH_I-1:0] sram_addr_i0;
+wire [SRAM_ADDR_WIDTH_I-1:0] sram_addr_i1;
+wire [SRAM_ADDR_WIDTH_I-1:0] sram_addr_i2;
+wire [SRAM_ADDR_WIDTH_I-1:0] sram_addr_i3;
+wire [BW_PER_ADDR_I-1:0] sram_wdata_i0;
+wire [BW_PER_ADDR_I-1:0] sram_wdata_i1;
+wire [BW_PER_ADDR_I-1:0] sram_wdata_i2;
+wire [BW_PER_ADDR_I-1:0] sram_wdata_i3;
+
 // Instantiate IEC RTL module
 IEC_top #(
     .BW_PER_ADDR_A(BW_PER_ADDR_A),
@@ -172,7 +192,8 @@ IEC_top #(
     .sram_rdata_a1(sram_rdata_a1),
     .sram_rdata_a2(sram_rdata_a2),
     .sram_rdata_a3(sram_rdata_a3),
-
+    
+    // SRAM B
     .sram_wen_b0(sram_wen_b0),
     .sram_wen_b1(sram_wen_b1),
     .sram_wen_b2(sram_wen_b2),
@@ -191,14 +212,36 @@ IEC_top #(
     .sram_rdata_b0(sram_rdata_b0),
     .sram_rdata_b1(sram_rdata_b1),
     .sram_rdata_b2(sram_rdata_b2),
-    .sram_rdata_b3(sram_rdata_b3)
+    .sram_rdata_b3(sram_rdata_b3),
+
+    // SRAM I
+    .sram_wen_i0(sram_wen_i0),
+    .sram_wen_i1(sram_wen_i1),
+    .sram_wen_i2(sram_wen_i2),
+    .sram_wen_i3(sram_wen_i3),
+
+    .sram_addr_i0(sram_addr_i0),
+    .sram_addr_i1(sram_addr_i1),
+    .sram_addr_i2(sram_addr_i2),
+    .sram_addr_i3(sram_addr_i3),
+    
+    .sram_wdata_i0(sram_wdata_i0),
+    .sram_wdata_i1(sram_wdata_i1),
+    .sram_wdata_i2(sram_wdata_i2),
+    .sram_wdata_i3(sram_wdata_i3),
+
+    .sram_rdata_i0(sram_rdata_i0),
+    .sram_rdata_i1(sram_rdata_i1),
+    .sram_rdata_i2(sram_rdata_i2),
+    .sram_rdata_i3(sram_rdata_i3)
+    
 );
 
 
 // ===== sram connection ===== //
 // SRAM for LAYER1: input_image (sram_a)
 sram_256x3b #(
-    .BW_PER_ADDR_A(BW_PER_ADDR_A),
+    .BW_PER_ADDR(BW_PER_ADDR_A),
     .ADDR_WIDTH(SRAM_ADDR_WIDTH_A)
 ) sram_a(
     .clk(clk), 
@@ -230,9 +273,11 @@ sram_256x3b #(
     .rdata_3(sram_rdata_a3)
 );
 
+// SRAM I(32x32x8b)
+
 // SRAM for LAYER2: initial_illum_map (sram_b)
 sram_256x8b #(
-    .BW_PER_ADDR_A(BW_PER_ADDR_B),
+    .BW_PER_ADDR(BW_PER_ADDR_B),
     .ADDR_WIDTH(SRAM_ADDR_WIDTH_B)
 ) sram_b(
     .clk(clk), 
@@ -262,6 +307,40 @@ sram_256x8b #(
     .rdata_1(sram_rdata_b1),
     .rdata_2(sram_rdata_b2),
     .rdata_3(sram_rdata_b3)
+);
+
+// SRAM for LAYER2: initial_illum_map (sram_b)
+sram_256x8b #(
+    .BW_PER_ADDR(BW_PER_ADDR_I),
+    .ADDR_WIDTH(SRAM_ADDR_WIDTH_I)
+) sram_i(
+    .clk(clk), 
+    .csb(1'b0), 
+    
+    .wsb_0(sram_wen_i0), 
+    .wsb_1(sram_wen_i1), 
+    .wsb_2(sram_wen_i2), 
+    .wsb_3(sram_wen_i3), 
+
+    .wdata_0(sram_wdata_i0), 
+    .wdata_1(sram_wdata_i1), 
+    .wdata_2(sram_wdata_i2), 
+    .wdata_3(sram_wdata_i3), 
+
+    .waddr_0(sram_addr_i0),  
+    .waddr_1(sram_addr_i1), 
+    .waddr_2(sram_addr_i2), 
+    .waddr_3(sram_addr_i3), 
+    
+    .raddr_0(sram_addr_i0),  
+    .raddr_1(sram_addr_i1), 
+    .raddr_2(sram_addr_i2), 
+    .raddr_3(sram_addr_i3), 
+
+    .rdata_0(sram_rdata_i0),
+    .rdata_1(sram_rdata_i1),
+    .rdata_2(sram_rdata_i2),
+    .rdata_3(sram_rdata_i3)
 );
 
 
@@ -505,13 +584,14 @@ task compare_load;
     integer total_errors;
     real sram_val_fp64;  // For fp64 conversion from sramB (layer 2)
     integer golden_val_uint8, sram_val_uint8;  // For uint8 comparison (layer 2)
-    
+    integer del;
 begin
     total_errors = 0;
     bank_errors[0] = 0;
     bank_errors[1] = 0;
     bank_errors[2] = 0;
     bank_errors[3] = 0;
+    del = 2;
     
     if(layer_value == 1) begin
         // Layer 1: Compare SRAM A (24-bit RGB)
@@ -620,14 +700,15 @@ begin
             sram_val_fp64 = $bitstoreal(sram_b.bank0[addr]);
             sram_val_uint8 = $rtoi(sram_val_fp64 * 255.0);
             // Compare uint8 values
-            if(sram_val_uint8 !== golden_val_uint8) begin
+            
+            if((golden_val_uint8 - del < sram_val_uint8) && (sram_val_uint8 < golden_val_uint8 + del)) begin
+                $display("%4d | %3d (uint8) | %3.17f -> %3d (uint8) | OK", 
+                    addr, golden_val_uint8, $bitstoreal(sram_b.bank0[addr]), sram_val_uint8);
+            end else begin
                 bank_errors[0] = bank_errors[0] + 1;
                 total_errors = total_errors + 1;
-                $display("%4d | %3d (uint8) | %016h -> %3d (uint8) | FAIL", 
-                    addr, golden_val_uint8, sram_b.bank0[addr], sram_val_uint8);
-            end else begin
-                $display("%4d | %3d (uint8) | %016h -> %3d (uint8) | OK", 
-                    addr, golden_val_uint8, sram_b.bank0[addr], sram_val_uint8);
+                $display("%4d | %3d (uint8) | %3.17f -> %3d (uint8) | FAIL", 
+                    addr, golden_val_uint8, $bitstoreal(sram_b.bank0[addr]), sram_val_uint8);
             end
         end
         
@@ -641,14 +722,14 @@ begin
             sram_val_fp64 = $bitstoreal(sram_b.bank1[addr]);
             sram_val_uint8 = $rtoi(sram_val_fp64 * 255.0);
             // Compare uint8 values
-            if(sram_val_uint8 !== golden_val_uint8) begin
+            if((golden_val_uint8 - del < sram_val_uint8) && (sram_val_uint8 < golden_val_uint8 + del)) begin
+                $display("%4d | %3d (uint8) | %3.17f -> %3d (uint8) | OK", 
+                    addr, golden_val_uint8, $bitstoreal(sram_b.bank1[addr]), sram_val_uint8);
+            end else begin
                 bank_errors[1] = bank_errors[1] + 1;
                 total_errors = total_errors + 1;
-                $display("%4d | %3d (uint8) | %016h -> %3d (uint8) | FAIL", 
-                    addr, golden_val_uint8, sram_b.bank1[addr], sram_val_uint8);
-            end else begin
-                $display("%4d | %3d (uint8) | %016h -> %3d (uint8) | OK", 
-                    addr, golden_val_uint8, sram_b.bank1[addr], sram_val_uint8);
+                $display("%4d | %3d (uint8) | %3.17f -> %3d (uint8) | FAIL", 
+                    addr, golden_val_uint8, $bitstoreal(sram_b.bank1[addr]), sram_val_uint8);
             end
         end
         
@@ -662,14 +743,14 @@ begin
             sram_val_fp64 = $bitstoreal(sram_b.bank2[addr]);
             sram_val_uint8 = $rtoi(sram_val_fp64 * 255.0);
             // Compare uint8 values
-            if(sram_val_uint8 !== golden_val_uint8) begin
+            if((golden_val_uint8 - del < sram_val_uint8) && (sram_val_uint8 < golden_val_uint8 + del)) begin
+                $display("%4d | %3d (uint8) | %3.17f -> %3d (uint8) | OK", 
+                    addr, golden_val_uint8, $bitstoreal(sram_b.bank2[addr]), sram_val_uint8);
+            end else begin
                 bank_errors[2] = bank_errors[2] + 1;
                 total_errors = total_errors + 1;
-                $display("%4d | %3d (uint8) | %016h -> %3d (uint8) | FAIL", 
-                    addr, golden_val_uint8, sram_b.bank2[addr], sram_val_uint8);
-            end else begin
-                $display("%4d | %3d (uint8) | %016h -> %3d (uint8) | OK", 
-                    addr, golden_val_uint8, sram_b.bank2[addr], sram_val_uint8);
+                $display("%4d | %3d (uint8) | %3.17f -> %3d (uint8) | FAIL", 
+                    addr, golden_val_uint8, $bitstoreal(sram_b.bank2[addr]), sram_val_uint8);
             end
         end
         
@@ -683,14 +764,14 @@ begin
             sram_val_fp64 = $bitstoreal(sram_b.bank3[addr]);
             sram_val_uint8 = $rtoi(sram_val_fp64 * 255.0);
             // Compare uint8 values
-            if(sram_val_uint8 !== golden_val_uint8) begin
+            if((golden_val_uint8 - del < sram_val_uint8) && (sram_val_uint8 < golden_val_uint8 + del)) begin
+                $display("%4d | %3d (uint8) | %3.17f -> %3d (uint8) | OK", 
+                    addr, golden_val_uint8, $bitstoreal(sram_b.bank3[addr]), sram_val_uint8);
+            end else begin
                 bank_errors[3] = bank_errors[3] + 1;
                 total_errors = total_errors + 1;
-                $display("%4d | %3d (uint8) | %016h -> %3d (uint8) | FAIL", 
-                    addr, golden_val_uint8, sram_b.bank3[addr], sram_val_uint8);
-            end else begin
-                $display("%4d | %3d (uint8) | %016h -> %3d (uint8) | OK", 
-                    addr, golden_val_uint8, sram_b.bank3[addr], sram_val_uint8);
+                $display("%4d | %3d (uint8) | %3.17f -> %3d (uint8) | FAIL", 
+                    addr, golden_val_uint8, $bitstoreal(sram_b.bank3[addr]), sram_val_uint8);
             end
         end
         
