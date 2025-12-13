@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Tuple
 
 from fft import fft2_iterative_radix2, ifft2_iterative_radix2
 from tdenom import tdenom_mat
@@ -277,21 +277,25 @@ def Tdenom_param(m: int, n: int, mu: float) -> np.ndarray:
 # ===== 4. fft with parameterized denominator ===== #
 
 # ===== 5. fft with data file ===== # 
-def updateT_dat(Ti: np.ndarray, mu: float, G: np.ndarray, U: np.ndarray) -> np.ndarray:
+def updateT_dat(
+    Ti: np.ndarray, mu: float, G: np.ndarray, U: np.ndarray
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
     Update T using the self-defined radix-2 iterative FFT/ifft (unshifted spectrum).
     Matrix dimensions must be powers of two (e.g., 32x32).
     """
     X = G - U
-    delX = multiplydtrans(X)
-    Tnum = 2 * Ti + mu * delX
-    Tn = fft2_iterative_radix2(Tnum)
+    delX = multiplydtrans(X) # sramX_1.dat
+    Tnum = 2 * Ti + mu * delX # sramE_1.dat
+    Tn = fft2_iterative_radix2(Tnum) # sramT_1.dat
 
     m, n = Ti.shape
-    Td = Tdenom_dat(m, n, mu)  # load precomputed denominator from file
-    Tnd = Tn / Td
-    Tout = ifft2_iterative_radix2(Tnd)
-    return np.real(Tout)
+    # load precomputed denominator from file
+    Td = Tdenom_dat(m, n, mu) # sramE_2.dat
+    Tnd = Tn / Td # sramC.dat
+    Tout = ifft2_iterative_radix2(Tnd) # sramT_2.dat
+    Tout_real = np.real(Tout)
+    return Tout_real, delX, Tnum, Tn, Td, Tnd, Tout
 
 def load_tdenom_hex(path: str, m: int, n: int) -> np.ndarray:
     """
@@ -361,27 +365,33 @@ def lime_trial(
     # print(W)
     
     while k < k0:
-        U = Z / mu                  # Z / μ
-        A = alpha * W / mu          # Threshold matrix of each element
-        T = updateT_dat(Ti, mu, G, U)   # T(t+1) = ...
-        delT = multiplyd(T)         # ∇T
-        G = shrinkage(A, delT + U)  # G(t+1) = Shrinkage(∇T + Z / μ)
-        B = delT - G                # ∇T - G
-        Q = mu * (B ) + Z           # previos ver: Z(t+1) = μ(t) * (∇T - G + Z(t)/μ(t))
-        Z = Q                       # Z(t+1) = μ(t) * (∇T - G) + Z(t)
-        mu *= rho                   # μ(t+1) = μ(t)
+        U = Z / mu                     # sramU_1.dat, Z / μ
+        A = alpha * W / mu             # sramW.dat, Threshold matrix of each element
+        T, delX, Tnum, Tn, Td, Tnd, Tout = updateT_dat(Ti, mu, G, U) # T(t+1) = ...
+        delT = multiplyd(T)            # sramX_2.dat, ∇T
+        G = shrinkage(A, delT + U)     # sramG.dat, G(t+1) = Shrinkage(∇T + Z / μ)
+        B = delT - G                   # ∇T - G
+        Q = mu * (B ) + Z              # sramU_2.dat, previos ver: Z(t+1) = μ(t) * (∇T - G + Z(t)/μ(t))
+        Z = Q                          # sramZ.dat, Z(t+1) = μ(t) * (∇T - G) + Z(t)
+        mu *= rho                      # μ(t+1) = μ(t)
         
         if dump_alm and debug_dir is not None:
             dump_iteration_mats(
                 debug_dir,
                 k,
                 {
-                    "U": U,
-                    "A": A,
-                    "T": T,
-                    "delT": delT,
-                    "G": G,
-                    "Z": Z
+                    "sramU_1": U,
+                    "sramW_1": A,
+                    "sramX_1": delX,
+                    "sramE_1": Tnum,
+                    "sramT_1": Tn,
+                    "sramE_2": Td,
+                    "sramC_1": Tnd,
+                    "sramT_2": Tout,
+                    "sramX_2": delT,
+                    "sramG_1": G,
+                    "sramU_2": Q,
+                    "sramZ_1": Z
                 },
             )
         # print(f"===== iteration {k} ===== ")

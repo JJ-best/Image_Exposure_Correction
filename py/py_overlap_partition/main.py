@@ -59,7 +59,7 @@ if __name__ == "__main__":
             enhanced1_patch = run_lime(
                 out_dir=out_dir_lime1,
                 img_in=patch_img,
-                k0=30,
+                k0=20,
                 gamma=0.7,
                 save_label=f"{patch_label}_under",
                 dump_alm=True, # if true, dump golden dat of alm
@@ -73,7 +73,7 @@ if __name__ == "__main__":
             enhanced2_patch = run_lime(
                 out_dir=out_dir_lime2,
                 img_in=arr_inv,
-                k0=30,
+                k0=20,
                 gamma=0.7,
                 save_label=f"{patch_label}_over",
                 dump_alm=True,
