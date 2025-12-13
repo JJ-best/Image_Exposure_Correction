@@ -1,0 +1,245 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 4
+Design : fft
+Version: R-2020.09-SP5
+Date   : Sat Dec 13 23:08:43 2025
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: PVT_1P08V_125C   Library: slow_vdd1v2
+Wire Load Model Mode: enclosed
+
+  Startpoint: stage_reg_1_
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: u_bpe1/clk_gate_state_reg/latch
+            (negative level-sensitive latch clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  fft                Large                 slow_vdd1v2
+  bpe_pDATA_WIDTH128_mydesign_0
+                     Small                 slow_vdd1v2
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  stage_reg_1_/CK (DFFRHQX1)                              0.00 #     0.00 r
+  stage_reg_1_/Q (DFFRHQX1)                               0.12       0.12 f
+  U24051/Y (INVXL)                                        0.04       0.16 r
+  U25628/Y (NAND3BXL)                                     0.10       0.26 f
+  U24592/Y (NOR2XL)                                       0.08       0.34 r
+  U19390/Y (INVXL)                                        0.11       0.45 f
+  U25629/Y (BUFX2)                                        0.10       0.56 f
+  U23858/Y (BUFX2)                                        0.08       0.64 f
+  U19383/Y (INVX1)                                        0.09       0.72 r
+  U23596/Y (NOR2XL)                                       0.08       0.80 f
+  U23586/Y (INVXL)                                        0.07       0.86 r
+  U23582/Y (NOR2XL)                                       0.06       0.92 f
+  U23856/Y (INVXL)                                        0.04       0.97 r
+  U19221/Y (OAI211XL)                                     0.11       1.07 f
+  U19249/Y (OAI211XL)                                     0.08       1.16 r
+  u_bpe1/i_vld (bpe_pDATA_WIDTH128_mydesign_0)            0.00       1.16 r
+  u_bpe1/U56/Y (INVXL)                                    0.07       1.23 f
+  u_bpe1/U5/Y (AOI221XL)                                  0.08       1.31 r
+  u_bpe1/U1081/Y (OA21X1)                                 0.11       1.42 r
+  u_bpe1/clk_gate_state_reg/EN (SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_0)
+                                                          0.00       1.42 r
+  u_bpe1/clk_gate_state_reg/latch/D (TLATNXL)             0.01       1.44 r
+  data arrival time                                                  1.44
+
+  clock clk (fall edge)                                   1.75       1.75
+  clock network delay (ideal)                             0.00       1.75
+  u_bpe1/clk_gate_state_reg/latch/GN (TLATNXL)            0.00       1.75 f
+  time borrowed from endpoint                             0.00       1.75
+  data required time                                                 1.75
+  --------------------------------------------------------------------------
+  data required time                                                 1.75
+  data arrival time                                                 -1.44
+  --------------------------------------------------------------------------
+  slack (MET)                                                        0.31
+
+  Time Borrowing Information
+  --------------------------------------------------------------
+  clk nominal pulse width                                 1.75   
+  library setup time                                     -0.06   
+  --------------------------------------------------------------
+  max time borrow                                         1.69   
+  actual time borrow                                      0.00   
+  --------------------------------------------------------------
+
+
+  Startpoint: stage_reg_1_
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: u_bpe0/clk_gate_state_reg/latch
+            (negative level-sensitive latch clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  fft                Large                 slow_vdd1v2
+  bpe_pDATA_WIDTH128_mydesign_1
+                     Small                 slow_vdd1v2
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  stage_reg_1_/CK (DFFRHQX1)                              0.00 #     0.00 r
+  stage_reg_1_/Q (DFFRHQX1)                               0.12       0.12 f
+  U24051/Y (INVXL)                                        0.04       0.16 r
+  U25628/Y (NAND3BXL)                                     0.10       0.26 f
+  U24592/Y (NOR2XL)                                       0.08       0.34 r
+  U19390/Y (INVXL)                                        0.11       0.45 f
+  U25629/Y (BUFX2)                                        0.10       0.56 f
+  U23858/Y (BUFX2)                                        0.08       0.64 f
+  U19383/Y (INVX1)                                        0.09       0.72 r
+  U23596/Y (NOR2XL)                                       0.08       0.80 f
+  U23586/Y (INVXL)                                        0.07       0.86 r
+  U23582/Y (NOR2XL)                                       0.06       0.92 f
+  U23856/Y (INVXL)                                        0.04       0.97 r
+  U19221/Y (OAI211XL)                                     0.11       1.07 f
+  U19249/Y (OAI211XL)                                     0.08       1.16 r
+  u_bpe0/i_vld (bpe_pDATA_WIDTH128_mydesign_1)            0.00       1.16 r
+  u_bpe0/U48/Y (INVXL)                                    0.07       1.23 f
+  u_bpe0/U13/Y (AOI221X1)                                 0.08       1.31 r
+  u_bpe0/U1082/Y (OA21X1)                                 0.11       1.42 r
+  u_bpe0/clk_gate_state_reg/EN (SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_79)
+                                                          0.00       1.42 r
+  u_bpe0/clk_gate_state_reg/latch/D (TLATNXL)             0.01       1.43 r
+  data arrival time                                                  1.43
+
+  clock clk (fall edge)                                   1.75       1.75
+  clock network delay (ideal)                             0.00       1.75
+  u_bpe0/clk_gate_state_reg/latch/GN (TLATNXL)            0.00       1.75 f
+  time borrowed from endpoint                             0.00       1.75
+  data required time                                                 1.75
+  --------------------------------------------------------------------------
+  data required time                                                 1.75
+  data arrival time                                                 -1.43
+  --------------------------------------------------------------------------
+  slack (MET)                                                        0.32
+
+  Time Borrowing Information
+  --------------------------------------------------------------
+  clk nominal pulse width                                 1.75   
+  library setup time                                     -0.06   
+  --------------------------------------------------------------
+  max time borrow                                         1.69   
+  actual time borrow                                      0.00   
+  --------------------------------------------------------------
+
+
+  Startpoint: stage_reg_1_
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: clk_gate_cnt_out_reg/latch
+            (negative level-sensitive latch clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  fft                Large                 slow_vdd1v2
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  stage_reg_1_/CK (DFFRHQX1)                              0.00 #     0.00 r
+  stage_reg_1_/Q (DFFRHQX1)                               0.12       0.12 f
+  U24051/Y (INVXL)                                        0.04       0.16 r
+  U25628/Y (NAND3BXL)                                     0.10       0.26 f
+  U24592/Y (NOR2XL)                                       0.08       0.34 r
+  U19390/Y (INVXL)                                        0.11       0.45 f
+  U25629/Y (BUFX2)                                        0.10       0.56 f
+  U23858/Y (BUFX2)                                        0.08       0.64 f
+  U19383/Y (INVX1)                                        0.09       0.72 r
+  U23596/Y (NOR2XL)                                       0.08       0.80 f
+  U23586/Y (INVXL)                                        0.07       0.86 r
+  U24840/Y (NOR2XL)                                       0.07       0.93 f
+  U24231/Y (NOR2XL)                                       0.07       1.00 r
+  U35176/Y (NAND2BXL)                                     0.07       1.07 f
+  clk_gate_cnt_out_reg/EN (SNPS_CLOCK_GATE_HIGH_fft_mydesign_0)
+                                                          0.00       1.07 f
+  clk_gate_cnt_out_reg/latch/D (TLATNXL)                  0.03       1.10 f
+  data arrival time                                                  1.10
+
+  clock clk (fall edge)                                   1.75       1.75
+  clock network delay (ideal)                             0.00       1.75
+  clk_gate_cnt_out_reg/latch/GN (TLATNXL)                 0.00       1.75 f
+  time borrowed from endpoint                             0.00       1.75
+  data required time                                                 1.75
+  --------------------------------------------------------------------------
+  data required time                                                 1.75
+  data arrival time                                                 -1.10
+  --------------------------------------------------------------------------
+  slack (MET)                                                        0.65
+
+  Time Borrowing Information
+  --------------------------------------------------------------
+  clk nominal pulse width                                 1.75   
+  library setup time                                     -0.04   
+  --------------------------------------------------------------
+  max time borrow                                         1.71   
+  actual time borrow                                      0.00   
+  --------------------------------------------------------------
+
+
+  Startpoint: stage_reg_1_
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: clk_gate_round_cnt_reg/latch
+            (negative level-sensitive latch clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  fft                Large                 slow_vdd1v2
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  stage_reg_1_/CK (DFFRHQX1)                              0.00 #     0.00 r
+  stage_reg_1_/Q (DFFRHQX1)                               0.12       0.12 f
+  U24051/Y (INVXL)                                        0.04       0.16 r
+  U25628/Y (NAND3BXL)                                     0.10       0.26 f
+  U23945/Y (NOR2XL)                                       0.17       0.43 r
+  U24377/Y (INVXL)                                        0.18       0.61 f
+  U23587/Y (NAND2BXL)                                     0.09       0.70 r
+  U35394/Y (AOI211XL)                                     0.05       0.76 f
+  clk_gate_round_cnt_reg/EN (SNPS_CLOCK_GATE_HIGH_fft)
+                                                          0.00       0.76 f
+  clk_gate_round_cnt_reg/latch/D (TLATNXL)                0.03       0.79 f
+  data arrival time                                                  0.79
+
+  clock clk (fall edge)                                   1.75       1.75
+  clock network delay (ideal)                             0.00       1.75
+  clk_gate_round_cnt_reg/latch/GN (TLATNXL)               0.00       1.75 f
+  time borrowed from endpoint                             0.00       1.75
+  data required time                                                 1.75
+  --------------------------------------------------------------------------
+  data required time                                                 1.75
+  data arrival time                                                 -0.79
+  --------------------------------------------------------------------------
+  slack (MET)                                                        0.96
+
+  Time Borrowing Information
+  --------------------------------------------------------------
+  clk nominal pulse width                                 1.75   
+  library setup time                                     -0.05   
+  --------------------------------------------------------------
+  max time borrow                                         1.70   
+  actual time borrow                                      0.00   
+  --------------------------------------------------------------
+
+
+1
