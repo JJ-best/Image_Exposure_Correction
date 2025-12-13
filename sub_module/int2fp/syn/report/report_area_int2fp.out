@@ -1,0 +1,43 @@
+ 
+****************************************
+Report : area
+Design : int2fp
+Version: R-2020.09-SP5
+Date   : Thu Dec 11 23:26:02 2025
+****************************************
+
+Library(s) Used:
+
+    slow_vdd1v2 (File: /usr/cadtool/GPDK45/gsclib045_svt_v4.4/gsclib045/db/slow_vdd1v2_basicCells_wl.db)
+
+Number of ports:                           75
+Number of nets:                           123
+Number of cells:                          112
+Number of combinational cells:             99
+Number of sequential cells:                13
+Number of macros/black boxes:               0
+Number of buf/inv:                         62
+Number of references:                      23
+
+Combinational area:                100.206002
+Buf/Inv area:                       42.408001
+Noncombinational area:             104.652002
+Macro/Black Box area:                0.000000
+Net Interconnect area:               0.000000
+
+Total cell area:                   204.858005
+Total area:                        204.858005
+
+Hierarchical area distribution
+------------------------------
+
+                                  Global cell area          Local cell area
+                                  ------------------  --------------------------- 
+Hierarchical cell                 Absolute   Percent  Combi-    Noncombi-  Black-
+                                  Total      Total    national  national   boxes   Design
+--------------------------------  ---------  -------  --------  ---------  ------  ---------
+int2fp                             204.8580    100.0  100.2060   104.6520  0.0000  int2fp
+--------------------------------  ---------  -------  --------  ---------  ------  ---------
+Total                                                 100.2060   104.6520  0.0000
+
+1
