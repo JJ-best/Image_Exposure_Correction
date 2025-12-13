@@ -1,0 +1,127 @@
+ 
+****************************************
+Report : area
+Design : fft
+Version: R-2020.09-SP5
+Date   : Sat Dec 13 23:08:43 2025
+****************************************
+
+Library(s) Used:
+
+    slow_vdd1v2 (File: /usr/cadtool/GPDK45/gsclib045_svt_v4.4/gsclib045/db/slow_vdd1v2_basicCells_wl.db)
+
+Number of ports:                        16999
+Number of nets:                         42699
+Number of cells:                        31995
+Number of combinational cells:          24855
+Number of sequential cells:              7056
+Number of macros/black boxes:               0
+Number of buf/inv:                       3728
+Number of references:                      44
+
+Combinational area:              41726.736931
+Buf/Inv area:                     4088.952091
+Noncombinational area:           43384.068968
+Macro/Black Box area:                0.000000
+Net Interconnect area:               0.000000
+
+Total cell area:                 85110.805899
+Total area:                      85110.805899
+
+Hierarchical area distribution
+------------------------------
+
+                                  Global cell area            Local cell area
+                                  -------------------  ------------------------------ 
+Hierarchical cell                 Absolute    Percent  Combi-      Noncombi-   Black-
+                                  Total       Total    national    national    boxes   Design
+--------------------------------  ----------  -------  ----------  ----------  ------  --------------------------------------------------------------
+fft                               85110.8059    100.0  38504.0709   1822.1760  0.0000  fft
+clk_gate_cnt_out_reg                  6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_fft_mydesign_0
+clk_gate_round_cnt_reg                6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_fft
+u_bpe0                            22385.9525     26.3   1555.7580  20556.5945  0.0000  bpe_pDATA_WIDTH128_mydesign_1
+u_bpe0/clk_gate_buf_ai_reg            6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_52
+u_bpe0/clk_gate_buf_ai_reg_0          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_51
+u_bpe0/clk_gate_buf_ai_reg_1          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_50
+u_bpe0/clk_gate_buf_ai_reg_10         6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_41
+u_bpe0/clk_gate_buf_ai_reg_11         6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_40
+u_bpe0/clk_gate_buf_ai_reg_2          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_49
+u_bpe0/clk_gate_buf_ai_reg_3          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_48
+u_bpe0/clk_gate_buf_ai_reg_4          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_47
+u_bpe0/clk_gate_buf_ai_reg_5          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_46
+u_bpe0/clk_gate_buf_ai_reg_6          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_45
+u_bpe0/clk_gate_buf_ai_reg_7          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_44
+u_bpe0/clk_gate_buf_ai_reg_8          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_43
+u_bpe0/clk_gate_buf_ai_reg_9          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_42
+u_bpe0/clk_gate_buf_bi_reg            6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_78
+u_bpe0/clk_gate_buf_bi_reg_0          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_77
+u_bpe0/clk_gate_buf_bi_reg_1          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_76
+u_bpe0/clk_gate_buf_bi_reg_10         6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_67
+u_bpe0/clk_gate_buf_bi_reg_11         6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_66
+u_bpe0/clk_gate_buf_bi_reg_2          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_75
+u_bpe0/clk_gate_buf_bi_reg_3          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_74
+u_bpe0/clk_gate_buf_bi_reg_4          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_73
+u_bpe0/clk_gate_buf_bi_reg_5          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_72
+u_bpe0/clk_gate_buf_bi_reg_6          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_71
+u_bpe0/clk_gate_buf_bi_reg_7          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_70
+u_bpe0/clk_gate_buf_bi_reg_8          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_69
+u_bpe0/clk_gate_buf_bi_reg_9          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_68
+u_bpe0/clk_gate_buf_gm_reg            6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_65
+u_bpe0/clk_gate_buf_gm_reg_0          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_64
+u_bpe0/clk_gate_buf_gm_reg_1          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_63
+u_bpe0/clk_gate_buf_gm_reg_10         6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_54
+u_bpe0/clk_gate_buf_gm_reg_11         6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_53
+u_bpe0/clk_gate_buf_gm_reg_2          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_62
+u_bpe0/clk_gate_buf_gm_reg_3          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_61
+u_bpe0/clk_gate_buf_gm_reg_4          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_60
+u_bpe0/clk_gate_buf_gm_reg_5          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_59
+u_bpe0/clk_gate_buf_gm_reg_6          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_58
+u_bpe0/clk_gate_buf_gm_reg_7          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_57
+u_bpe0/clk_gate_buf_gm_reg_8          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_56
+u_bpe0/clk_gate_buf_gm_reg_9          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_55
+u_bpe0/clk_gate_state_reg             6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_79
+u_bpe1                            22384.9265     26.3   1554.7320  20556.5945  0.0000  bpe_pDATA_WIDTH128_mydesign_0
+u_bpe1/clk_gate_buf_ai_reg            6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_13
+u_bpe1/clk_gate_buf_ai_reg_0          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_12
+u_bpe1/clk_gate_buf_ai_reg_1          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_11
+u_bpe1/clk_gate_buf_ai_reg_10         6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_2
+u_bpe1/clk_gate_buf_ai_reg_11         6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_1
+u_bpe1/clk_gate_buf_ai_reg_2          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_10
+u_bpe1/clk_gate_buf_ai_reg_3          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_9
+u_bpe1/clk_gate_buf_ai_reg_4          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_8
+u_bpe1/clk_gate_buf_ai_reg_5          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_7
+u_bpe1/clk_gate_buf_ai_reg_6          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_6
+u_bpe1/clk_gate_buf_ai_reg_7          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_5
+u_bpe1/clk_gate_buf_ai_reg_8          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_4
+u_bpe1/clk_gate_buf_ai_reg_9          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_3
+u_bpe1/clk_gate_buf_bi_reg            6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_39
+u_bpe1/clk_gate_buf_bi_reg_0          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_38
+u_bpe1/clk_gate_buf_bi_reg_1          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_37
+u_bpe1/clk_gate_buf_bi_reg_10         6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_28
+u_bpe1/clk_gate_buf_bi_reg_11         6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_27
+u_bpe1/clk_gate_buf_bi_reg_2          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_36
+u_bpe1/clk_gate_buf_bi_reg_3          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_35
+u_bpe1/clk_gate_buf_bi_reg_4          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_34
+u_bpe1/clk_gate_buf_bi_reg_5          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_33
+u_bpe1/clk_gate_buf_bi_reg_6          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_32
+u_bpe1/clk_gate_buf_bi_reg_7          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_31
+u_bpe1/clk_gate_buf_bi_reg_8          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_30
+u_bpe1/clk_gate_buf_bi_reg_9          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_29
+u_bpe1/clk_gate_buf_gm_reg            6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_26
+u_bpe1/clk_gate_buf_gm_reg_0          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_25
+u_bpe1/clk_gate_buf_gm_reg_1          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_24
+u_bpe1/clk_gate_buf_gm_reg_10         6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_15
+u_bpe1/clk_gate_buf_gm_reg_11         6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_14
+u_bpe1/clk_gate_buf_gm_reg_2          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_23
+u_bpe1/clk_gate_buf_gm_reg_3          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_22
+u_bpe1/clk_gate_buf_gm_reg_4          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_21
+u_bpe1/clk_gate_buf_gm_reg_5          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_20
+u_bpe1/clk_gate_buf_gm_reg_6          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_19
+u_bpe1/clk_gate_buf_gm_reg_7          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_18
+u_bpe1/clk_gate_buf_gm_reg_8          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_17
+u_bpe1/clk_gate_buf_gm_reg_9          6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_16
+u_bpe1/clk_gate_state_reg             6.8400      0.0      1.3680      5.4720  0.0000  SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_0
+--------------------------------  ----------  -------  ----------  ----------  ------  --------------------------------------------------------------
+Total                                                  41726.7369  43384.0690  0.0000
+
+1
