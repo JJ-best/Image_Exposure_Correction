@@ -2,10 +2,19 @@ module IEC_top #(
     parameter BW_PER_ADDR_A = 24,
     parameter BW_PER_ADDR_B = 64,
     parameter BW_PER_ADDR_I = 64,
-    parameter ADDR_WIDTH_A = 8,
-    parameter ADDR_WIDTH_B = 8,
-    parameter ADDR_WIDTH_I = 8,
-    parameter pFP_WIDTH    = 64
+    parameter BW_PER_ADDR_Z = 64,
+    parameter BW_PER_ADDR_U = 64,
+    parameter BW_PER_ADDR_G = 64,
+    parameter BW_PER_ADDR_X = 64,
+    parameter ADDR_WIDTH_A  = 8,
+    parameter ADDR_WIDTH_B  = 8,
+    parameter ADDR_WIDTH_I  = 8,
+    parameter ADDR_WIDTH_Z  = 9,
+    parameter ADDR_WIDTH_U  = 9,
+    parameter ADDR_WIDTH_G  = 9,
+    parameter ADDR_WIDTH_X  = 9,
+    parameter pFP_WIDTH     = 64,
+    parameter pINT_WIDTH    = 8
 )(
     input clk,
     input rst_n,
@@ -65,6 +74,79 @@ module IEC_top #(
     output reg [BW_PER_ADDR_I-1:0] sram_wdata_i1,
     output reg [BW_PER_ADDR_I-1:0] sram_wdata_i2,
     output reg [BW_PER_ADDR_I-1:0] sram_wdata_i3
+,
+
+    // SRAM Z (64x32x1x64)
+    output reg sram_wen_z0,
+    output reg sram_wen_z1,
+    output reg sram_wen_z2,
+    output reg sram_wen_z3,
+    input [BW_PER_ADDR_Z-1:0] sram_rdata_z0,
+    input [BW_PER_ADDR_Z-1:0] sram_rdata_z1,
+    input [BW_PER_ADDR_Z-1:0] sram_rdata_z2,
+    input [BW_PER_ADDR_Z-1:0] sram_rdata_z3,
+    output reg [ADDR_WIDTH_Z-1:0] sram_addr_z0,
+    output reg [ADDR_WIDTH_Z-1:0] sram_addr_z1,
+    output reg [ADDR_WIDTH_Z-1:0] sram_addr_z2,
+    output reg [ADDR_WIDTH_Z-1:0] sram_addr_z3,
+    output reg [BW_PER_ADDR_Z-1:0] sram_wdata_z0,
+    output reg [BW_PER_ADDR_Z-1:0] sram_wdata_z1,
+    output reg [BW_PER_ADDR_Z-1:0] sram_wdata_z2,
+    output reg [BW_PER_ADDR_Z-1:0] sram_wdata_z3,
+
+    // SRAM U (64x32x1x64)
+    output reg sram_wen_u0,
+    output reg sram_wen_u1,
+    output reg sram_wen_u2,
+    output reg sram_wen_u3,
+    input [BW_PER_ADDR_U-1:0] sram_rdata_u0,
+    input [BW_PER_ADDR_U-1:0] sram_rdata_u1,
+    input [BW_PER_ADDR_U-1:0] sram_rdata_u2,
+    input [BW_PER_ADDR_U-1:0] sram_rdata_u3,
+    output reg [ADDR_WIDTH_U-1:0] sram_addr_u0,
+    output reg [ADDR_WIDTH_U-1:0] sram_addr_u1,
+    output reg [ADDR_WIDTH_U-1:0] sram_addr_u2,
+    output reg [ADDR_WIDTH_U-1:0] sram_addr_u3,
+    output reg [BW_PER_ADDR_U-1:0] sram_wdata_u0,
+    output reg [BW_PER_ADDR_U-1:0] sram_wdata_u1,
+    output reg [BW_PER_ADDR_U-1:0] sram_wdata_u2,
+    output reg [BW_PER_ADDR_U-1:0] sram_wdata_u3,
+
+    // SRAM G (64x32x1x64)
+    output reg sram_wen_g0,
+    output reg sram_wen_g1,
+    output reg sram_wen_g2,
+    output reg sram_wen_g3,
+    input [BW_PER_ADDR_G-1:0] sram_rdata_g0,
+    input [BW_PER_ADDR_G-1:0] sram_rdata_g1,
+    input [BW_PER_ADDR_G-1:0] sram_rdata_g2,
+    input [BW_PER_ADDR_G-1:0] sram_rdata_g3,
+    output reg [ADDR_WIDTH_G-1:0] sram_addr_g0,
+    output reg [ADDR_WIDTH_G-1:0] sram_addr_g1,
+    output reg [ADDR_WIDTH_G-1:0] sram_addr_g2,
+    output reg [ADDR_WIDTH_G-1:0] sram_addr_g3,
+    output reg [BW_PER_ADDR_G-1:0] sram_wdata_g0,
+    output reg [BW_PER_ADDR_G-1:0] sram_wdata_g1,
+    output reg [BW_PER_ADDR_G-1:0] sram_wdata_g2,
+    output reg [BW_PER_ADDR_G-1:0] sram_wdata_g3,
+
+    // SRAM X (64x32x1x64)
+    output reg sram_wen_x0,
+    output reg sram_wen_x1,
+    output reg sram_wen_x2,
+    output reg sram_wen_x3,
+    input [BW_PER_ADDR_X-1:0] sram_rdata_x0,
+    input [BW_PER_ADDR_X-1:0] sram_rdata_x1,
+    input [BW_PER_ADDR_X-1:0] sram_rdata_x2,
+    input [BW_PER_ADDR_X-1:0] sram_rdata_x3,
+    output reg [ADDR_WIDTH_X-1:0] sram_addr_x0,
+    output reg [ADDR_WIDTH_X-1:0] sram_addr_x1,
+    output reg [ADDR_WIDTH_X-1:0] sram_addr_x2,
+    output reg [ADDR_WIDTH_X-1:0] sram_addr_x3,
+    output reg [BW_PER_ADDR_X-1:0] sram_wdata_x0,
+    output reg [BW_PER_ADDR_X-1:0] sram_wdata_x1,
+    output reg [BW_PER_ADDR_X-1:0] sram_wdata_x2,
+    output reg [BW_PER_ADDR_X-1:0] sram_wdata_x3
 );
 
 // ===== problem ===== //
@@ -94,6 +176,11 @@ reg [(ADDR_WIDTH_A-1):0] sram_i_addr_n;
 reg [(ADDR_WIDTH_A-1):0] sram_b_addr;
 reg [(ADDR_WIDTH_A-1):0] sram_b_addr_n;
 // ----- computation resource ----- //
+reg [(pINT_WIDTH-1):0] int2fp_in_int[0:3];
+reg int2fp_in_valid[0:3];
+wire int2fp_out_valid[0:3];
+wire [(pFP_WIDTH-1):0]int2fp_out_fp[0:3];
+
 reg [(2*pFP_WIDTH-1):0] mul0_ina;
 reg [(2*pFP_WIDTH-1):0] mul0_inb;
 reg [1:0]mul0_mode;
@@ -173,7 +260,7 @@ always @(posedge clk or negedge rst_n) begin
 end
 
 // ----- debug done ----- //
-reg [5:0] done_cnt;
+reg [10:0] done_cnt;
 always @(posedge clk) begin
     if (!rst_n) begin
         done_cnt <= 0;
@@ -181,7 +268,7 @@ always @(posedge clk) begin
         done_cnt <= done_cnt + 1;
     end
 end
-assign done = (done_cnt == 6'd10)? 1:0;
+assign done = (done_cnt == 10'd2000)? 1:0;
 
 // ===== stage 1 ===== //
 // SRAM A(32x32x3x8) store the original bmp file
@@ -310,19 +397,6 @@ always @(posedge clk or negedge rst_n) begin
     end
 end
 
-genvar k;
-generate
-    for (k=0; k<4; k=k+1) begin: GEN_INT2FP
-        int2fp u_int2fp (
-            .in_int   (max_sel[k]),
-            .in_valid (valid_1),
-            .clk      (clk),
-            .out_valid(fp_valid[k]),
-            .out_fp   (fp_out[k])
-        );
-    end
-endgenerate
-
 // ----- write SRAM I ----- //
 always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
@@ -350,13 +424,13 @@ always @(*) begin
 end
 
 always @(*) begin
-    sram_wdata_i0 = fp_out[0];
-    sram_wdata_i1 = fp_out[1];
-    sram_wdata_i2 = fp_out[2];
-    sram_wdata_i3 = fp_out[3];
+    sram_wdata_i0 = int2fp_out_fp[0];
+    sram_wdata_i1 = int2fp_out_fp[1];
+    sram_wdata_i2 = int2fp_out_fp[2];
+    sram_wdata_i3 = int2fp_out_fp[3];
     case (top_state)
         RGB_MAX, RGB_MAX_t: begin
-            if (fp_valid[0]) begin
+            if (int2fp_out_valid[0] && (top_state == RGB_MAX || top_state == RGB_MAX_t)) begin
                 sram_i_addr_n = sram_i_addr + 1;
                 sram_wen_i0 = 1'b0;
                 sram_wen_i1 = 1'b0;
@@ -459,10 +533,129 @@ always @(*) begin
     endcase
 end
 
+// ===== stage 3 ===== //
+// In this stage, we construct the weight matrix
+// we take delT operation and store the result into SRAM W
+// the size of SRAM W is 64x32x64
+// this step needs fp_recip module(waiting for it).
+
+// ===== stage 4 ===== //
+// read SRAM Z(64x32x1x64) and then devided by mu
+// write into SRAM U(64x32x1x64)
+reg [(ADDR_WIDTH_Z-1):0] sram_z_addr;
+reg [(ADDR_WIDTH_Z-1):0] sram_z_addr_n;
+
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        sram_z_addr <= 0;
+    end else begin
+        sram_z_addr <= sram_z_addr_n;
+    end
+end
+
+always @(*) begin
+    case (top_state)
+        Z_DIV_U: begin
+            sram_z_addr_n = sram_z_addr + 1;
+            sram_wen_z0 = 1'b1;
+            sram_wen_z1 = 1'b1;
+            sram_wen_z2 = 1'b1;
+            sram_wen_z3 = 1'b1;
+            sram_addr_z0 = sram_z_addr;
+            sram_addr_z1 = sram_z_addr;
+            sram_addr_z2 = sram_z_addr;
+            sram_addr_z3 = sram_z_addr;
+        end 
+        default: begin
+            sram_z_addr_n = 0;
+            sram_wen_z0 = 1'b1;
+            sram_wen_z1 = 1'b1;
+            sram_wen_z2 = 1'b1;
+            sram_wen_z3 = 1'b1;
+            sram_addr_z0 = 0;
+            sram_addr_z1 = 0;
+            sram_addr_z2 = 0;
+            sram_addr_z3 = 0;
+        end
+    endcase
+end
+
+// ===== stage 5 ===== //
+// read SRAM U(64x32x1x64) and SRAM G(64x32x1x64)
+// do G - U and D^T operation
+// G - U is 64x32 matrix, we split it to two region
+// left-side Gx 64x16 matrix, right side Gy 64x16 matrix
+// note that the above two matrix need to be reshape into 
+// 32x32 by column-major.
+// for example:
+// Gx: 
+// mat64-col0  -> mat32-col0 and mat32-col1
+// mat64-col1  -> mat32-col2 and mat32 col3
+// ...
+// mat64-col15 -> mat32-col30 and mat32-col31
+// Gy
+// mat64-col16 -> mat32-col0 and mat32-col1
+// ...
+// mat64-col30 -> mat32-col60 and mat32-col61
+// mat64-col31 -> mat32-col62 and mat32-col63
+// we multiply a 1st order differential matrix in py
+// this operation may be reduce to col-wise or row-wose deviation.
+// 1. delGx = Gx @ Dx -> left col - right col and store to right col
+// 2. delGy = Dy @ altGy ->
+
+
+// write into SRAM X(64x32x1x64)
 
 // ========================================================== //
 // ===               computation resource                 === //
 // ========================================================== //
+
+
+always @(*) begin
+    case (top_state)
+        RGB_MAX, RGB_MAX_t: begin
+            for (i=0; i<4; i=i+1) begin
+                int2fp_in_int[i] = max_sel[i];
+                int2fp_in_valid[i] = valid_1;
+            end
+        end 
+        default: begin
+            for (i=0; i<4; i=i+1) begin
+                int2fp_in_int[i] = 0;
+                int2fp_in_valid[i] = 0;
+            end
+        end
+    endcase
+end
+
+int2fp int2fp_U0(
+    .in_int   (int2fp_in_int[0]),
+    .in_valid (int2fp_in_valid[0]),
+    .clk      (clk),
+    .out_valid(int2fp_out_valid[0]),
+    .out_fp   (int2fp_out_fp[0])
+);
+int2fp int2fp_U1(
+    .in_int   (int2fp_in_int[1]),
+    .in_valid (int2fp_in_valid[1]),
+    .clk      (clk),
+    .out_valid(int2fp_out_valid[1]),
+    .out_fp   (int2fp_out_fp[1])
+);
+int2fp int2fp_U2(
+    .in_int   (int2fp_in_int[2]),
+    .in_valid (int2fp_in_valid[2]),
+    .clk      (clk),
+    .out_valid(int2fp_out_valid[2]),
+    .out_fp   (int2fp_out_fp[2])
+);
+int2fp int2fp_U3(
+    .in_int   (int2fp_in_int[3]),
+    .in_valid (int2fp_in_valid[3]),
+    .clk      (clk),
+    .out_valid(int2fp_out_valid[3]),
+    .out_fp   (int2fp_out_fp[3])
+);
 
 always @(posedge clk) begin
     case (top_state)
@@ -489,7 +682,7 @@ always @(posedge clk) begin
     endcase
 end
 
-mul U0(
+mul mul_U0(
     .in_A(mul0_ina),
     .in_B(mul0_inb),
     .mode(mul0_mode),
@@ -499,7 +692,7 @@ mul U0(
     .result_c(mul0_out),
     .out_valid(mul0_out_valid)
 );
-mul U1(
+mul mul_U1(
     .in_A(mul1_ina),
     .in_B(mul1_inb),
     .mode(mul1_mode),

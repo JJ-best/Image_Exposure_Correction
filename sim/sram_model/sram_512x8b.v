@@ -1,6 +1,6 @@
-module sram_256x8b #(
+module sram_512x8b #(
     parameter BW_PER_ADDR = 64,
-    parameter ADDR_WIDTH = 8  
+    parameter ADDR_WIDTH = 9  
 )(
     input clk,
     input csb,      // chip enable (active low)

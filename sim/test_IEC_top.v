@@ -18,7 +18,8 @@ localparam BW_PER_ADDR_B = 64;    // SRAM B: 64-bit per address
 localparam BW_PER_ADDR_I = 64;    // SRAM I: 64-bit per address
 localparam SRAM_ADDR_WIDTH_A = 8; // SRAM A: 8-bit address (256 addresses)
 localparam SRAM_ADDR_WIDTH_B = 8; // SRAM B: 8-bit address (256 addresses)
-localparam SRAM_ADDR_WIDTH_I = 8; // SRAM B: 8-bit address (256 addresses)
+localparam SRAM_ADDR_WIDTH_I = 8; // SRAM I: 8-bit address (256 addresses)
+localparam SRAM_ADDR_WIDTH_ZUGX = 9; // SRAM Z/U/G/X: 9-bit address (512 addresses)
 
 // ===== Layer selection ===== //
 // +define+LAYER=1 or +define+LAYER=2 in run_sim.sh
@@ -161,12 +162,94 @@ wire [BW_PER_ADDR_I-1:0] sram_wdata_i1;
 wire [BW_PER_ADDR_I-1:0] sram_wdata_i2;
 wire [BW_PER_ADDR_I-1:0] sram_wdata_i3;
 
+// SRAM Z signals
+wire sram_wen_z0;
+wire sram_wen_z1;
+wire sram_wen_z2;
+wire sram_wen_z3;
+wire [BW_PER_ADDR_I-1:0] sram_rdata_z0;
+wire [BW_PER_ADDR_I-1:0] sram_rdata_z1;
+wire [BW_PER_ADDR_I-1:0] sram_rdata_z2;
+wire [BW_PER_ADDR_I-1:0] sram_rdata_z3;
+wire [SRAM_ADDR_WIDTH_ZUGX-1:0] sram_addr_z0;
+wire [SRAM_ADDR_WIDTH_ZUGX-1:0] sram_addr_z1;
+wire [SRAM_ADDR_WIDTH_ZUGX-1:0] sram_addr_z2;
+wire [SRAM_ADDR_WIDTH_ZUGX-1:0] sram_addr_z3;
+wire [BW_PER_ADDR_I-1:0] sram_wdata_z0;
+wire [BW_PER_ADDR_I-1:0] sram_wdata_z1;
+wire [BW_PER_ADDR_I-1:0] sram_wdata_z2;
+wire [BW_PER_ADDR_I-1:0] sram_wdata_z3;
+
+// SRAM U signals
+wire sram_wen_u0;
+wire sram_wen_u1;
+wire sram_wen_u2;
+wire sram_wen_u3;
+wire [BW_PER_ADDR_I-1:0] sram_rdata_u0;
+wire [BW_PER_ADDR_I-1:0] sram_rdata_u1;
+wire [BW_PER_ADDR_I-1:0] sram_rdata_u2;
+wire [BW_PER_ADDR_I-1:0] sram_rdata_u3;
+wire [SRAM_ADDR_WIDTH_ZUGX-1:0] sram_addr_u0;
+wire [SRAM_ADDR_WIDTH_ZUGX-1:0] sram_addr_u1;
+wire [SRAM_ADDR_WIDTH_ZUGX-1:0] sram_addr_u2;
+wire [SRAM_ADDR_WIDTH_ZUGX-1:0] sram_addr_u3;
+wire [BW_PER_ADDR_I-1:0] sram_wdata_u0;
+wire [BW_PER_ADDR_I-1:0] sram_wdata_u1;
+wire [BW_PER_ADDR_I-1:0] sram_wdata_u2;
+wire [BW_PER_ADDR_I-1:0] sram_wdata_u3;
+
+// SRAM G signals
+wire sram_wen_g0;
+wire sram_wen_g1;
+wire sram_wen_g2;
+wire sram_wen_g3;
+wire [BW_PER_ADDR_I-1:0] sram_rdata_g0;
+wire [BW_PER_ADDR_I-1:0] sram_rdata_g1;
+wire [BW_PER_ADDR_I-1:0] sram_rdata_g2;
+wire [BW_PER_ADDR_I-1:0] sram_rdata_g3;
+wire [SRAM_ADDR_WIDTH_ZUGX-1:0] sram_addr_g0;
+wire [SRAM_ADDR_WIDTH_ZUGX-1:0] sram_addr_g1;
+wire [SRAM_ADDR_WIDTH_ZUGX-1:0] sram_addr_g2;
+wire [SRAM_ADDR_WIDTH_ZUGX-1:0] sram_addr_g3;
+wire [BW_PER_ADDR_I-1:0] sram_wdata_g0;
+wire [BW_PER_ADDR_I-1:0] sram_wdata_g1;
+wire [BW_PER_ADDR_I-1:0] sram_wdata_g2;
+wire [BW_PER_ADDR_I-1:0] sram_wdata_g3;
+
+// SRAM X signals
+wire sram_wen_x0;
+wire sram_wen_x1;
+wire sram_wen_x2;
+wire sram_wen_x3;
+wire [BW_PER_ADDR_I-1:0] sram_rdata_x0;
+wire [BW_PER_ADDR_I-1:0] sram_rdata_x1;
+wire [BW_PER_ADDR_I-1:0] sram_rdata_x2;
+wire [BW_PER_ADDR_I-1:0] sram_rdata_x3;
+wire [SRAM_ADDR_WIDTH_ZUGX-1:0] sram_addr_x0;
+wire [SRAM_ADDR_WIDTH_ZUGX-1:0] sram_addr_x1;
+wire [SRAM_ADDR_WIDTH_ZUGX-1:0] sram_addr_x2;
+wire [SRAM_ADDR_WIDTH_ZUGX-1:0] sram_addr_x3;
+wire [BW_PER_ADDR_I-1:0] sram_wdata_x0;
+wire [BW_PER_ADDR_I-1:0] sram_wdata_x1;
+wire [BW_PER_ADDR_I-1:0] sram_wdata_x2;
+wire [BW_PER_ADDR_I-1:0] sram_wdata_x3;
+
 // Instantiate IEC RTL module
 IEC_top #(
     .BW_PER_ADDR_A(BW_PER_ADDR_A),
     .BW_PER_ADDR_B(BW_PER_ADDR_B),
+    .BW_PER_ADDR_I(BW_PER_ADDR_I),
+    .BW_PER_ADDR_Z(BW_PER_ADDR_I),
+    .BW_PER_ADDR_U(BW_PER_ADDR_I),
+    .BW_PER_ADDR_G(BW_PER_ADDR_I),
+    .BW_PER_ADDR_X(BW_PER_ADDR_I),
     .ADDR_WIDTH_A(SRAM_ADDR_WIDTH_A),
-    .ADDR_WIDTH_B(SRAM_ADDR_WIDTH_B) 
+    .ADDR_WIDTH_B(SRAM_ADDR_WIDTH_B),
+    .ADDR_WIDTH_I(SRAM_ADDR_WIDTH_I),
+    .ADDR_WIDTH_Z(SRAM_ADDR_WIDTH_ZUGX),
+    .ADDR_WIDTH_U(SRAM_ADDR_WIDTH_ZUGX),
+    .ADDR_WIDTH_G(SRAM_ADDR_WIDTH_ZUGX),
+    .ADDR_WIDTH_X(SRAM_ADDR_WIDTH_ZUGX)
 )U_IEC(
     .clk(clk),
     .rst_n(rst_n),
@@ -233,7 +316,91 @@ IEC_top #(
     .sram_rdata_i0(sram_rdata_i0),
     .sram_rdata_i1(sram_rdata_i1),
     .sram_rdata_i2(sram_rdata_i2),
-    .sram_rdata_i3(sram_rdata_i3)
+    .sram_rdata_i3(sram_rdata_i3),
+    
+    // SRAM Z
+    .sram_wen_z0(sram_wen_z0),
+    .sram_wen_z1(sram_wen_z1),
+    .sram_wen_z2(sram_wen_z2),
+    .sram_wen_z3(sram_wen_z3),
+
+    .sram_addr_z0(sram_addr_z0),
+    .sram_addr_z1(sram_addr_z1),
+    .sram_addr_z2(sram_addr_z2),
+    .sram_addr_z3(sram_addr_z3),
+
+    .sram_wdata_z0(sram_wdata_z0),
+    .sram_wdata_z1(sram_wdata_z1),
+    .sram_wdata_z2(sram_wdata_z2),
+    .sram_wdata_z3(sram_wdata_z3),
+
+    .sram_rdata_z0(sram_rdata_z0),
+    .sram_rdata_z1(sram_rdata_z1),
+    .sram_rdata_z2(sram_rdata_z2),
+    .sram_rdata_z3(sram_rdata_z3),
+
+    // SRAM U
+    .sram_wen_u0(sram_wen_u0),
+    .sram_wen_u1(sram_wen_u1),
+    .sram_wen_u2(sram_wen_u2),
+    .sram_wen_u3(sram_wen_u3),
+
+    .sram_addr_u0(sram_addr_u0),
+    .sram_addr_u1(sram_addr_u1),
+    .sram_addr_u2(sram_addr_u2),
+    .sram_addr_u3(sram_addr_u3),
+
+    .sram_wdata_u0(sram_wdata_u0),
+    .sram_wdata_u1(sram_wdata_u1),
+    .sram_wdata_u2(sram_wdata_u2),
+    .sram_wdata_u3(sram_wdata_u3),
+
+    .sram_rdata_u0(sram_rdata_u0),
+    .sram_rdata_u1(sram_rdata_u1),
+    .sram_rdata_u2(sram_rdata_u2),
+    .sram_rdata_u3(sram_rdata_u3),
+
+    // SRAM G
+    .sram_wen_g0(sram_wen_g0),
+    .sram_wen_g1(sram_wen_g1),
+    .sram_wen_g2(sram_wen_g2),
+    .sram_wen_g3(sram_wen_g3),
+
+    .sram_addr_g0(sram_addr_g0),
+    .sram_addr_g1(sram_addr_g1),
+    .sram_addr_g2(sram_addr_g2),
+    .sram_addr_g3(sram_addr_g3),
+
+    .sram_wdata_g0(sram_wdata_g0),
+    .sram_wdata_g1(sram_wdata_g1),
+    .sram_wdata_g2(sram_wdata_g2),
+    .sram_wdata_g3(sram_wdata_g3),
+
+    .sram_rdata_g0(sram_rdata_g0),
+    .sram_rdata_g1(sram_rdata_g1),
+    .sram_rdata_g2(sram_rdata_g2),
+    .sram_rdata_g3(sram_rdata_g3),
+
+    // SRAM X
+    .sram_wen_x0(sram_wen_x0),
+    .sram_wen_x1(sram_wen_x1),
+    .sram_wen_x2(sram_wen_x2),
+    .sram_wen_x3(sram_wen_x3),
+
+    .sram_addr_x0(sram_addr_x0),
+    .sram_addr_x1(sram_addr_x1),
+    .sram_addr_x2(sram_addr_x2),
+    .sram_addr_x3(sram_addr_x3),
+
+    .sram_wdata_x0(sram_wdata_x0),
+    .sram_wdata_x1(sram_wdata_x1),
+    .sram_wdata_x2(sram_wdata_x2),
+    .sram_wdata_x3(sram_wdata_x3),
+
+    .sram_rdata_x0(sram_rdata_x0),
+    .sram_rdata_x1(sram_rdata_x1),
+    .sram_rdata_x2(sram_rdata_x2),
+    .sram_rdata_x3(sram_rdata_x3)
     
 );
 
@@ -343,6 +510,138 @@ sram_256x8b #(
     .rdata_3(sram_rdata_i3)
 );
 
+// SRAM for later stages (Z/U/G/X, 512 entries each)
+sram_256x8b #(
+    .BW_PER_ADDR(BW_PER_ADDR_I),
+    .ADDR_WIDTH(SRAM_ADDR_WIDTH_ZUGX)
+) sram_z(
+    .clk(clk),
+    .csb(1'b0),
+
+    .wsb_0(sram_wen_z0),
+    .wsb_1(sram_wen_z1),
+    .wsb_2(sram_wen_z2),
+    .wsb_3(sram_wen_z3),
+
+    .wdata_0(sram_wdata_z0),
+    .wdata_1(sram_wdata_z1),
+    .wdata_2(sram_wdata_z2),
+    .wdata_3(sram_wdata_z3),
+
+    .waddr_0(sram_addr_z0),
+    .waddr_1(sram_addr_z1),
+    .waddr_2(sram_addr_z2),
+    .waddr_3(sram_addr_z3),
+
+    .raddr_0(sram_addr_z0),
+    .raddr_1(sram_addr_z1),
+    .raddr_2(sram_addr_z2),
+    .raddr_3(sram_addr_z3),
+
+    .rdata_0(sram_rdata_z0),
+    .rdata_1(sram_rdata_z1),
+    .rdata_2(sram_rdata_z2),
+    .rdata_3(sram_rdata_z3)
+);
+
+sram_256x8b #(
+    .BW_PER_ADDR(BW_PER_ADDR_I),
+    .ADDR_WIDTH(SRAM_ADDR_WIDTH_ZUGX)
+) sram_u(
+    .clk(clk),
+    .csb(1'b0),
+
+    .wsb_0(sram_wen_u0),
+    .wsb_1(sram_wen_u1),
+    .wsb_2(sram_wen_u2),
+    .wsb_3(sram_wen_u3),
+
+    .wdata_0(sram_wdata_u0),
+    .wdata_1(sram_wdata_u1),
+    .wdata_2(sram_wdata_u2),
+    .wdata_3(sram_wdata_u3),
+
+    .waddr_0(sram_addr_u0),
+    .waddr_1(sram_addr_u1),
+    .waddr_2(sram_addr_u2),
+    .waddr_3(sram_addr_u3),
+
+    .raddr_0(sram_addr_u0),
+    .raddr_1(sram_addr_u1),
+    .raddr_2(sram_addr_u2),
+    .raddr_3(sram_addr_u3),
+
+    .rdata_0(sram_rdata_u0),
+    .rdata_1(sram_rdata_u1),
+    .rdata_2(sram_rdata_u2),
+    .rdata_3(sram_rdata_u3)
+);
+
+sram_256x8b #(
+    .BW_PER_ADDR(BW_PER_ADDR_I),
+    .ADDR_WIDTH(SRAM_ADDR_WIDTH_ZUGX)
+) sram_g(
+    .clk(clk),
+    .csb(1'b0),
+
+    .wsb_0(sram_wen_g0),
+    .wsb_1(sram_wen_g1),
+    .wsb_2(sram_wen_g2),
+    .wsb_3(sram_wen_g3),
+
+    .wdata_0(sram_wdata_g0),
+    .wdata_1(sram_wdata_g1),
+    .wdata_2(sram_wdata_g2),
+    .wdata_3(sram_wdata_g3),
+
+    .waddr_0(sram_addr_g0),
+    .waddr_1(sram_addr_g1),
+    .waddr_2(sram_addr_g2),
+    .waddr_3(sram_addr_g3),
+
+    .raddr_0(sram_addr_g0),
+    .raddr_1(sram_addr_g1),
+    .raddr_2(sram_addr_g2),
+    .raddr_3(sram_addr_g3),
+
+    .rdata_0(sram_rdata_g0),
+    .rdata_1(sram_rdata_g1),
+    .rdata_2(sram_rdata_g2),
+    .rdata_3(sram_rdata_g3)
+);
+
+sram_256x8b #(
+    .BW_PER_ADDR(BW_PER_ADDR_I),
+    .ADDR_WIDTH(SRAM_ADDR_WIDTH_ZUGX)
+) sram_x(
+    .clk(clk),
+    .csb(1'b0),
+
+    .wsb_0(sram_wen_x0),
+    .wsb_1(sram_wen_x1),
+    .wsb_2(sram_wen_x2),
+    .wsb_3(sram_wen_x3),
+
+    .wdata_0(sram_wdata_x0),
+    .wdata_1(sram_wdata_x1),
+    .wdata_2(sram_wdata_x2),
+    .wdata_3(sram_wdata_x3),
+
+    .waddr_0(sram_addr_x0),
+    .waddr_1(sram_addr_x1),
+    .waddr_2(sram_addr_x2),
+    .waddr_3(sram_addr_x3),
+
+    .raddr_0(sram_addr_x0),
+    .raddr_1(sram_addr_x1),
+    .raddr_2(sram_addr_x2),
+    .raddr_3(sram_addr_x3),
+
+    .rdata_0(sram_rdata_x0),
+    .rdata_1(sram_rdata_x1),
+    .rdata_2(sram_rdata_x2),
+    .rdata_3(sram_rdata_x3)
+);
 
 // ===== waveform dumpping ===== //
 initial begin
@@ -359,6 +658,10 @@ initial begin
     enable = 0;
     
     #(`CYCLE * 5);
+
+    // Initialize SRAM Z and G to zero using load_dat
+    sram_z.load_dat("0", 0, 0, 0);
+    sram_g.load_dat("0", 0, 0, 0);
     
     // Initialize SRAM 
     if(layer_value == 1) begin // Layer 1: input_image
