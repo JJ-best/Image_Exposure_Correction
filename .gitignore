@@ -2,6 +2,7 @@
 py/**/imgs_lime1/
 py/**/imgs_lime2/
 py/**/imgs_fusion/
+py/**/**/alm
 # Python cache
 **/__pycache__/
 py/**/__pycache__/
@@ -13,3 +14,9 @@ sim/pat/imgs_lime2/
 *.fsdb
 *.ucli.key
 **/simv.daidir
+
+# fft
+alib-52/
+*.synopsys_dc.setup
+*.log
+*.svf

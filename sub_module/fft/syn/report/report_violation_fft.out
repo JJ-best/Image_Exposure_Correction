@@ -1,0 +1,276 @@
+ 
+****************************************
+Report : constraint
+        -all_violators
+Design : fft
+Version: R-2020.09-SP5
+Date   : Sat Dec 13 23:08:52 2025
+****************************************
+
+
+   max_transition
+
+                             Required        Actual
+   Net                      Transition     Transition        Slack
+   -----------------------------------------------------------------
+   u_bpe0/n209                  0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U890/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U889/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U888/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U887/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U886/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U885/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U884/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U883/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U882/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U881/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U880/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U879/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U851/A
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U865/A
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U850/Y
+                                0.28           0.30          -0.02  (VIOLATED)
+   u_bpe0/n218                  0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U947/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U946/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U945/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U944/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U943/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U942/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U941/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U940/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U939/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U938/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U937/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U936/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U908/A
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U922/A
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U907/Y
+                                0.28           0.30          -0.02  (VIOLATED)
+   u_bpe0/n227                  0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U1004/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U1003/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U1002/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U1001/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U1000/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U999/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U998/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U997/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U996/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U995/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U994/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U993/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U965/A
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U979/A
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U964/Y
+                                0.28           0.30          -0.02  (VIOLATED)
+   u_bpe0/n236                  0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U1061/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U1060/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U1059/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U1058/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U1057/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U1056/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U1055/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U1054/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U1053/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U1052/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U1051/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U1050/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U1022/A
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U1036/A
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe0/U1021/Y
+                                0.28           0.30          -0.02  (VIOLATED)
+   u_bpe1/n209                  0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U889/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U888/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U887/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U886/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U885/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U884/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U883/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U882/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U881/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U880/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U879/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U878/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U850/A
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U864/A
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U849/Y
+                                0.28           0.30          -0.02  (VIOLATED)
+   u_bpe1/n218                  0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U946/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U945/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U944/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U943/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U942/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U941/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U940/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U939/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U938/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U937/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U936/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U935/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U907/A
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U921/A
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U906/Y
+                                0.28           0.30          -0.02  (VIOLATED)
+   u_bpe1/n227                  0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U1003/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U1002/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U1001/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U1000/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U999/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U998/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U997/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U996/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U995/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U994/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U993/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U992/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U964/A
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U978/A
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U963/Y
+                                0.28           0.30          -0.02  (VIOLATED)
+   u_bpe1/n236                  0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U1060/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U1059/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U1058/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U1057/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U1056/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U1055/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U1054/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U1053/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U1052/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U1051/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U1050/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U1049/S0
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U1021/A
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U1035/A
+                                0.28           0.30          -0.02  (VIOLATED)
+       PIN :   u_bpe1/U1020/Y
+                                0.28           0.30          -0.02  (VIOLATED)
+
+   -----------------------------------------------------------------
+   Total                      8                  -0.16  
+
+   max_area
+
+                             Required        Actual
+   Design                      Area           Area           Slack
+   -----------------------------------------------------------------
+   fft                          0.00       85110.80       -85110.80 (VIOLATED)
+
+
+1

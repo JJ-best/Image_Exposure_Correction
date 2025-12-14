@@ -1,0 +1,79 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : fft
+Version: R-2020.09-SP5
+Date   : Sat Dec 13 23:08:43 2025
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: PVT_1P08V_125C   Library: slow_vdd1v2
+Wire Load Model Mode: enclosed
+
+  Startpoint: stage_reg_1_
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: u_bpe1/clk_gate_state_reg/latch
+            (negative level-sensitive latch clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  fft                Large                 slow_vdd1v2
+  bpe_pDATA_WIDTH128_mydesign_0
+                     Small                 slow_vdd1v2
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                 0.0000     0.0000
+  clock network delay (ideal)                           0.0000     0.0000
+  stage_reg_1_/CK (DFFRHQX1)                            0.0000 #   0.0000 r
+  stage_reg_1_/Q (DFFRHQX1)                             0.1188     0.1188 f
+  U24051/Y (INVXL)                                      0.0374     0.1562 r
+  U25628/Y (NAND3BXL)                                   0.1003     0.2566 f
+  U24592/Y (NOR2XL)                                     0.0844     0.3409 r
+  U19390/Y (INVXL)                                      0.1136     0.4545 f
+  U25629/Y (BUFX2)                                      0.1037     0.5582 f
+  U23858/Y (BUFX2)                                      0.0800     0.6382 f
+  U19383/Y (INVX1)                                      0.0853     0.7234 r
+  U23596/Y (NOR2XL)                                     0.0751     0.7985 f
+  U23586/Y (INVXL)                                      0.0656     0.8641 r
+  U23582/Y (NOR2XL)                                     0.0603     0.9244 f
+  U23856/Y (INVXL)                                      0.0430     0.9674 r
+  U19221/Y (OAI211XL)                                   0.1053     1.0727 f
+  U19249/Y (OAI211XL)                                   0.0842     1.1568 r
+  u_bpe1/i_vld (bpe_pDATA_WIDTH128_mydesign_0)          0.0000     1.1568 r
+  u_bpe1/U56/Y (INVXL)                                  0.0718     1.2287 f
+  u_bpe1/U5/Y (AOI221XL)                                0.0824     1.3111 r
+  u_bpe1/U1081/Y (OA21X1)                               0.1137     1.4248 r
+  u_bpe1/clk_gate_state_reg/EN (SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_0)
+                                                        0.0000     1.4248 r
+  u_bpe1/clk_gate_state_reg/latch/D (TLATNXL)           0.0110     1.4357 r
+  data arrival time                                                1.4357
+
+  clock clk (fall edge)                                 1.7500     1.7500
+  clock network delay (ideal)                           0.0000     1.7500
+  u_bpe1/clk_gate_state_reg/latch/GN (TLATNXL)          0.0000     1.7500 f
+  time borrowed from endpoint                           0.0000     1.7500
+  data required time                                               1.7500
+  --------------------------------------------------------------------------
+  data required time                                               1.7500
+  data arrival time                                               -1.4357
+  --------------------------------------------------------------------------
+  slack (MET)                                                      0.3143
+
+  Time Borrowing Information
+  --------------------------------------------------------------
+  clk nominal pulse width                               1.7500   
+  library setup time                                   -0.0569   
+  --------------------------------------------------------------
+  max time borrow                                       1.6931   
+  actual time borrow                                    0.0000   
+  --------------------------------------------------------------
+
+
+1

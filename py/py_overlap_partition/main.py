@@ -59,9 +59,10 @@ if __name__ == "__main__":
             enhanced1_patch = run_lime(
                 out_dir=out_dir_lime1,
                 img_in=patch_img,
-                k0=30,
+                k0=20,
                 gamma=0.7,
                 save_label=f"{patch_label}_under",
+                dump_alm=True, # if true, dump golden dat of alm
             )
             # enhanced1_img(24x24x3)
             enhanced1_img[i*valid_size:(i+1)*valid_size, j*valid_size:(j+1)*valid_size, 0:3] = enhanced1_patch[border:border+valid_size, border:border+valid_size, 0:3]
@@ -72,9 +73,10 @@ if __name__ == "__main__":
             enhanced2_patch = run_lime(
                 out_dir=out_dir_lime2,
                 img_in=arr_inv,
-                k0=30,
+                k0=20,
                 gamma=0.7,
                 save_label=f"{patch_label}_over",
+                dump_alm=True,
             )
             enhanced2_patch_inv = 1- enhanced2_patch
             # enhanced2_img(24x24x3)

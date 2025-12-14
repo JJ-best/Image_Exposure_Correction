@@ -1,0 +1,214 @@
+Information: Propagating switching activity (low effort zero delay simulation). (PWR-6)
+Warning: Design has unannotated primary inputs. (PWR-414)
+Warning: Design has unannotated sequential cell outputs. (PWR-415)
+ 
+****************************************
+Report : power
+        -hier
+        -analysis_effort low
+Design : fft
+Version: R-2020.09-SP5
+Date   : Sat Dec 13 23:08:52 2025
+****************************************
+
+
+Library(s) Used:
+
+    slow_vdd1v2 (File: /usr/cadtool/GPDK45/gsclib045_svt_v4.4/gsclib045/db/slow_vdd1v2_basicCells_wl.db)
+
+
+Operating Conditions: PVT_1P08V_125C   Library: slow_vdd1v2
+Wire Load Model Mode: enclosed
+
+Design        Wire Load Model            Library
+------------------------------------------------
+fft                    Large             slow_vdd1v2
+bpe_pDATA_WIDTH128_mydesign_1
+                       Small             slow_vdd1v2
+bpe_pDATA_WIDTH128_mydesign_0
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_fft
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_fft_mydesign_0
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_79
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_0
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_1
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_2
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_3
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_4
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_5
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_6
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_7
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_8
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_9
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_10
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_11
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_12
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_13
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_14
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_15
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_16
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_17
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_18
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_19
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_20
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_21
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_22
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_23
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_24
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_25
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_26
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_27
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_28
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_29
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_30
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_31
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_32
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_33
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_34
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_35
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_36
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_37
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_38
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_39
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_40
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_41
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_42
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_43
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_44
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_45
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_46
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_47
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_48
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_49
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_50
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_51
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_52
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_53
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_54
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_55
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_56
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_57
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_58
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_59
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_60
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_61
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_62
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_63
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_64
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_65
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_66
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_67
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_68
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_69
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_70
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_71
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_72
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_73
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_74
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_75
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_76
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_77
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_bpe_pDATA_WIDTH128_mydesign_0_mydesign_78
+                       Small             slow_vdd1v2
+
+
+Global Operating Voltage = 1.08 
+Power-specific unit information :
+    Voltage Units = 1V
+    Capacitance Units = 1.000000pf
+    Time Units = 1ns
+    Dynamic Power Units = 1mW    (derived from V,C,T units)
+    Leakage Power Units = 1pW
+
+
+--------------------------------------------------------------------------------
+                                       Switch   Int      Leak     Total
+Hierarchy                              Power    Power    Power    Power    %
+--------------------------------------------------------------------------------
+fft                                       0.246    8.611 2.52e+06    8.860 100.0
+  u_bpe1 (bpe_pDATA_WIDTH128_mydesign_0)
+                                       7.76e-02    4.018 7.57e+05    4.097  46.2
+  u_bpe0 (bpe_pDATA_WIDTH128_mydesign_1)
+                                       7.77e-02    4.018 7.57e+05    4.096  46.2
+1

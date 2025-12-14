@@ -1,6 +1,8 @@
 # Image_Exposure_Correction
 A hardware implementation of illumination-map-based image enhancement, featuring LIME estimation, dual illumination correction (forward + inverted images), and multi-exposure fusion for robust under/over-exposure correction.
 
+![figure](image/dataflow.png)
+
 ## Test Pattern
 run main.py
 
@@ -141,12 +143,13 @@ For example
 1. upload the this repo into mobaxterm
 2. > cd Image_Exposure_correction/py/py_overlap
 3. > python3 -m pip install --user pillow numpy
-4. > python3 main.py
-5. > cd Image_Exposure_correction/sim
-6. > vim run_sim.sh
-7. > :set ff=unix
-8. > :wq
-9. > sh run_sim.sh
+4. > python3 tdenom.py
+5. > python3 main.py
+6. > cd Image_Exposure_correction/sim
+7. > vim run_sim.sh
+8. > :set ff=unix
+9. > :wq
+10. > sh run_sim.sh
 ```
 
 
