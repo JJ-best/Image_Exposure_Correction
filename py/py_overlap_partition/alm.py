@@ -86,6 +86,9 @@ def multiplydtrans(G: np.ndarray) -> np.ndarray:
     delGy = Dy @ altGy
     delGx = Gx @ Dx
     
+    # golden data sramX_1.dat
+    delG = np.vstack((delGx, delGy))
+    
     # ---- matrix size ----- #
     # print("G   size: ", G.shape)
     # print("Dyi size: ", Dyi.shape)
@@ -96,7 +99,7 @@ def multiplydtrans(G: np.ndarray) -> np.ndarray:
     # print("delGy  size: ", delGy.shape)
     # print("delGx  size: ", delGx.shape)
     
-    return delGx + delGy
+    return delGx + delGy, delG
 
 def shrinkage(A: np.ndarray, X: np.ndarray) -> np.ndarray:
     """Soft thresholding."""
@@ -285,7 +288,7 @@ def updateT_dat(
     Matrix dimensions must be powers of two (e.g., 32x32).
     """
     X = G - U
-    delX = multiplydtrans(X) # sramX_1.dat
+    delX, delG = multiplydtrans(X) # sramX_1.dat
     Tnum = 2 * Ti + mu * delX # sramE_1.dat
     Tn = fft2_iterative_radix2(Tnum) # sramT_1.dat
 
@@ -295,7 +298,7 @@ def updateT_dat(
     Tnd = Tn / Td # sramC.dat
     Tout = ifft2_iterative_radix2(Tnd) # sramT_2.dat
     Tout_real = np.real(Tout)
-    return Tout_real, delX, Tnum, Tn, Td, Tnd, Tout
+    return Tout_real, delX, Tnum, Tn, Td, Tnd, Tout, delG
 
 def load_tdenom_hex(path: str, m: int, n: int) -> np.ndarray:
     """
@@ -367,7 +370,7 @@ def lime_trial(
     while k < k0:
         U = Z / mu                     # sramU_1.dat, Z / μ
         A = alpha * W / mu             # sramW.dat, Threshold matrix of each element
-        T, delX, Tnum, Tn, Td, Tnd, Tout = updateT_dat(Ti, mu, G, U) # T(t+1) = ...
+        T, delX, Tnum, Tn, Td, Tnd, Tout, delG = updateT_dat(Ti, mu, G, U) # T(t+1) = ...
         delT = multiplyd(T)            # sramX_2.dat, ∇T
         G = shrinkage(A, delT + U)     # sramG.dat, G(t+1) = Shrinkage(∇T + Z / μ)
         B = delT - G                   # ∇T - G
@@ -382,7 +385,7 @@ def lime_trial(
                 {
                     "sramU_1": U,
                     "sramW_1": A,
-                    "sramX_1": delX,
+                    "sramX_1": delG,
                     "sramE_1": Tnum,
                     "sramT_1": Tn,
                     "sramE_2": Td,
