@@ -9,7 +9,7 @@ echo "Step 1: Generating VCD waveform..."
 echo "=========================================="
 
 vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs.log \
-    +define+MODE=1 +define+COL_STAGE=6 +define+WAVEFORM_FORMAT=$WAVEFORM_FORMAT
+    +define+MODE=0 +define+COL_STAGE=6 +define+WAVEFORM_FORMAT=$WAVEFORM_FORMAT
 
 # Check VCD file generation
 if [ -f "fft_sim.vcd" ]; then
