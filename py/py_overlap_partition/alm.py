@@ -101,6 +101,50 @@ def multiplydtrans(G: np.ndarray) -> np.ndarray:
     
     return delGx + delGy, delG
 
+# 2025.12.16 hw friendly multiplytrans
+def selfdefined_multiplydtrans(G: np.ndarray) -> np.ndarray:
+    """
+    Multiply D^T with G.
+    G shape is (2*m, n); returns (m, n).
+    """
+    # (2m, n) = (p, n)
+    p, n = G.shape
+    m = p // 2
+
+    # flatten matrix G to a 2m by n vector(column major)
+    g = G.reshape(p * n, order="F")
+    # first m*n element is Gx, last m*n element is Gy
+    Gx = g[: m * n].reshape((m, n), order="F")
+    Gy = g[m * n :].reshape((2*m, n//2), order="F") # 64x16 matrix
+    
+    Dxi = maked_alt(n)
+    Dx = Dxi[:n, :n]
+    Dx[:, 0] += Dxi[:n, n]  # wrap column
+    delGx = Gx @ Dx
+    
+    # implement hw delGy
+    delGy = np.zeros((32,32), dtype=np.float64)
+    for i in range((n//2)//4): # column
+        for j in range(1,32): # row(1-31)
+            # lower row = upper row - lower row
+            delGy[j, 2*(i*4+0)] = Gy[j-1, i*4] - Gy[j, i*4]
+            delGy[j, 2*(i*4+1)] = Gy[j-1, i*4+1] - Gy[j, i*4+1]
+            delGy[j, 2*(i*4+2)] = Gy[j-1, i*4+2] - Gy[j, i*4+2]
+            delGy[j, 2*(i*4+3)] = Gy[j-1, i*4+3] - Gy[j, i*4+3]
+            
+    for i in range((n//2)//4): 
+        for j in range(33,64): #row(32-63) 
+            delGy[j-32, 2*(i*4+0)+1] = Gy[j-1, i*4] - Gy[j, i*4]
+            delGy[j-32, 2*(i*4+1)+1] = Gy[j-1, i*4+1] - Gy[j, i*4+1]
+            delGy[j-32, 2*(i*4+2)+1] = Gy[j-1, i*4+2] - Gy[j, i*4+2]
+            delGy[j-32, 2*(i*4+3)+1] = Gy[j-1, i*4+3] - Gy[j, i*4+3]
+    
+    
+    # golden data sramX_1.dat
+    delG = np.vstack((delGx, delGy))
+    
+    return delGx + delGy, delG
+
 def shrinkage(A: np.ndarray, X: np.ndarray) -> np.ndarray:
     """Soft thresholding."""
     return np.sign(X) * np.maximum(np.abs(X) - A, 0.0)
@@ -288,7 +332,7 @@ def updateT_dat(
     Matrix dimensions must be powers of two (e.g., 32x32).
     """
     X = G - U
-    delX, delG = multiplydtrans(X) # sramX_1.dat
+    delX, delG = selfdefined_multiplydtrans(X) # sramX_1.dat
     Tnum = 2 * Ti + mu * delX # sramE_1.dat
     Tn = fft2_iterative_radix2(Tnum) # sramT_1.dat
 
