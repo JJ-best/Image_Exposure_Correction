@@ -120,28 +120,10 @@ addr-255:
 ```
 
 
-## Preparing Pattern Files
-
-*note: start from step4
-
-### 1. Create the directory
-```
-./sim/pat
-```
-### 2. Copy all images from the following folders into ./sim/pat:
-```
-py/py_overlap_partition/imgs_lime1
-py/py_overlap_partition/imgs_lime2
-```
-### 3. Rename all image files: Pad both indices to two digits
-For example
-```
-0_0 -> 00_00
-```
-### 4. Run simulation
+## Run simulation
 ```shell
 1. upload the this repo into mobaxterm
-2. > cd Image_Exposure_correction/py/py_overlap
+2. > cd Image_Exposure_correction/py/py_overlap_partition
 3. > python3 -m pip install --user pillow numpy
 4. > python3 tdenom.py
 5. > python3 main.py
