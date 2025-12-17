@@ -1,0 +1,45 @@
+Information: Checking out the license 'DesignWare'. (SEC-104)
+Information: Changed wire load model for 'recip_lut' from '(none)' to 'Small'. (OPT-170)
+Information: Changed wire load model for 'alt1' from '(none)' to 'Large'. (OPT-170)
+Information: Changed wire load model for 'apparch' from '(none)' to 'Large'. (OPT-170)
+Information: Changed wire load model for 'DW01_inc_width55' from '(none)' to 'Small'. (OPT-170)
+Information: Changed wire load model for '*ADD_UNS_OP_55_1_55' from '(none)' to 'Small'. (OPT-170)
+Information: Changed wire load model for 'DW01_sub_width11' from '(none)' to 'Small'. (OPT-170)
+Information: Changed wire load model for '*SUB_UNS_OP_11_11_11' from '(none)' to 'Small'. (OPT-170)
+Information: Changed wire load model for 'DW01_dec_width11' from '(none)' to 'Small'. (OPT-170)
+Information: Changed wire load model for '*SUB_UNS_OP_11_1_11' from '(none)' to 'Small'. (OPT-170)
+Information: Changed wire load model for 'DW01_sub_width57' from '(none)' to 'Small'. (OPT-170)
+Information: Changed wire load model for '*SUB_UNS_OP_57_57_57' from '(none)' to 'Small'. (OPT-170)
+Information: Changed wire load model for 'DW01_sub_width57' from '(none)' to 'Small'. (OPT-170)
+Information: Changed wire load model for '*SUB_UNS_OP_57_57_57' from '(none)' to 'Small'. (OPT-170)
+Information: Changed wire load model for 'DW01_sub_width57' from '(none)' to 'Small'. (OPT-170)
+Information: Changed wire load model for '*SUB_UNS_OP_57_57_57' from '(none)' to 'Small'. (OPT-170)
+Information: Changed wire load model for 'DW02_mult' from '(none)' to 'Small'. (OPT-170)
+Information: Changed wire load model for '*MULT_UNS_OP_57_57_111' from '(none)' to 'Small'. (OPT-170)
+Information: Changed wire load model for 'DW02_mult' from '(none)' to 'Small'. (OPT-170)
+Information: Changed wire load model for '*MULT_UNS_OP_57_57_112' from '(none)' to 'Small'. (OPT-170)
+Information: Changed wire load model for 'DW02_mult' from '(none)' to 'Small'. (OPT-170)
+Information: Changed wire load model for '*MULT_UNS_OP_57_57_112' from '(none)' to 'Small'. (OPT-170)
+Information: Changed wire load model for 'DW02_mult' from '(none)' to 'Small'. (OPT-170)
+Information: Changed wire load model for '*MULT_UNS_OP_57_57_112' from '(none)' to 'Small'. (OPT-170)
+Information: Changed wire load model for 'DW02_mult' from '(none)' to 'Small'. (OPT-170)
+Information: Changed wire load model for '*MULT_UNS_OP_57_57_112' from '(none)' to 'Small'. (OPT-170)
+Information: Changed wire load model for 'DW02_mult' from '(none)' to 'Small'. (OPT-170)
+Information: Changed wire load model for '*MULT_UNS_OP_57_57_112' from '(none)' to 'Small'. (OPT-170)
+Information: Updating design information... (UID-85)
+Warning: Design 'fp64_reciprocal' contains 1 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
+
+Information: Checking generated_clocks...
+
+Information: Checking loops...
+
+Information: Checking no_input_delay...
+
+Information: Checking unconstrained_endpoints...
+
+Information: Checking pulse_clock_cell_type...
+
+Information: Checking no_driving_cell...
+
+Information: Checking partial_input_delay...
+1

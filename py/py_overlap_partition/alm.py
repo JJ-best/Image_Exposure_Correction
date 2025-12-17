@@ -345,7 +345,7 @@ def lime_trial(Ti: np.ndarray, alpha: float, mu0: float, rho: float, k0: int = 5
     while k < k0:
         U = Z / mu                  # Z / μ
         A = alpha * W / mu          # Threshold matrix of each element
-        T = updateT_dat(Ti, mu, G, U)   # T(t+1) = ...
+        T = updateT_no_shift(Ti, mu, G, U)   # T(t+1) = ...
         delT = multiplyd(T)         # ∇T
         G = shrinkage(A, delT + U)  # G(t+1) = Shrinkage(∇T + Z / μ)
         B = delT - G                # ∇T - G

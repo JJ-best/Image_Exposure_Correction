@@ -2,6 +2,7 @@
 py/**/imgs_lime1/
 py/**/imgs_lime2/
 py/**/imgs_fusion/
+py/**/imgs_dat_output/
 # Python cache
 **/__pycache__/
 py/**/__pycache__/

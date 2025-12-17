@@ -8,7 +8,7 @@ import numpy as np
 if __name__ == "__main__":
     # get absolute path of this file's directory (py_hardware)
     root = Path(__file__).resolve().parent
-    img = root / "imgs" / "lake.bmp"
+    img = root / "imgs" / "women.bmp"
     
     # output file path
     out_dir_lime1 = root / "imgs_lime1"

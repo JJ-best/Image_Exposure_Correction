@@ -50,7 +50,7 @@ IEEE754 format is 64-bit, used to represent a floating point number.
 
 ## 3. Module IO
 ```verilog
-module fp64_recip #(
+module fp64_reciprocal #(
     parameter pFP_WIDTH = 64
 )(
     input clk,

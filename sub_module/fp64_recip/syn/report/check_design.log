@@ -1,0 +1,22 @@
+ 
+****************************************
+check_design summary:
+Version:     R-2020.09-SP5
+Date:        Wed Dec 17 10:30:59 2025
+****************************************
+
+                   Name                                            Total
+--------------------------------------------------------------------------------
+Inputs/Outputs                                                      2
+    Unconnected ports (LINT-28)                                     1
+    Constant outputs (LINT-52)                                      1
+
+Cells                                                               2
+    Cells do not drive (LINT-1)                                     2
+--------------------------------------------------------------------------------
+
+Warning: In design 'fp64_reciprocal', cell 'C704' does not drive any nets. (LINT-1)
+Warning: In design 'fp64_reciprocal', cell 'C711' does not drive any nets. (LINT-1)
+Warning: In design 'fp64_reciprocal', port 'srst_n' is not connected to any nets. (LINT-28)
+Warning: In design 'recip_lut', output port 'data[7]' is connected directly to 'logic 1'. (LINT-52)
+1
