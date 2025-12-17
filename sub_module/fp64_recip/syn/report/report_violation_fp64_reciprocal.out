@@ -1,0 +1,19 @@
+ 
+****************************************
+Report : constraint
+        -all_violators
+Design : fp64_reciprocal
+Version: R-2020.09-SP5
+Date   : Wed Dec 17 10:42:32 2025
+****************************************
+
+
+   max_area
+
+                             Required        Actual
+   Design                      Area           Area           Slack
+   -----------------------------------------------------------------
+   fp64_reciprocal              0.00       88799.62       -88799.62 (VIOLATED)
+
+
+1

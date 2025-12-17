@@ -1,0 +1,44 @@
+ 
+****************************************
+Report : area
+Design : fp64_reciprocal
+Version: R-2020.09-SP5
+Date   : Wed Dec 17 10:42:26 2025
+****************************************
+
+Library(s) Used:
+
+    slow_vdd1v2 (File: /usr/cadtool/GPDK45/gsclib045_svt_v4.4/gsclib045/db/slow_vdd1v2_basicCells_wl.db)
+
+Number of ports:                          146
+Number of nets:                         39680
+Number of cells:                        34495
+Number of combinational cells:          33756
+Number of sequential cells:               738
+Number of macros/black boxes:               0
+Number of buf/inv:                       4045
+Number of references:                      91
+
+Combinational area:              84498.283885
+Buf/Inv area:                     3800.646085
+Noncombinational area:            4301.334096
+Macro/Black Box area:                0.000000
+Net Interconnect area:               0.000000
+
+Total cell area:                 88799.617981
+Total area:                      88799.617981
+
+Hierarchical area distribution
+------------------------------
+
+                                  Global cell area            Local cell area
+                                  -------------------  ----------------------------- 
+Hierarchical cell                 Absolute    Percent  Combi-      Noncombi-  Black-
+                                  Total       Total    national    national   boxes   Design
+--------------------------------  ----------  -------  ----------  ---------  ------  ---------
+fp64_reciprocal                   88799.6180    100.0  84315.3139  4301.3341  0.0000  fp64_reciprocal
+u_lut                               182.9700      0.2    182.9700     0.0000  0.0000  recip_lut
+--------------------------------  ----------  -------  ----------  ---------  ------  ---------
+Total                                                  84498.2839  4301.3341  0.0000
+
+1

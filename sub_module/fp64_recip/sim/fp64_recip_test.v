@@ -1,25 +1,20 @@
-//======================================================================================================
-//  Note:           Adapted for FP64 Reciprocal Unit Verification
-//======================================================================================================
-
 `timescale 1ns/100ps
 
+// 定義測試資料範圍
 `define PAT_L 0
-`define PAT_U 1999  // Test 2000 patterns (Matches the number of lines in golden.dat)
+`define PAT_U 1999 
 `define NUM_PAT (`PAT_U-`PAT_L+1)
 
 `define CYCLE 10
-`define END_CYCLES 100000 // Prevent simulation from hanging indefinitely
-`define FLAG_VERBOSE 1    // Set to 1 to show detailed errors, 0 to show only Pass/Fail summary
-`define FLAG_DUMPWV 1     // Set to 1 to enable waveform dumping
+`define END_CYCLES 100000 
+`define FLAG_VERBOSE 1    // 1: 顯示錯誤細節, 0: 只顯示統計
+`define FLAG_DUMPWV 1     // 1: 產生波形檔
 
 module tb_fp64_reciprocal;
 
 // Parameters
-localparam pFP_WIDTH   = 64;
-localparam pDATA_WIDTH = 128;
-localparam TOLERANCE   = 2;    // Allowable error margin in ULP (Units in Last Place)
-localparam MUL_LATENCY = 3;    // Latency of the simulated multiplier
+parameter pFP_WIDTH = 64;
+parameter TOLERANCE = 2; // 容許 2 ULP (Unit in Last Place) 的誤差
 
 // ===== module I/O ===== //
 reg clk;
@@ -29,229 +24,177 @@ reg [pFP_WIDTH-1:0] in_A;
 wire [pFP_WIDTH-1:0] in_B;
 wire output_valid;
 
-// External Multiplier Interface (Connected to DUT)
-wire mul_req;
-wire [pDATA_WIDTH-1:0] mul_a;
-wire [pDATA_WIDTH-1:0] mul_b;
-wire  [pDATA_WIDTH-1:0] mul_res;
-wire  mul_ack;
-
 // ===== Data Arrays ===== //
-// Format: Input(64 bits) + Expected(64 bits) = 128 bits total
+// 靜態陣列，用於儲存 golden pattern
 reg [127:0] test_vectors [0:`NUM_PAT-1];
 reg [pFP_WIDTH-1:0] input_data [0:`NUM_PAT-1];
 reg [pFP_WIDTH-1:0] golden_data [0:`NUM_PAT-1];
 
-// Debug Monitoring Wires (For waveform visibility)
-wire [pFP_WIDTH-1:0] debug_current_golden;
-wire [pFP_WIDTH-1:0] debug_current_input;
+// Counters
+integer in_idx;   // 輸入資料指標 (Driver)
+integer out_idx;  // 輸出比對指標 (Monitor)
+integer total_err;
 
-// Instantiate DUT (Device Under Test)
+// =========================================================
+// 1. Instantiate DUT (Device Under Test)
+// =========================================================
 fp64_reciprocal #(
     .pFP_WIDTH(pFP_WIDTH)
 ) uut (
     .clk(clk),
     .srst_n(srst_n),
-    
-    // Control / Data IO
     .in_valid(in_valid),
     .in_A(in_A),
     .in_B(in_B),
-    .output_valid(output_valid),
-
-    // mul_model Interface
-    .mul_req_o(mul_req),
-    .mul_a_o(mul_a),
-    .mul_b_o(mul_b),
-    .mul_res_i(mul_res),
-    .mul_ack_i(mul_ack)
+    .output_valid(output_valid)
 );
 
-
-// --- Mul Model Instance ---
-// This simulates the external multiplier IP
-mul #(.pDATA_WIDTH(pDATA_WIDTH)) u_mul (
-    .clk(clk),
-    .rst_n(srst_n),
-    .mode(2'b10), // Float Mode
-    .in_valid(mul_req),
-    .in_A(mul_a),
-    .in_B(mul_b),
-    .result_c(),       // Unused complex result port
-    .result_int(mul_res), // Result connected here
-    .out_valid(mul_ack)
-);
-
-
-// ===== Waveform Dumping ===== //
-initial begin
-    if(`FLAG_DUMPWV)begin
-        $fsdbDumpfile("reciprocal_unit.fsdb");
-        $fsdbDumpvars("+mda"); // +mda enables dumping of memory arrays
-    end
-end
-
-// ===== System Reset & Clock ===== //
+// =========================================================
+// 2. Clock & Reset
+// =========================================================
 initial begin
     clk = 0;
     while(1) #(`CYCLE/2) clk = ~clk;
 end
 
-// Watchdog Timer
+// Watchdog (防止模擬卡死)
 initial begin
     #(`CYCLE * `END_CYCLES);
-    $display("\n========================================================");
-    $display("   Error!!! Simulation time is too long...             ");
-    $display("   There might be something wrong in your FSM/Mul handshake.");
-    $display("========================================================");
+    $display("\n[Error] Simulation timeout! Output valid never asserted enough times.");
     $finish;
 end
 
-// ===== Cycle Counter ===== //
-integer cycle_cnt;
-integer aver_cycle_cnt;
-initial begin
-    cycle_cnt = 0;
-    aver_cycle_cnt = 0;
-    while(1) begin 
-        cycle_cnt = cycle_cnt + 1;
-        @(negedge clk);
-    end
-end
-
-// ===== Main Verification Flow ===== //
-integer i_pat;
-integer total_err_pat;
-integer error_tmp;
-
-// Assign debug wires for easy waveform viewing
-assign debug_current_golden = golden_data[i_pat];
-assign debug_current_input  = input_data[i_pat];
-
-initial begin
-    // Load Patterns
-    load_golden;
-
-    $display("\n%c[1;36mStart checking FP64 Reciprocal Unit ... %c[0m\n", 27, 27);
-
-    total_err_pat = 0;
-    srst_n = 1;
-    in_valid = 0;
-    in_A = 0;
-
-    // Reset Sequence
-    @(negedge clk); srst_n = 1'b0;
-    @(negedge clk); srst_n = 1'b1; 
-    @(negedge clk);
-
-    // Loop through patterns
-    for(i_pat = `PAT_L; i_pat <= `PAT_U; i_pat = i_pat + 1) begin
-        
-        // Feed Input
-        in_valid = 1'b1;
-        in_A = input_data[i_pat];
-        @(negedge clk);
-        in_valid = 1'b0; // Pulse input valid
-
-        // Wait for Output
-        wait(output_valid);
-        
-        // Compare
-        compare_output(i_pat);
-        
-        // Wait a bit before next pattern (optional pipeline bubble)
-        @(negedge clk);
-    end
-
-    aver_cycle_cnt = cycle_cnt / `NUM_PAT;
-
-    // Summary
-    $display("\n\n\n                    Summary of all patterns: ");
-    if(total_err_pat == 0) begin 
-        $display("------------------------------------------------------------\n");
-        $write("%c[1;32mCongratulations! %c[0m",27, 27);
-        $display("Your Reciprocal Unit is correct!");
-        $display("Total cycle count = %0d", cycle_cnt);
-        $display("Average cycle count per pattern = %0d", aver_cycle_cnt);
-        $display("-----------------------------PASS---------------------------\n");
-        
-    end else begin
-        $display("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-        $display("X                                                            X");
-        $display("X        %c[1;31mFAIL%c[0m in Reciprocal Unit!!!                  X",27,27);
-        $display("X               %4d patterns are failed... (T ~ T)           X", total_err_pat);
-        $display("X                                                            X");
-        $display("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-        $display("Total cycle count = %0d", cycle_cnt);
-    end
-    $finish;
-end
-
-// ===== Tasks ===== //
-
+// =========================================================
+// 3. Load Data Task
+// =========================================================
 task load_golden;
     integer idx;
     begin
         $display("Loading golden.dat...");
-        // Format assumed: Input_Hex(64) Expected_Hex(64) combined into 128 bits
-        // Adjust this if your golden.dat format is different
+        // 請確保 golden.dat 在當前目錄下
         $readmemh("./fp64_recip_pat/golden.dat", test_vectors);
-
+        
         for(idx = 0; idx < `NUM_PAT; idx = idx + 1) begin
-            // Ensure proper bit slicing:
-            // [127:64] contains the Input value (High part)
-            // [63:0]   contains the Golden Expected value (Low part)
+            // 切分 128bit 為 Input(高位) 與 Golden(低位)
             input_data[idx]  = test_vectors[idx][127:64];
             golden_data[idx] = test_vectors[idx][63:0];
         end
-
-        $display("Data Split Check:");
-        $display("  input_data[0]  = %h", input_data[0]);
-        $display("  golden_data[0] = %h", golden_data[0]);
     end
 endtask
 
-task compare_output(input integer pat_idx);
-    reg [pFP_WIDTH-1:0] golden;
-    reg [pFP_WIDTH-1:0] yours;
+// =========================================================
+// 4. Input Driver (負責一直餵資料)
+// =========================================================
+initial begin
+    // 初始化
+    load_golden;
+    srst_n = 1;
+    in_valid = 0;
+    in_A = 0;
+    in_idx = 0;
+
+    // Reset 序列
+    @(negedge clk); srst_n = 0;
+    @(negedge clk); srst_n = 1;
+    @(negedge clk); 
+
+    $display("\n[Start] Feeding Pipeline with %0d patterns...", `NUM_PAT);
+
+    // Pipeline 餵入迴圈：每個 Cycle 都送一筆新資料
+    while (in_idx < `NUM_PAT) begin
+        // 設定訊號
+        in_valid = 1'b1;
+        in_A     = input_data[in_idx];
+        
+        // 推進 index
+        in_idx = in_idx + 1;
+        
+        // 等待下一個 Cycle
+        @(negedge clk); 
+    end
+
+    // 資料餵完後，拉低 Valid
+    in_valid = 1'b0;
+    in_A = 0;
+    $display("[Driver] All data fed into pipeline. Waiting for outputs...");
+end
+
+// =========================================================
+// 5. Output Monitor (負責一直收資料並比對)
+// =========================================================
+initial begin
+    out_idx = 0;
+    total_err = 0;
+    
+    // 等待 Reset 結束
+    wait(srst_n == 1);
+
+    // 監控迴圈：直到收滿所有資料才停止
+    while (out_idx < `NUM_PAT) begin
+        @(posedge clk); // 在正緣採樣輸出
+        
+        if (output_valid) begin
+            check_result(out_idx); // 比對結果
+            out_idx = out_idx + 1;
+        end
+    end
+
+    // 結束模擬
+    final_report;
+    $finish;
+end
+
+// =========================================================
+// 6. 輔助 Tasks
+// =========================================================
+
+// 比對邏輯
+task check_result;
+    input integer idx;
+    reg [pFP_WIDTH-1:0] exp_val;
+    reg [pFP_WIDTH-1:0] dut_val;
     reg [pFP_WIDTH-1:0] diff;
     begin
-        golden = golden_data[pat_idx];
-        yours  = in_B;
-        
-        // Calculate Absolute Difference (Bitwise for ULP check)
-        if (golden > yours) diff = golden - yours;
-        else                diff = yours - golden;
+        // 因為是 FIFO 結構，第 N 個 output_valid 對應第 N 筆 golden_data
+        exp_val = golden_data[idx];
+        dut_val = in_B;
 
-        // Check Tolerance
-        if (diff > TOLERANCE && golden != yours) begin
-            if(`FLAG_VERBOSE) begin
-                $display("\n========================================================================");
-                $display("======================== Pattern No. %04d ========================", pat_idx);
-                $display("========================================================================");
-                $display("FAIL!");
-                display_error(yours, golden, diff);
-                $display("========================================================================");
+        // 計算誤差 (絕對值)
+        if (exp_val > dut_val) diff = exp_val - dut_val;
+        else                   diff = dut_val - exp_val;
+
+        // 判斷是否通過 (Tolerance)
+        // 注意：這裡簡化了 NaN/Inf 的比對，若需要嚴格 IEEE754 比對需額外判斷
+        if (diff > TOLERANCE && exp_val != dut_val) begin
+            if (`FLAG_VERBOSE) begin
+                $display("[FAIL] Pat %0d | In=%h | Exp=%h | Got=%h | Diff=%0d", 
+                         idx, input_data[idx], exp_val, dut_val, diff);
             end
-            total_err_pat = total_err_pat + 1;
-        end else begin
-            // Optional: Uncomment to see PASS messages
-            // if(`FLAG_VERBOSE) $display("Pattern No. %04d PASS (Diff: %0d ULP)", pat_idx, diff);
+            total_err = total_err + 1;
         end
     end
 endtask
 
-task display_error(
-    input [pFP_WIDTH-1:0] user_val,
-    input [pFP_WIDTH-1:0] gold_val,
-    input [pFP_WIDTH-1:0] difference
-);
+// 最終報告
+task final_report;
     begin
-        $write("Your answer is      : %h\n", user_val);
-        $write("But the golden is   : %h\n", gold_val);
-        $write("Difference (ULP)    : %0d (Tolerance: %0d)\n", difference, TOLERANCE);
-        $write("Input value was     : %h\n", input_data[i_pat]);
+        $display("\n========================================================");
+        if (total_err == 0) begin
+            $display("  CONGRATULATIONS! All %0d patterns passed!", `NUM_PAT);
+            $display("  Pipeline latency verified implicitly.");
+        end else begin
+            $display("  FAIL! Found %0d errors.", total_err);
+        end
+        $display("========================================================\n");
     end
 endtask
+
+// 波形設定
+initial begin
+    if(`FLAG_DUMPWV)begin
+        $fsdbDumpfile("recip_pipeline.fsdb");
+        $fsdbDumpvars(0, tb_fp64_reciprocal, "+mda");
+    end
+end
 
 endmodule
