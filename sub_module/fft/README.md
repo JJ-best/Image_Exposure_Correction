@@ -123,6 +123,7 @@ endmodule
 
 ## Complete process
 * input and output are at **different** sram
+* When the 32 row FFT operations are completed, a transpose (TSP) is performed and the data is moved from SRAM B to SRAM A. The column FFT is then executed. After all 32 column FFT operations are finished, another transpose is performed, and the final data is stored in SRAM B.
 
 |                | Normal Input | Reverse | S1 out | S2 out | S3 out | S4 out | S5 out | TSP     |
 |----------------|--------------|---------|--------|--------|--------|--------|--------| --------|
