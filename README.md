@@ -126,6 +126,7 @@ addr-255:
 2. > cd Image_Exposure_correction/py/py_overlap_partition
 3. > python3 -m pip install --user pillow numpy
 4. > python3 tdenom.py
+4. > python3 fft_pat.py
 5. > python3 main.py
 6. > cd Image_Exposure_correction/sim
 7. > vim run_sim.sh

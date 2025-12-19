@@ -10,6 +10,7 @@ def _matrix_to_hex_lines(mat: np.ndarray) -> list[str]:
     - Real numbers: one 16-hex-digit IEEE754 FP64 value per line.
     - Complex numbers: REAL_HEX_IMAG_HEX on one line.
     """
+    mat = mat[::-1]  # bottom row first
     # ---- Complex matrix case ----
     if np.iscomplexobj(mat):
         # Convert real part to a contiguous float64 array in row-major order.

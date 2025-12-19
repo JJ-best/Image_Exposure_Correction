@@ -11,6 +11,8 @@
 module test_IEC_top;
 
 // ===== Parameters ===== //
+localparam pFP_WIDTH = 64;
+
 localparam INPUT = 5'd0;
 localparam INIT = 5'd1;
 localparam BW_PER_ADDR_A = 24;    // SRAM A: 24-bit per address 
@@ -28,7 +30,7 @@ localparam BW_PER_ADDR_Z = 64;    // SRAM Z: 64-bit per address
 
 localparam SRAM_ADDR_WIDTH_A = 8;  // SRAM A: 8-bit address (256 addresses)
 localparam SRAM_ADDR_WIDTH_B = 8;  // SRAM B: 8-bit address (256 addresses)
-localparam SRAM_ADDR_WIDTH_I = 9;  // SRAM I: 9-bit address (512 addresses)
+localparam SRAM_ADDR_WIDTH_I = 8;  // SRAM I: 9-bit address (512 addresses)
 localparam SRAM_ADDR_WIDTH_U = 9;  // SRAM U: 9-bit address (512 addresses)
 localparam SRAM_ADDR_WIDTH_W = 9;  // SRAM W: 9-bit address (512 addresses)
 localparam SRAM_ADDR_WIDTH_X = 9;  // SRAM X: 9-bit address (512 addresses)
@@ -372,6 +374,16 @@ wire [BW_PER_ADDR_Z-1:0] sram_wdata_z1;
 wire [BW_PER_ADDR_Z-1:0] sram_wdata_z2;
 wire [BW_PER_ADDR_Z-1:0] sram_wdata_z3;
 
+// Twiddle ROM signals (16 banks)
+wire [0:0] twiddle_addr_0, twiddle_addr_1, twiddle_addr_2, twiddle_addr_3,
+            twiddle_addr_4, twiddle_addr_5, twiddle_addr_6, twiddle_addr_7,
+            twiddle_addr_8, twiddle_addr_9, twiddle_addr_10, twiddle_addr_11,
+            twiddle_addr_12, twiddle_addr_13, twiddle_addr_14, twiddle_addr_15;
+wire [(2*pFP_WIDTH-1):0] twiddle_data_0, twiddle_data_1, twiddle_data_2, twiddle_data_3,
+                        twiddle_data_4, twiddle_data_5, twiddle_data_6, twiddle_data_7,
+                        twiddle_data_8, twiddle_data_9, twiddle_data_10, twiddle_data_11,
+                        twiddle_data_12, twiddle_data_13, twiddle_data_14, twiddle_data_15;
+
 // Instantiate IEC RTL module
 IEC_top #(
     .BW_PER_ADDR_A(BW_PER_ADDR_A),
@@ -609,7 +621,16 @@ IEC_top #(
     .sram_rdata_z0(sram_rdata_z0),
     .sram_rdata_z1(sram_rdata_z1),
     .sram_rdata_z2(sram_rdata_z2),
-    .sram_rdata_z3(sram_rdata_z3)
+    .sram_rdata_z3(sram_rdata_z3),
+
+    .twiddle_addr_0(twiddle_addr_0_dut), .twiddle_addr_1(twiddle_addr_1_dut), .twiddle_addr_2(twiddle_addr_2_dut), .twiddle_addr_3(twiddle_addr_3_dut),
+    .twiddle_addr_4(twiddle_addr_4_dut), .twiddle_addr_5(twiddle_addr_5_dut), .twiddle_addr_6(twiddle_addr_6_dut), .twiddle_addr_7(twiddle_addr_7_dut),
+    .twiddle_addr_8(twiddle_addr_8_dut), .twiddle_addr_9(twiddle_addr_9_dut), .twiddle_addr_10(twiddle_addr_10_dut), .twiddle_addr_11(twiddle_addr_11_dut),
+    .twiddle_addr_12(twiddle_addr_12_dut), .twiddle_addr_13(twiddle_addr_13_dut), .twiddle_addr_14(twiddle_addr_14_dut), .twiddle_addr_15(twiddle_addr_15_dut),
+    .twiddle_data_0(twiddle_data_0), .twiddle_data_1(twiddle_data_1), .twiddle_data_2(twiddle_data_2), .twiddle_data_3(twiddle_data_3),
+    .twiddle_data_4(twiddle_data_4), .twiddle_data_5(twiddle_data_5), .twiddle_data_6(twiddle_data_6), .twiddle_data_7(twiddle_data_7),
+    .twiddle_data_8(twiddle_data_8), .twiddle_data_9(twiddle_data_9), .twiddle_data_10(twiddle_data_10), .twiddle_data_11(twiddle_data_11),
+    .twiddle_data_12(twiddle_data_12), .twiddle_data_13(twiddle_data_13), .twiddle_data_14(twiddle_data_14), .twiddle_data_15(twiddle_data_15)
 );
 
 
@@ -995,6 +1016,21 @@ sram_512x8b #(
     .rdata_3(sram_rdata_z3)
 );
 
+// Instantiate Twiddle ROM (16 banks)
+twiddle_rom #(
+    .DATA_WIDTH(2*pFP_WIDTH),
+    .BANK_ADDR_WIDTH(1)
+) u_twiddle_rom (
+    .addr_0(twiddle_addr_0), .addr_1(twiddle_addr_1), .addr_2(twiddle_addr_2), .addr_3(twiddle_addr_3),
+    .addr_4(twiddle_addr_4), .addr_5(twiddle_addr_5), .addr_6(twiddle_addr_6), .addr_7(twiddle_addr_7),
+    .addr_8(twiddle_addr_8), .addr_9(twiddle_addr_9), .addr_10(twiddle_addr_10), .addr_11(twiddle_addr_11),
+    .addr_12(twiddle_addr_12), .addr_13(twiddle_addr_13), .addr_14(twiddle_addr_14), .addr_15(twiddle_addr_15),
+    .twiddle_out_0(twiddle_data_0), .twiddle_out_1(twiddle_data_1), .twiddle_out_2(twiddle_data_2), .twiddle_out_3(twiddle_data_3),
+    .twiddle_out_4(twiddle_data_4), .twiddle_out_5(twiddle_data_5), .twiddle_out_6(twiddle_data_6), .twiddle_out_7(twiddle_data_7),
+    .twiddle_out_8(twiddle_data_8), .twiddle_out_9(twiddle_data_9), .twiddle_out_10(twiddle_data_10), .twiddle_out_11(twiddle_data_11),
+    .twiddle_out_12(twiddle_data_12), .twiddle_out_13(twiddle_data_13), .twiddle_out_14(twiddle_data_14), .twiddle_out_15(twiddle_data_15)
+);
+
 // ===== waveform dumpping ===== //
 initial begin
     if(`FLAG_DUMPWV)begin
@@ -1008,6 +1044,18 @@ initial begin
     clk = 0;
     rst_n = 0;
     enable = 0;
+    
+    sram_a.clear_sram(0);
+    sram_b.clear_sram(0);
+    sram_i.clear_sram(0);
+    sram_u.clear_sram(0);
+    sram_w.clear_sram(0);
+    sram_x.clear_sram(0);
+    sram_e.clear_sram(0);
+    sram_t.clear_sram(0);
+    sram_c.clear_sram(0);
+    sram_g.clear_sram(0);
+    sram_z.clear_sram(0);
     
     #(`CYCLE * 5);
     

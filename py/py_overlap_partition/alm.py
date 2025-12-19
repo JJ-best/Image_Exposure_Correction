@@ -342,7 +342,7 @@ def updateT_dat(
     Tnd = Tn / Td # sramC.dat
     Tout = ifft2_iterative_radix2(Tnd) # sramT_2.dat
     Tout_real = np.real(Tout)
-    return Tout_real, delX, Tnum, Tn, Td, Tnd, Tout, delG
+    return Tout_real, delX, Tnum, Tn, Td, Tnd, Tout, delG, Ti
 
 def load_tdenom_hex(path: str, m: int, n: int) -> np.ndarray:
     """
@@ -414,7 +414,7 @@ def lime_trial(
     while k < k0:
         U = Z / mu                     # sramU_1.dat, Z / μ
         A = alpha * W / mu             # sramW.dat, Threshold matrix of each element
-        T, delX, Tnum, Tn, Td, Tnd, Tout, delG = updateT_dat(Ti, mu, G, U) # T(t+1) = ...
+        T, delX, Tnum, Tn, Td, Tnd, Tout, delG, Ti = updateT_dat(Ti, mu, G, U) # T(t+1) = ...
         delT = multiplyd(T)            # sramX_2.dat, ∇T
         G = shrinkage(A, delT + U)     # sramG.dat, G(t+1) = Shrinkage(∇T + Z / μ)
         B = delT - G                   # ∇T - G
@@ -438,7 +438,8 @@ def lime_trial(
                     "sramX_2": delT,
                     "sramG_1": G,
                     "sramU_2": Q,
-                    "sramZ_1": Z
+                    "sramZ_1": Z,
+                    "sramB_1": Ti
                 },
             )
         # print(f"===== iteration {k} ===== ")
