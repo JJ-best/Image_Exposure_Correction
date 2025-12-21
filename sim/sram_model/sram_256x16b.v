@@ -645,5 +645,18 @@ begin
 end
 endtask
 
+task clear_sram;
+    input [BW_PER_ADDR-1:0] value;
+    integer addr;
+begin
+    for (addr = 0; addr < MEM_DEPTH; addr = addr + 1) begin
+        bank0[addr] = value;
+        bank1[addr] = value;
+        bank2[addr] = value;
+        bank3[addr] = value;
+    end
+end
+endtask
+
 endmodule
 

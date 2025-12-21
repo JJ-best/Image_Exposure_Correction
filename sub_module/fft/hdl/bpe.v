@@ -80,8 +80,8 @@ module bpe
 );
 //==================================================================================//
 
-localparam FFT_MUL_LATENCY = 21;
-localparam FP_ADD_LATENCY  = 5 ;
+localparam FFT_MUL_LATENCY = 21 + 1;
+localparam FP_ADD_LATENCY  = 5 + 1;
 
 localparam FFT_LATENCY     = 28;
 localparam iFFT_LATENCY    = 28;

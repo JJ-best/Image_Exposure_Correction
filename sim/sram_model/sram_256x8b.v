@@ -81,10 +81,10 @@ module sram_256x8b #(
 
 //-------------------- task --------------------
 // Task to load data directly into memory 
-// Initialization each layer, supports both BMP and .dat files
+// Initialization each layer, mainly init layer
 task load_dat;
     input [7:0] PAT;        // "lime1" or "lime2"
-    input [31:0] LAYER;     // 1~17
+    input [31:0] LAYER;     // 0 for zero-init, 1~5 for data
     input [31:0] PATCH_I;   // patch row index (0-27)
     input [31:0] PATCH_J;   // patch column index (0-27)
 
@@ -97,199 +97,130 @@ task load_dat;
     reg [7:0] patch_i_str [0:1];
     reg [7:0] patch_j_str [0:1];
     real pixel_val_fp64;  // For fp64 conversion (used in layer 2-5)
-    reg [63:0] data_byte;  // For .dat file reading
     
+    // ----- debug signal ----- //
+    real v0, v1, v2, v3;
 begin
-    // Format patch indices with leading zeros (00-99)
-    patch_i_str[0] = ((PATCH_I / 10) % 10) + "0";
-    patch_i_str[1] = (PATCH_I % 10) + "0";
-    patch_j_str[0] = ((PATCH_J / 10) % 10) + "0";
-    patch_j_str[1] = (PATCH_J % 10) + "0";
-    
-    // Build file path directly based on LAYER and PAT to avoid string padding issues
-    if(PAT == "1") begin
-        case(LAYER)
-            1 : $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime1/input_image/patch_%c%c_%c%c_under.bmp",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            2 : $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime1/initial_illum_map/patch_%c%c_%c%c_under.bmp",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
+    if (LAYER == 0) begin
+        for (addr = 0; addr < MEM_DEPTH; addr = addr + 1) begin
+            // bank0[addr] = {64'h3ff0000000000000}; // 1
+            // bank1[addr] = {64'h4000000000000000}; // 2 
+            // bank2[addr] = {64'h4008000000000000}; // 3
+            // bank3[addr] = {64'h4010000000000000}; // 4
+            v0 = (addr + 1) / 256.0;          // 0.00390625 .. 1.0
+            v1 = (addr + 1) / 512.0;          // 0.001953125 .. 0.5
+            v2 = (addr + 1) / 1024.0;         // 0.0009765625 .. 0.25
+            v3 = (addr + 1) / 2048.0;         // 0.00048828125 .. 0.125
 
-            3 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/iter_000/sramU_1.dat",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            4 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/iter_000/sramW_1.dat",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            5 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/iter_000/sramX_1.dat",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            6 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/iter_000/sramE_1.dat",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            7 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/iter_000/sramT_1.dat",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            8 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/iter_000/sramE_2.dat",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            9 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/iter_000/sramC_1.dat",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            10: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/iter_000/sramT_2.dat",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            11: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/iter_000/sramX_2.dat",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            12: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/iter_000/sramG_1.dat",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            13: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/iter_000/sramU_2.dat",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            14: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/iter_000/sramZ_1.dat",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            
-            15: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime1/refined_illum_map/patch_%c%c_%c%c_under.bmp",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            16: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime1/gamma_illum_map/patch_%c%c_%c%c_under.bmp",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            17: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime1/enhanced_image/patch_%c%c_%c%c_under.bmp",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            default: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime1/unknown_layer/patch_%c%c_%c%c_under.bmp",
-                              patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-        endcase
-    end else begin  // PAT == "2"
-        case(LAYER)
-            1 : $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime2/input_image/patch_%c%c_%c%c_over.bmp",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            2 : $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime2/initial_illum_map/patch_%c%c_%c%c_over.bmp",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            
-            3 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/iter_000/sramU_1.dat",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            4 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/iter_000/sramW_1.dat",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            5 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/iter_000/sramX_1.dat",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            6 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/iter_000/sramE_1.dat",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            7 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/iter_000/sramT_1.dat",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            8 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/iter_000/sramE_2.dat",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            9 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/iter_000/sramC_1.dat",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            10: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/iter_000/sramT_2.dat",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            11: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/iter_000/sramX_2.dat",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            12: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/iter_000/sramG_1.dat",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            13: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/iter_000/sramU_2.dat",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            14: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/iter_000/sramZ_1.dat",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-
-
-            15: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime2/refined_illum_map/patch_%c%c_%c%c_over.bmp",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            16: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime2/gamma_illum_map/patch_%c%c_%c%c_over.bmp",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            17: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime2/enhanced_image/patch_%c%c_%c%c_over.bmp",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            default: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime2/unknown_layer/patch_%c%c_%c%c_over.bmp",
-                              patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-        endcase
-    end
-    
-    $display("Loading %s", bmp_filepath);
-
-    file_in = $fopen(bmp_filepath, "rb");
-    if(file_in == 0) begin
-        $display("Error: Cannot open %s", bmp_filepath);
-        disable load_dat;
-    end
-
-    // Check if file is .bmp or .dat based on LAYER
-    if(LAYER <= 2 || (LAYER >= 15 && LAYER <= 17)) begin
-        // BMP file: Skip header and convert
-    if(LAYER == 1) begin
-        for(i = 0; i < 54; i = i + 1)
-            r = $fgetc(file_in);
+            bank0[addr] = $realtobits(v0);
+            bank1[addr] = $realtobits(v1);
+            bank2[addr] = $realtobits(v2);
+            bank3[addr] = $realtobits(v3);
+            // just for debug, actually it need to init to all zero
+        end
+        $display("SRAM zeroed via load_dat (PAT=%c, LAYER=0)", PAT);
     end else begin
-        for(i = 0; i < 1078; i = i + 1)
-            r = $fgetc(file_in);
-    end
-    
-    // addr : 0~255
-    addr = 0;
-    for(row = 31; row >= 0; row = row - 1) begin  // BMP bottom-up
-        for(col = 0; col < 32; col = col + 4) begin  // 4 pixel -> 4 bank
-            // Convert each uint8 (0-255) to fp64 (0.0-1.0) using IEEE 754 double precision format
-            // pixel0 -> bank0
-            r = $fgetc(file_in);
-            pixel_val_fp64 = r / 255.0;  // Convert uint8 to float64 (0.0-1.0)
-            bank0[addr] = $realtobits(pixel_val_fp64);  // Convert to IEEE 754 double (64-bit)
+        // Format patch indices with leading zeros (00-99)
+        patch_i_str[0] = ((PATCH_I / 10) % 10) + "0";
+        patch_i_str[1] = (PATCH_I % 10) + "0";
+        patch_j_str[0] = ((PATCH_J / 10) % 10) + "0";
+        patch_j_str[1] = (PATCH_J % 10) + "0";
+        
+        // Build file path directly based on LAYER and PAT to avoid string padding issues
+        if(PAT == "1") begin
+            case(LAYER)
+                1: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime1/input_image/patch_%c%c_%c%c_under.bmp",
+                            patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
+                2: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime1/initial_illum_map/patch_%c%c_%c%c_under.bmp",
+                            patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
+                3: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime1/refined_illum_map/patch_%c%c_%c%c_under.bmp",
+                            patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
+                4: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime1/gamma_illum_map/patch_%c%c_%c%c_under.bmp",
+                            patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
+                5: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime1/enhanced_image/patch_%c%c_%c%c_under.bmp",
+                            patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
+                default: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime1/unknown_layer/patch_%c%c_%c%c_under.bmp",
+                                  patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
+            endcase
+        end else begin  // PAT == "2"
+            case(LAYER)
+                1: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime2/input_image/patch_%c%c_%c%c_over.bmp",
+                            patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
+                2: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime2/initial_illum_map/patch_%c%c_%c%c_over.bmp",
+                            patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
+                3: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime2/refined_illum_map/patch_%c%c_%c%c_over.bmp",
+                            patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
+                4: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime2/gamma_illum_map/patch_%c%c_%c%c_over.bmp",
+                            patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
+                5: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime2/enhanced_image/patch_%c%c_%c%c_over.bmp",
+                            patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
+                default: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime2/unknown_layer/patch_%c%c_%c%c_over.bmp",
+                                  patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
+            endcase
+        end
+        
+        $display("Loading %s", bmp_filepath);
 
-            // pixel1 -> bank1
-            r = $fgetc(file_in);
-            pixel_val_fp64 = r / 255.0;  
-            bank1[addr] = $realtobits(pixel_val_fp64);  
+        file_in = $fopen(bmp_filepath, "rb");
+        if(file_in == 0) begin
+            $display("Error: Cannot open %s", bmp_filepath);
+            disable load_dat;
+        end
 
-            // pixel2 -> bank2
-            r = $fgetc(file_in);
-            pixel_val_fp64 = r / 255.0;  
-            bank2[addr] = $realtobits(pixel_val_fp64);  
+        // Skip BMP header 
+        if(LAYER == 1) begin
+            for(i = 0; i < 54; i = i + 1)
+                r = $fgetc(file_in);
+        end else begin
+            for(i = 0; i < 1078; i = i + 1)
+                r = $fgetc(file_in);
+        end
+        
+        // addr : 0~255
+        addr = 0;
+        for(row = 31; row >= 0; row = row - 1) begin  // BMP bottom-up
+            for(col = 0; col < 32; col = col + 4) begin  // 4 pixel -> 4 bank
+                // Convert each uint8 (0-255) to fp64 (0.0-1.0) using IEEE 754 double precision format
+                // pixel0 -> bank0
+                r = $fgetc(file_in);
+                pixel_val_fp64 = r / 255.0;  // Convert uint8 to float64 (0.0-1.0)
+                bank0[addr] = $realtobits(pixel_val_fp64);  // Convert to IEEE 754 double (64-bit)
 
-            // pixel3 -> bank3
-            r = $fgetc(file_in);
-            pixel_val_fp64 = r / 255.0;  
-            bank3[addr] = $realtobits(pixel_val_fp64);  
+                // pixel1 -> bank1
+                r = $fgetc(file_in);
+                pixel_val_fp64 = r / 255.0;  
+                bank1[addr] = $realtobits(pixel_val_fp64);  
+
+                // pixel2 -> bank2
+                r = $fgetc(file_in);
+                pixel_val_fp64 = r / 255.0;  
+                bank2[addr] = $realtobits(pixel_val_fp64);  
+
+                // pixel3 -> bank3
+                r = $fgetc(file_in);
+                pixel_val_fp64 = r / 255.0;  
+                bank3[addr] = $realtobits(pixel_val_fp64);  
 
                 addr = addr + 1;
             end
         end
-    end else begin
-        // .dat file: Read binary data directly (64-bit fp64 per address)
-        // Each address stores 64-bit (8 bytes) of data
-        addr = 0;
-        while(addr < MEM_DEPTH) begin
-            // Read 8 bytes for bank0
-            for(i = 0; i < 8; i = i + 1) begin
-                data_byte = $fgetc(file_in);
-                if($feof(file_in)) begin
-                    $display("Warning: End of file reached at address %d", addr);
-                    disable load_dat;
-                end
-                bank0[addr][i*8 +: 8] = data_byte[7:0];
-            end
-            
-            // Read 8 bytes for bank1
-            for(i = 0; i < 8; i = i + 1) begin
-                data_byte = $fgetc(file_in);
-                if($feof(file_in)) begin
-                    $display("Warning: End of file reached at address %d", addr);
-                    disable load_dat;
-                end
-                bank1[addr][i*8 +: 8] = data_byte[7:0];
-            end
-            
-            // Read 8 bytes for bank2
-            for(i = 0; i < 8; i = i + 1) begin
-                data_byte = $fgetc(file_in);
-                if($feof(file_in)) begin
-                    $display("Warning: End of file reached at address %d", addr);
-                    disable load_dat;
-                end
-                bank2[addr][i*8 +: 8] = data_byte[7:0];
-            end
-            
-            // Read 8 bytes for bank3
-            for(i = 0; i < 8; i = i + 1) begin
-                data_byte = $fgetc(file_in);
-                if($feof(file_in)) begin
-                    $display("Warning: End of file reached at address %d", addr);
-                    disable load_dat;
-                end
-                bank3[addr][i*8 +: 8] = data_byte[7:0];
-            end
 
-            addr = addr + 1;
-        end
+        $fclose(file_in);
+        $display("Finished loading %s into 4 banks", bmp_filepath);
     end
+end
+endtask
 
-    $fclose(file_in);
-    $display("Finished loading %s into 4 banks", bmp_filepath);
+task clear_sram;
+    input [BW_PER_ADDR-1:0] value;
+    integer addr;
+begin
+    for (addr = 0; addr < MEM_DEPTH; addr = addr + 1) begin
+        bank0[addr] = value;
+        bank1[addr] = value;
+        bank2[addr] = value;
+        bank3[addr] = value;
+    end
 end
 endtask
 
