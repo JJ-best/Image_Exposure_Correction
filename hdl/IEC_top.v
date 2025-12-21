@@ -511,7 +511,8 @@ localparam FFT_D_t   = 7'd19;
 localparam PRE_iFFT  = 7'd20;
 localparam PRE_iFFT_t= 7'd21;
 localparam iFFT      = 7'd22;
-localparam DONE      = 7'd23;
+localparam iFFT_t    = 7'd23;
+localparam DONE      = 7'd24;
 
 always @(*) begin
     case (top_state)
@@ -637,9 +638,16 @@ always @(*) begin
         end
         PRE_iFFT_t: begin
             if (sram_c_addr == 6'd63 && sram_wen_c15 == 1'b0) begin
-                top_state_n = DONE;
+                top_state_n = iFFT;
             end else begin
                 top_state_n = PRE_iFFT_t;
+            end
+        end
+        iFFT: begin
+            if (fft_done) begin
+                top_state_n = DONE;
+            end else begin
+                top_state_n = iFFT;
             end
         end
         DONE: begin
@@ -1736,29 +1744,6 @@ always @(*) begin
         end
         FFT: begin
             sram_e_addr_n = 0;
-            sram_addr_e0  = sram_e_addr; sram_addr_e1  = sram_e_addr;
-            sram_addr_e2  = sram_e_addr; sram_addr_e3  = sram_e_addr;
-
-            sram_addr_e4  = sram_e_addr; sram_addr_e5  = sram_e_addr;
-            sram_addr_e6  = sram_e_addr; sram_addr_e7  = sram_e_addr;
-
-            sram_addr_e8  = sram_e_addr; sram_addr_e9  = sram_e_addr;
-            sram_addr_e10 = sram_e_addr; sram_addr_e11 = sram_e_addr;
-
-            sram_addr_e12 = sram_e_addr; sram_addr_e13 = sram_e_addr;
-            sram_addr_e14 = sram_e_addr; sram_addr_e15 = sram_e_addr;
-
-            sram_wdata_e0  = {add_result[4], 64'b0}; sram_wdata_e1  = {add_result[5], 64'b0};
-            sram_wdata_e2  = {add_result[6], 64'b0}; sram_wdata_e3  = {add_result[7], 64'b0};
-
-            sram_wdata_e4  = {add_result[4], 64'b0}; sram_wdata_e5  = {add_result[5], 64'b0};
-            sram_wdata_e6  = {add_result[6], 64'b0}; sram_wdata_e7  = {add_result[7], 64'b0};
-
-            sram_wdata_e8  = {add_result[4], 64'b0}; sram_wdata_e9  = {add_result[5], 64'b0};
-            sram_wdata_e10 = {add_result[6], 64'b0}; sram_wdata_e11 = {add_result[7], 64'b0};
-
-            sram_wdata_e12 = {add_result[4], 64'b0}; sram_wdata_e13 = {add_result[5], 64'b0};
-            sram_wdata_e14 = {add_result[6], 64'b0}; sram_wdata_e15 = {add_result[7], 64'b0};
 
             // addr from DUT
             sram_addr_e0  = sramA_addr_0_dut;  sram_addr_e1  = sramA_addr_1_dut;
@@ -1900,7 +1885,7 @@ always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
         fft_start_flag <= 0;
         fft_start_flag_d1 <= 0;
-    end else if (top_state == FFT) begin
+    end else if (top_state == FFT || top_state == iFFT) begin
         fft_start_flag <= 1;
         fft_start_flag_d1 <= fft_start_flag;
     end else begin
@@ -1919,6 +1904,46 @@ always @(*) begin
         fft_mode = 0;
     end
 end
+
+reg [(2*pFP_WIDTH-1):0] sramA_rdata_0, sramA_rdata_1, sramA_rdata_2, sramA_rdata_3;
+reg [(2*pFP_WIDTH-1):0] sramA_rdata_4, sramA_rdata_5, sramA_rdata_6, sramA_rdata_7;
+reg [(2*pFP_WIDTH-1):0] sramA_rdata_8, sramA_rdata_9, sramA_rdata_10, sramA_rdata_11;
+reg [(2*pFP_WIDTH-1):0] sramA_rdata_12, sramA_rdata_13, sramA_rdata_14, sramA_rdata_15;
+always @(*) begin
+    case (top_state)
+        FFT: begin
+            sramA_rdata_0  = sram_rdata_e0; sramA_rdata_1  = sram_rdata_e1;
+            sramA_rdata_2  = sram_rdata_e2; sramA_rdata_3  = sram_rdata_e3;
+            sramA_rdata_4  = sram_rdata_e4; sramA_rdata_5  = sram_rdata_e5;
+            sramA_rdata_6  = sram_rdata_e6; sramA_rdata_7  = sram_rdata_e7;
+            sramA_rdata_8  = sram_rdata_e8; sramA_rdata_9  = sram_rdata_e9;
+            sramA_rdata_10 = sram_rdata_e10; sramA_rdata_11 = sram_rdata_e11;
+            sramA_rdata_12 = sram_rdata_e12; sramA_rdata_13 = sram_rdata_e13;
+            sramA_rdata_14 = sram_rdata_e14; sramA_rdata_15 = sram_rdata_e15;
+        end 
+        iFFT: begin
+            sramA_rdata_0  = sram_rdata_c0; sramA_rdata_1  = sram_rdata_c1;
+            sramA_rdata_2  = sram_rdata_c2; sramA_rdata_3  = sram_rdata_c3;
+            sramA_rdata_4  = sram_rdata_c4; sramA_rdata_5  = sram_rdata_c5;
+            sramA_rdata_6  = sram_rdata_c6; sramA_rdata_7  = sram_rdata_c7;
+            sramA_rdata_8  = sram_rdata_c8; sramA_rdata_9  = sram_rdata_c9;
+            sramA_rdata_10 = sram_rdata_c10; sramA_rdata_11 = sram_rdata_c11;
+            sramA_rdata_12 = sram_rdata_c12; sramA_rdata_13 = sram_rdata_c13;
+            sramA_rdata_14 = sram_rdata_c14; sramA_rdata_15 = sram_rdata_c15;
+        end
+        default: begin
+            sramA_rdata_0  = 0; sramA_rdata_1  = 0;
+            sramA_rdata_2  = 0; sramA_rdata_3  = 0;
+            sramA_rdata_4  = 0; sramA_rdata_5  = 0;
+            sramA_rdata_6  = 0; sramA_rdata_7  = 0;
+            sramA_rdata_8  = 0; sramA_rdata_9  = 0;
+            sramA_rdata_10 = 0; sramA_rdata_11 = 0;
+            sramA_rdata_12 = 0; sramA_rdata_13 = 0;
+            sramA_rdata_14 = 0; sramA_rdata_15 = 0;
+        end
+    endcase
+end
+
 
 fft u_fft (
     .clk(clk),
@@ -1940,11 +1965,11 @@ fft u_fft (
     .sramA_addr_8(sramA_addr_8_dut), .sramA_addr_9(sramA_addr_9_dut), .sramA_addr_10(sramA_addr_10_dut), .sramA_addr_11(sramA_addr_11_dut),
     .sramA_addr_12(sramA_addr_12_dut), .sramA_addr_13(sramA_addr_13_dut), .sramA_addr_14(sramA_addr_14_dut), .sramA_addr_15(sramA_addr_15_dut),
 
-    // ----- input (SRAM-E)
-    .sramA_rdata_0 (sram_rdata_e0 ), .sramA_rdata_1 (sram_rdata_e1 ), .sramA_rdata_2 (sram_rdata_e2 ), .sramA_rdata_3 (sram_rdata_e3 ),
-    .sramA_rdata_4 (sram_rdata_e4 ), .sramA_rdata_5 (sram_rdata_e5 ), .sramA_rdata_6 (sram_rdata_e6 ), .sramA_rdata_7 (sram_rdata_e7 ),
-    .sramA_rdata_8 (sram_rdata_e8 ), .sramA_rdata_9 (sram_rdata_e9 ), .sramA_rdata_10(sram_rdata_e10), .sramA_rdata_11(sram_rdata_e11),
-    .sramA_rdata_12(sram_rdata_e12), .sramA_rdata_13(sram_rdata_e13), .sramA_rdata_14(sram_rdata_e14), .sramA_rdata_15(sram_rdata_e15),
+    // ----- input (SRAM-E/C muxed)
+    .sramA_rdata_0 (sramA_rdata_0 ), .sramA_rdata_1 (sramA_rdata_1 ), .sramA_rdata_2 (sramA_rdata_2 ), .sramA_rdata_3 (sramA_rdata_3 ),
+    .sramA_rdata_4 (sramA_rdata_4 ), .sramA_rdata_5 (sramA_rdata_5 ), .sramA_rdata_6 (sramA_rdata_6 ), .sramA_rdata_7 (sramA_rdata_7 ),
+    .sramA_rdata_8 (sramA_rdata_8 ), .sramA_rdata_9 (sramA_rdata_9 ), .sramA_rdata_10(sramA_rdata_10), .sramA_rdata_11(sramA_rdata_11),
+    .sramA_rdata_12(sramA_rdata_12), .sramA_rdata_13(sramA_rdata_13), .sramA_rdata_14(sramA_rdata_14), .sramA_rdata_15(sramA_rdata_15),
 
     // ----- output (SRAM-T)
     // .sramB_csb(sramB_csb_dut),
@@ -2077,7 +2102,7 @@ fft u_fft (
 // ----- SRAM T control ----- //
 always @(*) begin
     case (top_state)
-        FFT: begin
+        FFT, iFFT: begin
             // write enable (low active)
             sram_wen_t0  = sramB_wsb_0_dut;   sram_wen_t1  = sramB_wsb_1_dut;   sram_wen_t2  = sramB_wsb_2_dut;   sram_wen_t3  = sramB_wsb_3_dut;
             sram_wen_t4  = sramB_wsb_4_dut;   sram_wen_t5  = sramB_wsb_5_dut;   sram_wen_t6  = sramB_wsb_6_dut;   sram_wen_t7  = sramB_wsb_7_dut;
@@ -2111,6 +2136,25 @@ always @(*) begin
             sram_wdata_t4  = 0;  sram_wdata_t5  = 0;  sram_wdata_t6  = 0;  sram_wdata_t7  = 0;
             sram_wdata_t8  = 0;  sram_wdata_t9  = 0;  sram_wdata_t10 = 0;  sram_wdata_t11 = 0;
             sram_wdata_t12 = 0;  sram_wdata_t13 = 0;  sram_wdata_t14 = 0;  sram_wdata_t15 = 0;
+        end
+        iFFT: begin
+            // write enable (low active)
+            sram_wen_t0  = sramB_wsb_0_dut;   sram_wen_t1  = sramB_wsb_1_dut;   sram_wen_t2  = sramB_wsb_2_dut;   sram_wen_t3  = sramB_wsb_3_dut;
+            sram_wen_t4  = sramB_wsb_4_dut;   sram_wen_t5  = sramB_wsb_5_dut;   sram_wen_t6  = sramB_wsb_6_dut;   sram_wen_t7  = sramB_wsb_7_dut;
+            sram_wen_t8  = sramB_wsb_8_dut;   sram_wen_t9  = sramB_wsb_9_dut;   sram_wen_t10 = sramB_wsb_10_dut;  sram_wen_t11 = sramB_wsb_11_dut;
+            sram_wen_t12 = sramB_wsb_12_dut;  sram_wen_t13 = sramB_wsb_13_dut;  sram_wen_t14 = sramB_wsb_14_dut;  sram_wen_t15 = sramB_wsb_15_dut;
+
+            // address
+            sram_addr_t0  = sramB_addr_0_dut;   sram_addr_t1  = sramB_addr_1_dut;   sram_addr_t2  = sramB_addr_2_dut;   sram_addr_t3  = sramB_addr_3_dut;
+            sram_addr_t4  = sramB_addr_4_dut;   sram_addr_t5  = sramB_addr_5_dut;   sram_addr_t6  = sramB_addr_6_dut;   sram_addr_t7  = sramB_addr_7_dut;
+            sram_addr_t8  = sramB_addr_8_dut;   sram_addr_t9  = sramB_addr_9_dut;   sram_addr_t10 = sramB_addr_10_dut;  sram_addr_t11 = sramB_addr_11_dut;
+            sram_addr_t12 = sramB_addr_12_dut;  sram_addr_t13 = sramB_addr_13_dut;  sram_addr_t14 = sramB_addr_14_dut;  sram_addr_t15 = sramB_addr_15_dut;
+
+            // write data
+            sram_wdata_t0  = sramB_wdata_0_dut;   sram_wdata_t1  = sramB_wdata_1_dut;   sram_wdata_t2  = sramB_wdata_2_dut;   sram_wdata_t3  = sramB_wdata_3_dut;
+            sram_wdata_t4  = sramB_wdata_4_dut;   sram_wdata_t5  = sramB_wdata_5_dut;   sram_wdata_t6  = sramB_wdata_6_dut;   sram_wdata_t7  = sramB_wdata_7_dut;
+            sram_wdata_t8  = sramB_wdata_8_dut;   sram_wdata_t9  = sramB_wdata_9_dut;   sram_wdata_t10 = sramB_wdata_10_dut;  sram_wdata_t11 = sramB_wdata_11_dut;
+            sram_wdata_t12 = sramB_wdata_12_dut;  sram_wdata_t13 = sramB_wdata_13_dut;  sram_wdata_t14 = sramB_wdata_14_dut;  sram_wdata_t15 = sramB_wdata_15_dut;
         end
         default: begin
             // idle: disable write
@@ -2302,6 +2346,38 @@ always @(*) begin
                 sram_wen_c12 = 1'b1;  sram_wen_c13 = 1'b1;  sram_wen_c14 = 1'b1;  sram_wen_c15 = 1'b1;
             end
         end
+        iFFT: begin
+            sram_c_addr_n = 0;
+            // addr from DUT
+            sram_addr_c0  = sramA_addr_0_dut;  sram_addr_c1  = sramA_addr_1_dut;
+            sram_addr_c2  = sramA_addr_2_dut;  sram_addr_c3  = sramA_addr_3_dut;
+            sram_addr_c4  = sramA_addr_4_dut;  sram_addr_c5  = sramA_addr_5_dut;
+            sram_addr_c6  = sramA_addr_6_dut;  sram_addr_c7  = sramA_addr_7_dut;
+            sram_addr_c8  = sramA_addr_8_dut;  sram_addr_c9  = sramA_addr_9_dut;
+            sram_addr_c10 = sramA_addr_10_dut; sram_addr_c11 = sramA_addr_11_dut;
+            sram_addr_c12 = sramA_addr_12_dut; sram_addr_c13 = sramA_addr_13_dut;
+            sram_addr_c14 = sramA_addr_14_dut; sram_addr_c15 = sramA_addr_15_dut;
+
+            // wdata from DUT
+            sram_wdata_c0  = sramA_wdata_0_dut;  sram_wdata_c1  = sramA_wdata_1_dut;
+            sram_wdata_c2  = sramA_wdata_2_dut;  sram_wdata_c3  = sramA_wdata_3_dut;
+            sram_wdata_c4  = sramA_wdata_4_dut;  sram_wdata_c5  = sramA_wdata_5_dut;
+            sram_wdata_c6  = sramA_wdata_6_dut;  sram_wdata_c7  = sramA_wdata_7_dut;
+            sram_wdata_c8  = sramA_wdata_8_dut;  sram_wdata_c9  = sramA_wdata_9_dut;
+            sram_wdata_c10 = sramA_wdata_10_dut; sram_wdata_c11 = sramA_wdata_11_dut;
+            sram_wdata_c12 = sramA_wdata_12_dut; sram_wdata_c13 = sramA_wdata_13_dut;
+            sram_wdata_c14 = sramA_wdata_14_dut; sram_wdata_c15 = sramA_wdata_15_dut;
+
+            // wen from DUT
+            sram_wen_c0  = sramA_wsb_0_dut;  sram_wen_c1  = sramA_wsb_1_dut;
+            sram_wen_c2  = sramA_wsb_2_dut;  sram_wen_c3  = sramA_wsb_3_dut;
+            sram_wen_c4  = sramA_wsb_4_dut;  sram_wen_c5  = sramA_wsb_5_dut;
+            sram_wen_c6  = sramA_wsb_6_dut;  sram_wen_c7  = sramA_wsb_7_dut;
+            sram_wen_c8  = sramA_wsb_8_dut;  sram_wen_c9  = sramA_wsb_9_dut;
+            sram_wen_c10 = sramA_wsb_10_dut; sram_wen_c11 = sramA_wsb_11_dut;
+            sram_wen_c12 = sramA_wsb_12_dut; sram_wen_c13 = sramA_wsb_13_dut;
+            sram_wen_c14 = sramA_wsb_14_dut; sram_wen_c15 = sramA_wsb_15_dut;
+        end
         default: begin
             sram_c_addr_n = 0;
 
@@ -2416,7 +2492,7 @@ always @(posedge clk) begin
             mul1_mode <= 2'b10; 
             mul1_in_valid <= add_out_valid[2];
         end
-        FFT: begin
+        FFT, iFFT: begin
             mul0_ina      <= bpe0_mul_in_A;
             mul0_inb      <= bpe0_mul_in_B;
             mul0_mode     <= bpe0_mul_mode;
@@ -2580,7 +2656,7 @@ always @(posedge clk) begin
             add_in_valid[6] <= mul1_out_valid;
             add_in_valid[7] <= mul1_out_valid;
         end
-        FFT: begin
+        FFT, iFFT: begin
             // ===== BPE0 (4 fp_add) -> add[0..3] =====
             add_ina[0]      <= bpe0_fp_add_01_in_A;
             add_inb[0]      <= bpe0_fp_add_01_in_B;

@@ -4,7 +4,7 @@ module test_fft();
 
     // Parameters
     parameter BW_PER_ADDR = 128;  // 64-bit real + 64-bit imag
-    parameter ADDR_WIDTH = 8;     // 256 addresses per bank
+    parameter ADDR_WIDTH = 6;     // 256 addresses per bank
     parameter TWIDDLE_ADDR_WIDTH = 6;  // 31 twiddle factors
 
     // Clock and reset
@@ -121,6 +121,53 @@ module test_fft();
     wire         bpe1_fp_add_12_in_valid;
     wire [63:0]  bpe1_fp_add_12_result;
     wire         bpe1_fp_add_12_out_valid;
+
+
+    // bpe input FF
+    // ===== BPE0 mul pipeline FF =====
+    reg [127:0] bpe0_mul_in_A_q;
+    reg [127:0] bpe0_mul_in_B_q;
+    reg [1:0]   bpe0_mul_mode_q;
+    reg         bpe0_mul_in_valid_q;
+    // ===== BPE0 fp_add pipeline FF =====
+    reg [63:0] bpe0_fp_add_01_in_A_q;
+    reg [63:0] bpe0_fp_add_01_in_B_q;
+    reg        bpe0_fp_add_01_in_valid_q;
+
+    reg [63:0] bpe0_fp_add_02_in_A_q;
+    reg [63:0] bpe0_fp_add_02_in_B_q;
+    reg        bpe0_fp_add_02_in_valid_q;
+
+    reg [63:0] bpe0_fp_add_11_in_A_q;
+    reg [63:0] bpe0_fp_add_11_in_B_q;
+    reg        bpe0_fp_add_11_in_valid_q;
+
+    reg [63:0] bpe0_fp_add_12_in_A_q;
+    reg [63:0] bpe0_fp_add_12_in_B_q;
+    reg        bpe0_fp_add_12_in_valid_q;
+    // ===== BPE1 mul pipeline FF =====
+    reg [127:0] bpe1_mul_in_A_q;
+    reg [127:0] bpe1_mul_in_B_q;
+    reg [1:0]   bpe1_mul_mode_q;
+    reg         bpe1_mul_in_valid_q;
+    // ===== BPE1 fp_add pipeline FF =====
+    reg [63:0] bpe1_fp_add_01_in_A_q;
+    reg [63:0] bpe1_fp_add_01_in_B_q;
+    reg        bpe1_fp_add_01_in_valid_q;
+
+    reg [63:0] bpe1_fp_add_02_in_A_q;
+    reg [63:0] bpe1_fp_add_02_in_B_q;
+    reg        bpe1_fp_add_02_in_valid_q;
+
+    reg [63:0] bpe1_fp_add_11_in_A_q;
+    reg [63:0] bpe1_fp_add_11_in_B_q;
+    reg        bpe1_fp_add_11_in_valid_q;
+
+    reg [63:0] bpe1_fp_add_12_in_A_q;
+    reg [63:0] bpe1_fp_add_12_in_B_q;
+    reg        bpe1_fp_add_12_in_valid_q;
+
+
     // Twiddle ROM address signals from FFT module (16 banks)
     wire [0:0] twiddle_addr_0_dut, twiddle_addr_1_dut, twiddle_addr_2_dut, twiddle_addr_3_dut,
                twiddle_addr_4_dut, twiddle_addr_5_dut, twiddle_addr_6_dut, twiddle_addr_7_dut,
@@ -486,113 +533,213 @@ module test_fft();
         .bpe1_fp_add_12_out_valid(bpe1_fp_add_12_out_valid)
     );
 
+    // ===== FFT -> BPE pipeline FF =====
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        // ---------- BPE0 mul ----------
+        bpe0_mul_in_A_q       <= 128'd0;
+        bpe0_mul_in_B_q       <= 128'd0;
+        bpe0_mul_mode_q       <= 2'd0;
+        bpe0_mul_in_valid_q   <= 1'b0;
+
+        // ---------- BPE0 fp_add ----------
+        bpe0_fp_add_01_in_A_q     <= 64'd0;
+        bpe0_fp_add_01_in_B_q     <= 64'd0;
+        bpe0_fp_add_01_in_valid_q <= 1'b0;
+
+        bpe0_fp_add_02_in_A_q     <= 64'd0;
+        bpe0_fp_add_02_in_B_q     <= 64'd0;
+        bpe0_fp_add_02_in_valid_q <= 1'b0;
+
+        bpe0_fp_add_11_in_A_q     <= 64'd0;
+        bpe0_fp_add_11_in_B_q     <= 64'd0;
+        bpe0_fp_add_11_in_valid_q <= 1'b0;
+
+        bpe0_fp_add_12_in_A_q     <= 64'd0;
+        bpe0_fp_add_12_in_B_q     <= 64'd0;
+        bpe0_fp_add_12_in_valid_q <= 1'b0;
+
+        // ---------- BPE1 mul ----------
+        bpe1_mul_in_A_q       <= 128'd0;
+        bpe1_mul_in_B_q       <= 128'd0;
+        bpe1_mul_mode_q       <= 2'd0;
+        bpe1_mul_in_valid_q   <= 1'b0;
+
+        // ---------- BPE1 fp_add ----------
+        bpe1_fp_add_01_in_A_q     <= 64'd0;
+        bpe1_fp_add_01_in_B_q     <= 64'd0;
+        bpe1_fp_add_01_in_valid_q <= 1'b0;
+
+        bpe1_fp_add_02_in_A_q     <= 64'd0;
+        bpe1_fp_add_02_in_B_q     <= 64'd0;
+        bpe1_fp_add_02_in_valid_q <= 1'b0;
+
+        bpe1_fp_add_11_in_A_q     <= 64'd0;
+        bpe1_fp_add_11_in_B_q     <= 64'd0;
+        bpe1_fp_add_11_in_valid_q <= 1'b0;
+
+        bpe1_fp_add_12_in_A_q     <= 64'd0;
+        bpe1_fp_add_12_in_B_q     <= 64'd0;
+        bpe1_fp_add_12_in_valid_q <= 1'b0;
+
+    end else begin
+        // ---------- BPE0 mul ----------
+        bpe0_mul_in_A_q       <= bpe0_mul_in_A;
+        bpe0_mul_in_B_q       <= bpe0_mul_in_B;
+        bpe0_mul_mode_q       <= bpe0_mul_mode;
+        bpe0_mul_in_valid_q   <= bpe0_mul_in_valid;
+
+        // ---------- BPE0 fp_add ----------
+        bpe0_fp_add_01_in_A_q     <= bpe0_fp_add_01_in_A;
+        bpe0_fp_add_01_in_B_q     <= bpe0_fp_add_01_in_B;
+        bpe0_fp_add_01_in_valid_q <= bpe0_fp_add_01_in_valid;
+
+        bpe0_fp_add_02_in_A_q     <= bpe0_fp_add_02_in_A;
+        bpe0_fp_add_02_in_B_q     <= bpe0_fp_add_02_in_B;
+        bpe0_fp_add_02_in_valid_q <= bpe0_fp_add_02_in_valid;
+
+        bpe0_fp_add_11_in_A_q     <= bpe0_fp_add_11_in_A;
+        bpe0_fp_add_11_in_B_q     <= bpe0_fp_add_11_in_B;
+        bpe0_fp_add_11_in_valid_q <= bpe0_fp_add_11_in_valid;
+
+        bpe0_fp_add_12_in_A_q     <= bpe0_fp_add_12_in_A;
+        bpe0_fp_add_12_in_B_q     <= bpe0_fp_add_12_in_B;
+        bpe0_fp_add_12_in_valid_q <= bpe0_fp_add_12_in_valid;
+
+        // ---------- BPE1 mul ----------
+        bpe1_mul_in_A_q       <= bpe1_mul_in_A;
+        bpe1_mul_in_B_q       <= bpe1_mul_in_B;
+        bpe1_mul_mode_q       <= bpe1_mul_mode;
+        bpe1_mul_in_valid_q   <= bpe1_mul_in_valid;
+
+        // ---------- BPE1 fp_add ----------
+        bpe1_fp_add_01_in_A_q     <= bpe1_fp_add_01_in_A;
+        bpe1_fp_add_01_in_B_q     <= bpe1_fp_add_01_in_B;
+        bpe1_fp_add_01_in_valid_q <= bpe1_fp_add_01_in_valid;
+
+        bpe1_fp_add_02_in_A_q     <= bpe1_fp_add_02_in_A;
+        bpe1_fp_add_02_in_B_q     <= bpe1_fp_add_02_in_B;
+        bpe1_fp_add_02_in_valid_q <= bpe1_fp_add_02_in_valid;
+
+        bpe1_fp_add_11_in_A_q     <= bpe1_fp_add_11_in_A;
+        bpe1_fp_add_11_in_B_q     <= bpe1_fp_add_11_in_B;
+        bpe1_fp_add_11_in_valid_q <= bpe1_fp_add_11_in_valid;
+
+        bpe1_fp_add_12_in_A_q     <= bpe1_fp_add_12_in_A;
+        bpe1_fp_add_12_in_B_q     <= bpe1_fp_add_12_in_B;
+        bpe1_fp_add_12_in_valid_q <= bpe1_fp_add_12_in_valid;
+    end
+end
+
+
     // Mul instances (one per bpe, total 2)
     mul u_mul_bpe0 (
-        .in_A(bpe0_mul_in_A),
-        .in_B(bpe0_mul_in_B),
-        .mode(bpe0_mul_mode),
-        .clk(clk),
-        .rst_n(rst_n),
-        .in_valid(bpe0_mul_in_valid),
-        .result_c(bpe0_mul_result_c),
+        .in_A      (bpe0_mul_in_A_q),
+        .in_B      (bpe0_mul_in_B_q),
+        .mode      (bpe0_mul_mode_q),
+        .clk       (clk),
+        .rst_n     (rst_n),
+        .in_valid  (bpe0_mul_in_valid_q),
+        .result_c  (bpe0_mul_result_c),
         .result_int(bpe0_mul_result_int),
-        .out_valid(bpe0_mul_out_valid)
+        .out_valid (bpe0_mul_out_valid)
     );
 
+
     mul u_mul_bpe1 (
-        .in_A(bpe1_mul_in_A),
-        .in_B(bpe1_mul_in_B),
-        .mode(bpe1_mul_mode),
-        .clk(clk),
-        .rst_n(rst_n),
-        .in_valid(bpe1_mul_in_valid),
-        .result_c(bpe1_mul_result_c),
+        .in_A      (bpe1_mul_in_A_q),
+        .in_B      (bpe1_mul_in_B_q),
+        .mode      (bpe1_mul_mode_q),
+        .clk       (clk),
+        .rst_n     (rst_n),
+        .in_valid  (bpe1_mul_in_valid_q),
+        .result_c  (bpe1_mul_result_c),
         .result_int(bpe1_mul_result_int),
-        .out_valid(bpe1_mul_out_valid)
+        .out_valid (bpe1_mul_out_valid)
     );
 
     // FP_ADD instances (4 per bpe, total 8)
     // BPE 0 fp_add instances
     fp_add u_fp_add_bpe0_01 (
-        .in_A(bpe0_fp_add_01_in_A),
-        .in_B(bpe0_fp_add_01_in_B),
-        .clk(clk),
-        .rst_n(rst_n),
-        .in_valid(bpe0_fp_add_01_in_valid),
-        .result(bpe0_fp_add_01_result),
+        .in_A     (bpe0_fp_add_01_in_A_q),
+        .in_B     (bpe0_fp_add_01_in_B_q),
+        .clk      (clk),
+        .rst_n    (rst_n),
+        .in_valid (bpe0_fp_add_01_in_valid_q),
+        .result   (bpe0_fp_add_01_result),
         .out_valid(bpe0_fp_add_01_out_valid)
     );
 
     fp_add u_fp_add_bpe0_02 (
-        .in_A(bpe0_fp_add_02_in_A),
-        .in_B(bpe0_fp_add_02_in_B),
-        .clk(clk),
-        .rst_n(rst_n),
-        .in_valid(bpe0_fp_add_02_in_valid),
-        .result(bpe0_fp_add_02_result),
+        .in_A     (bpe0_fp_add_02_in_A_q),
+        .in_B     (bpe0_fp_add_02_in_B_q),
+        .clk      (clk),
+        .rst_n    (rst_n),
+        .in_valid (bpe0_fp_add_02_in_valid_q),
+        .result   (bpe0_fp_add_02_result),
         .out_valid(bpe0_fp_add_02_out_valid)
     );
 
     fp_add u_fp_add_bpe0_11 (
-        .in_A(bpe0_fp_add_11_in_A),
-        .in_B(bpe0_fp_add_11_in_B),
-        .clk(clk),
-        .rst_n(rst_n),
-        .in_valid(bpe0_fp_add_11_in_valid),
-        .result(bpe0_fp_add_11_result),
+        .in_A     (bpe0_fp_add_11_in_A_q),
+        .in_B     (bpe0_fp_add_11_in_B_q),
+        .clk      (clk),
+        .rst_n    (rst_n),
+        .in_valid (bpe0_fp_add_11_in_valid_q),
+        .result   (bpe0_fp_add_11_result),
         .out_valid(bpe0_fp_add_11_out_valid)
     );
 
     fp_add u_fp_add_bpe0_12 (
-        .in_A(bpe0_fp_add_12_in_A),
-        .in_B(bpe0_fp_add_12_in_B),
-        .clk(clk),
-        .rst_n(rst_n),
-        .in_valid(bpe0_fp_add_12_in_valid),
-        .result(bpe0_fp_add_12_result),
+        .in_A     (bpe0_fp_add_12_in_A_q),
+        .in_B     (bpe0_fp_add_12_in_B_q),
+        .clk      (clk),
+        .rst_n    (rst_n),
+        .in_valid (bpe0_fp_add_12_in_valid_q),
+        .result   (bpe0_fp_add_12_result),
         .out_valid(bpe0_fp_add_12_out_valid)
     );
 
-    // BPE 1 fp_add instances
     fp_add u_fp_add_bpe1_01 (
-        .in_A(bpe1_fp_add_01_in_A),
-        .in_B(bpe1_fp_add_01_in_B),
-        .clk(clk),
-        .rst_n(rst_n),
-        .in_valid(bpe1_fp_add_01_in_valid),
-        .result(bpe1_fp_add_01_result),
+        .in_A     (bpe1_fp_add_01_in_A_q),
+        .in_B     (bpe1_fp_add_01_in_B_q),
+        .clk      (clk),
+        .rst_n    (rst_n),
+        .in_valid (bpe1_fp_add_01_in_valid_q),
+        .result   (bpe1_fp_add_01_result),
         .out_valid(bpe1_fp_add_01_out_valid)
     );
 
     fp_add u_fp_add_bpe1_02 (
-        .in_A(bpe1_fp_add_02_in_A),
-        .in_B(bpe1_fp_add_02_in_B),
-        .clk(clk),
-        .rst_n(rst_n),
-        .in_valid(bpe1_fp_add_02_in_valid),
-        .result(bpe1_fp_add_02_result),
+        .in_A     (bpe1_fp_add_02_in_A_q),
+        .in_B     (bpe1_fp_add_02_in_B_q),
+        .clk      (clk),
+        .rst_n    (rst_n),
+        .in_valid (bpe1_fp_add_02_in_valid_q),
+        .result   (bpe1_fp_add_02_result),
         .out_valid(bpe1_fp_add_02_out_valid)
     );
 
     fp_add u_fp_add_bpe1_11 (
-        .in_A(bpe1_fp_add_11_in_A),
-        .in_B(bpe1_fp_add_11_in_B),
-        .clk(clk),
-        .rst_n(rst_n),
-        .in_valid(bpe1_fp_add_11_in_valid),
-        .result(bpe1_fp_add_11_result),
+        .in_A     (bpe1_fp_add_11_in_A_q),
+        .in_B     (bpe1_fp_add_11_in_B_q),
+        .clk      (clk),
+        .rst_n    (rst_n),
+        .in_valid (bpe1_fp_add_11_in_valid_q),
+        .result   (bpe1_fp_add_11_result),
         .out_valid(bpe1_fp_add_11_out_valid)
     );
 
     fp_add u_fp_add_bpe1_12 (
-        .in_A(bpe1_fp_add_12_in_A),
-        .in_B(bpe1_fp_add_12_in_B),
-        .clk(clk),
-        .rst_n(rst_n),
-        .in_valid(bpe1_fp_add_12_in_valid),
-        .result(bpe1_fp_add_12_result),
+        .in_A     (bpe1_fp_add_12_in_A_q),
+        .in_B     (bpe1_fp_add_12_in_B_q),
+        .clk      (clk),
+        .rst_n    (rst_n),
+        .in_valid (bpe1_fp_add_12_in_valid_q),
+        .result   (bpe1_fp_add_12_result),
         .out_valid(bpe1_fp_add_12_out_valid)
     );
+
 
 
 // ===== need further integrate to top ==== //
@@ -1014,17 +1161,17 @@ module test_fft();
         // Test 1: Load input data into SRAM A
         $display("\n=== Test 1: Loading input.hex into SRAM A ===");
         if(MODE_PARAM == 0)
-            u_sramA.load_hex("pat/input.hex");
+            u_sramA.load_hex("fft_pat/input.hex");
         else
-            u_sramA.load_hex("pat/input_ifft.hex");
+            u_sramA.load_hex("fft_pat/input_ifft.hex");
         #100;
         
         // Test 2: Verify input data in SRAM A
         $display("\n=== Test 2: Verifying input data in SRAM A ===");
         if(MODE_PARAM == 0)
-            verify_sram_against_hex("pat/input.hex", 0);
+            verify_sram_against_hex("fft_pat/input.hex", 0);
         else
-            verify_sram_against_hex("pat/input_ifft.hex", 0);
+            verify_sram_against_hex("fft_pat/input_ifft.hex", 0);
         #100;
         
         // Test 3: Verify Twiddle ROM initialization
@@ -1032,7 +1179,7 @@ module test_fft();
         // Wait for ROM initialization to complete
         wait(u_twiddle_rom.rom_initialized);
         #100;  // Additional delay to ensure ROM is ready
-        verify_twiddle_rom("pat/twiddle_factors.hex");
+        verify_twiddle_rom("fft_pat/twiddle_factors.hex");
         #100;
         
         $display("\n========================================");
@@ -1073,44 +1220,44 @@ module test_fft();
                 // Stage 0: A->B, verify B
                 0: begin
                     if (MODE_PARAM == 0)
-                        test_row_fft_stage(0, "pat/row_fft_stage0_bitreversed.hex", 1);
+                        test_row_fft_stage(0, "fft_pat/row_fft_stage0_bitreversed.hex", 1);
                     else
-                        test_row_fft_stage(0, "pat/row_ifft_stage0_bitreversed.hex", 1);
+                        test_row_fft_stage(0, "fft_pat/row_ifft_stage0_bitreversed.hex", 1);
                 end
                 // Stage 1: B->A, verify A
                 1: begin
                     if (MODE_PARAM == 0)
-                        test_row_fft_stage(1, "pat/row_fft_stage1_m2.hex", 0);
+                        test_row_fft_stage(1, "fft_pat/row_fft_stage1_m2.hex", 0);
                     else
-                        test_row_fft_stage(1, "pat/row_ifft_stage1_m2.hex", 0);
+                        test_row_fft_stage(1, "fft_pat/row_ifft_stage1_m2.hex", 0);
                 end
                 // Stage 2: A->B, verify B
                 2: begin
                     if (MODE_PARAM == 0)
-                        test_row_fft_stage(2, "pat/row_fft_stage2_m4.hex", 1);
+                        test_row_fft_stage(2, "fft_pat/row_fft_stage2_m4.hex", 1);
                     else
-                        test_row_fft_stage(2, "pat/row_ifft_stage2_m4.hex", 1);
+                        test_row_fft_stage(2, "fft_pat/row_ifft_stage2_m4.hex", 1);
                 end
                 // Stage 3: B->A, verify A
                 3: begin
                     if (MODE_PARAM == 0)
-                        test_row_fft_stage(3, "pat/row_fft_stage3_m8.hex", 0);
+                        test_row_fft_stage(3, "fft_pat/row_fft_stage3_m8.hex", 0);
                     else
-                        test_row_fft_stage(3, "pat/row_ifft_stage3_m8.hex", 0);
+                        test_row_fft_stage(3, "fft_pat/row_ifft_stage3_m8.hex", 0);
                 end
                 // Stage 4: A->B, verify B
                 4: begin
                     if (MODE_PARAM == 0)
-                        test_row_fft_stage(4, "pat/row_fft_stage4_m16.hex", 1);
+                        test_row_fft_stage(4, "fft_pat/row_fft_stage4_m16.hex", 1);
                     else
-                        test_row_fft_stage(4, "pat/row_ifft_stage4_m16.hex", 1);
+                        test_row_fft_stage(4, "fft_pat/row_ifft_stage4_m16.hex", 1);
                 end
                 // Stage 5: B->A, verify A
                 5: begin
                     if (MODE_PARAM == 0)
-                        test_row_fft_stage(5, "pat/row_fft_stage5_m32.hex", 0);
+                        test_row_fft_stage(5, "fft_pat/row_fft_stage5_m32.hex", 0);
                     else
-                        test_row_fft_stage(5, "pat/row_ifft_stage5_m32.hex", 0);
+                        test_row_fft_stage(5, "fft_pat/row_ifft_stage5_m32.hex", 0);
                 end
                 default: $display("ERROR: Invalid ROW_STAGE value: %0d", ROW_STAGE);
             endcase
@@ -1189,51 +1336,51 @@ module test_fft();
                 // Stage 0: A->B, verify B
                 0: begin
                     if (MODE_PARAM == 0)
-                        test_col_fft_stage(0, "pat/col_fft_stage0_bitreversed.hex", 1);
+                        test_col_fft_stage(0, "fft_pat/col_fft_stage0_bitreversed.hex", 1);
                     else
-                        test_col_fft_stage(0, "pat/col_ifft_stage0_bitreversed.hex", 1);
+                        test_col_fft_stage(0, "fft_pat/col_ifft_stage0_bitreversed.hex", 1);
                 end
                 // Stage 1: B->A, verify A
                 1: begin
                     if (MODE_PARAM == 0)
-                        test_col_fft_stage(1, "pat/col_fft_stage1_m2.hex", 0);
+                        test_col_fft_stage(1, "fft_pat/col_fft_stage1_m2.hex", 0);
                     else
-                        test_col_fft_stage(1, "pat/col_ifft_stage1_m2.hex", 0);
+                        test_col_fft_stage(1, "fft_pat/col_ifft_stage1_m2.hex", 0);
                 end
                 // Stage 2: A->B, verify B
                 2: begin
                     if (MODE_PARAM == 0)
-                        test_col_fft_stage(2, "pat/col_fft_stage2_m4.hex", 1);
+                        test_col_fft_stage(2, "fft_pat/col_fft_stage2_m4.hex", 1);
                     else
-                        test_col_fft_stage(2, "pat/col_ifft_stage2_m4.hex", 1);
+                        test_col_fft_stage(2, "fft_pat/col_ifft_stage2_m4.hex", 1);
                 end
                 // Stage 3: B->A, verify A
                 3: begin
                     if (MODE_PARAM == 0)
-                        test_col_fft_stage(3, "pat/col_fft_stage3_m8.hex", 0);
+                        test_col_fft_stage(3, "fft_pat/col_fft_stage3_m8.hex", 0);
                     else
-                        test_col_fft_stage(3, "pat/col_ifft_stage3_m8.hex", 0);
+                        test_col_fft_stage(3, "fft_pat/col_ifft_stage3_m8.hex", 0);
                 end
                 // Stage 4: A->B, verify B
                 4: begin
                     if (MODE_PARAM == 0)
-                        test_col_fft_stage(4, "pat/col_fft_stage4_m16.hex", 1);
+                        test_col_fft_stage(4, "fft_pat/col_fft_stage4_m16.hex", 1);
                     else
-                        test_col_fft_stage(4, "pat/col_ifft_stage4_m16.hex", 1);
+                        test_col_fft_stage(4, "fft_pat/col_ifft_stage4_m16.hex", 1);
                 end
                 // Stage 5: B->A, verify A
                 5: begin
                     if (MODE_PARAM == 0)
-                        test_col_fft_stage(5, "pat/col_fft_stage5_m32.hex", 0);
+                        test_col_fft_stage(5, "fft_pat/col_fft_stage5_m32.hex", 0);
                     else
-                        test_col_fft_stage(5, "pat/col_ifft_stage5_m32.hex", 0);
+                        test_col_fft_stage(5, "fft_pat/col_ifft_stage5_m32.hex", 0);
                 end
                 // Stage 6: Final output verification (assumes stage 5 completed, waits for R2C, verifies SRAM B)
                 6: begin
                     if (MODE_PARAM == 0)
-                        test_col_fft_stage(6, "pat/final_output.hex", 1);
+                        test_col_fft_stage(6, "fft_pat/final_output.hex", 1);
                     else
-                        test_col_fft_stage(6, "pat/final_output_ifft.hex", 1);
+                        test_col_fft_stage(6, "fft_pat/final_output_ifft.hex", 1);
                 end
                 default: $display("ERROR: Invalid COL_STAGE value: %0d", COL_STAGE);
             endcase
