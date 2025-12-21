@@ -7,7 +7,6 @@ def generate_verilog_lut():
     print("    case(addr)")
     
     for i in range(128):
-
         val = 1.0 + (i + 0.5)/128.0
         reciprocal = 1.0 / val
         

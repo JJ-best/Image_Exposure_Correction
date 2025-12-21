@@ -6,14 +6,44 @@ Report : timing
         -max_paths 4
 Design : fp64_reciprocal
 Version: R-2020.09-SP5
-Date   : Wed Dec 17 10:42:26 2025
+Date   : Sun Dec 21 14:30:10 2025
 ****************************************
 
 Operating Conditions: PVT_1P08V_125C   Library: slow_vdd1v2
 Wire Load Model Mode: enclosed
 
-  Startpoint: in_A[9] (input port clocked by clk)
-  Endpoint: D_reg0_reg_12_
+  Startpoint: in_A[63] (input port clocked by clk)
+  Endpoint: sign_0_reg (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  fp64_reciprocal    Large                 slow_vdd1v2
+
+  Point                                    Incr       Path
+  -----------------------------------------------------------
+  clock clk (rise edge)                    0.00       0.00
+  clock network delay (ideal)              0.00       0.00
+  input external delay                     0.00       0.00 f
+  in_A[63] (in)                            0.00       0.00 f
+  sign_0_reg/RN (DFFTRXL)                  0.03       0.03 f
+  data arrival time                                   0.03
+
+  clock clk (rise edge)                    0.00       0.00
+  clock network delay (ideal)              0.00       0.00
+  sign_0_reg/CK (DFFTRXL)                  0.00       0.00 r
+  library hold time                       -0.01      -0.01
+  data required time                                 -0.01
+  -----------------------------------------------------------
+  data required time                                 -0.01
+  data arrival time                                  -0.03
+  -----------------------------------------------------------
+  slack (MET)                                         0.04
+
+
+  Startpoint: in_valid (input port clocked by clk)
+  Endpoint: D_reg0_reg_23_
             (rising edge-triggered flip-flop clocked by clk)
   Path Group: clk
   Path Type: min
@@ -27,24 +57,24 @@ Wire Load Model Mode: enclosed
   clock clk (rise edge)                    0.00       0.00
   clock network delay (ideal)              0.00       0.00
   input external delay                     0.00       0.00 f
-  in_A[9] (in)                             0.00       0.00 f
-  D_reg0_reg_12_/RN (DFFTRXL)              0.02       0.02 f
-  data arrival time                                   0.02
+  in_valid (in)                            0.03       0.03 f
+  D_reg0_reg_23_/D (DFFTRXL)               0.01       0.05 f
+  data arrival time                                   0.05
 
   clock clk (rise edge)                    0.00       0.00
   clock network delay (ideal)              0.00       0.00
-  D_reg0_reg_12_/CK (DFFTRXL)              0.00       0.00 r
-  library hold time                       -0.01      -0.01
-  data required time                                 -0.01
+  D_reg0_reg_23_/CK (DFFTRXL)              0.00       0.00 r
+  library hold time                       -0.02      -0.02
+  data required time                                 -0.02
   -----------------------------------------------------------
-  data required time                                 -0.01
-  data arrival time                                  -0.02
+  data required time                                 -0.02
+  data arrival time                                  -0.05
   -----------------------------------------------------------
-  slack (MET)                                         0.03
+  slack (MET)                                         0.07
 
 
-  Startpoint: in_A[8] (input port clocked by clk)
-  Endpoint: D_reg0_reg_11_
+  Startpoint: in_valid (input port clocked by clk)
+  Endpoint: D_reg0_reg_22_
             (rising edge-triggered flip-flop clocked by clk)
   Path Group: clk
   Path Type: min
@@ -58,24 +88,24 @@ Wire Load Model Mode: enclosed
   clock clk (rise edge)                    0.00       0.00
   clock network delay (ideal)              0.00       0.00
   input external delay                     0.00       0.00 f
-  in_A[8] (in)                             0.00       0.00 f
-  D_reg0_reg_11_/RN (DFFTRXL)              0.02       0.02 f
-  data arrival time                                   0.02
+  in_valid (in)                            0.03       0.03 f
+  D_reg0_reg_22_/D (DFFTRXL)               0.01       0.05 f
+  data arrival time                                   0.05
 
   clock clk (rise edge)                    0.00       0.00
   clock network delay (ideal)              0.00       0.00
-  D_reg0_reg_11_/CK (DFFTRXL)              0.00       0.00 r
-  library hold time                       -0.01      -0.01
-  data required time                                 -0.01
+  D_reg0_reg_22_/CK (DFFTRXL)              0.00       0.00 r
+  library hold time                       -0.02      -0.02
+  data required time                                 -0.02
   -----------------------------------------------------------
-  data required time                                 -0.01
-  data arrival time                                  -0.02
+  data required time                                 -0.02
+  data arrival time                                  -0.05
   -----------------------------------------------------------
-  slack (MET)                                         0.03
+  slack (MET)                                         0.07
 
 
-  Startpoint: in_A[6] (input port clocked by clk)
-  Endpoint: D_reg0_reg_9_
+  Startpoint: in_valid (input port clocked by clk)
+  Endpoint: D_reg0_reg_17_
             (rising edge-triggered flip-flop clocked by clk)
   Path Group: clk
   Path Type: min
@@ -89,51 +119,20 @@ Wire Load Model Mode: enclosed
   clock clk (rise edge)                    0.00       0.00
   clock network delay (ideal)              0.00       0.00
   input external delay                     0.00       0.00 f
-  in_A[6] (in)                             0.00       0.00 f
-  D_reg0_reg_9_/RN (DFFTRXL)               0.02       0.02 f
-  data arrival time                                   0.02
+  in_valid (in)                            0.03       0.03 f
+  D_reg0_reg_17_/D (DFFTRXL)               0.01       0.05 f
+  data arrival time                                   0.05
 
   clock clk (rise edge)                    0.00       0.00
   clock network delay (ideal)              0.00       0.00
-  D_reg0_reg_9_/CK (DFFTRXL)               0.00       0.00 r
-  library hold time                       -0.01      -0.01
-  data required time                                 -0.01
+  D_reg0_reg_17_/CK (DFFTRXL)              0.00       0.00 r
+  library hold time                       -0.02      -0.02
+  data required time                                 -0.02
   -----------------------------------------------------------
-  data required time                                 -0.01
-  data arrival time                                  -0.02
+  data required time                                 -0.02
+  data arrival time                                  -0.05
   -----------------------------------------------------------
-  slack (MET)                                         0.03
-
-
-  Startpoint: in_A[4] (input port clocked by clk)
-  Endpoint: D_reg0_reg_7_
-            (rising edge-triggered flip-flop clocked by clk)
-  Path Group: clk
-  Path Type: min
-
-  Des/Clust/Port     Wire Load Model       Library
-  ------------------------------------------------
-  fp64_reciprocal    Large                 slow_vdd1v2
-
-  Point                                    Incr       Path
-  -----------------------------------------------------------
-  clock clk (rise edge)                    0.00       0.00
-  clock network delay (ideal)              0.00       0.00
-  input external delay                     0.00       0.00 f
-  in_A[4] (in)                             0.00       0.00 f
-  D_reg0_reg_7_/RN (DFFTRXL)               0.02       0.02 f
-  data arrival time                                   0.02
-
-  clock clk (rise edge)                    0.00       0.00
-  clock network delay (ideal)              0.00       0.00
-  D_reg0_reg_7_/CK (DFFTRXL)               0.00       0.00 r
-  library hold time                       -0.01      -0.01
-  data required time                                 -0.01
-  -----------------------------------------------------------
-  data required time                                 -0.01
-  data arrival time                                  -0.02
-  -----------------------------------------------------------
-  slack (MET)                                         0.03
+  slack (MET)                                         0.07
 
 
 1

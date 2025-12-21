@@ -3,7 +3,7 @@
 Report : area
 Design : fp64_reciprocal
 Version: R-2020.09-SP5
-Date   : Wed Dec 17 10:42:26 2025
+Date   : Sun Dec 21 14:30:11 2025
 ****************************************
 
 Library(s) Used:
@@ -11,22 +11,22 @@ Library(s) Used:
     slow_vdd1v2 (File: /usr/cadtool/GPDK45/gsclib045_svt_v4.4/gsclib045/db/slow_vdd1v2_basicCells_wl.db)
 
 Number of ports:                          146
-Number of nets:                         39680
-Number of cells:                        34495
-Number of combinational cells:          33756
+Number of nets:                         39229
+Number of cells:                        33823
+Number of combinational cells:          33084
 Number of sequential cells:               738
 Number of macros/black boxes:               0
-Number of buf/inv:                       4045
-Number of references:                      91
+Number of buf/inv:                       3939
+Number of references:                      89
 
-Combinational area:              84498.283885
-Buf/Inv area:                     3800.646085
-Noncombinational area:            4301.334096
+Combinational area:              82311.193836
+Buf/Inv area:                     3635.802081
+Noncombinational area:            4255.848095
 Macro/Black Box area:                0.000000
 Net Interconnect area:               0.000000
 
-Total cell area:                 88799.617981
-Total area:                      88799.617981
+Total cell area:                 86567.041931
+Total area:                      86567.041931
 
 Hierarchical area distribution
 ------------------------------
@@ -36,9 +36,9 @@ Hierarchical area distribution
 Hierarchical cell                 Absolute    Percent  Combi-      Noncombi-  Black-
                                   Total       Total    national    national   boxes   Design
 --------------------------------  ----------  -------  ----------  ---------  ------  ---------
-fp64_reciprocal                   88799.6180    100.0  84315.3139  4301.3341  0.0000  fp64_reciprocal
-u_lut                               182.9700      0.2    182.9700     0.0000  0.0000  recip_lut
+fp64_reciprocal                   86567.0419    100.0  82128.9078  4255.8481  0.0000  fp64_reciprocal
+u_lut                               182.2860      0.2    182.2860     0.0000  0.0000  recip_lut
 --------------------------------  ----------  -------  ----------  ---------  ------  ---------
-Total                                                  84498.2839  4301.3341  0.0000
+Total                                                  82311.1938  4255.8481  0.0000
 
 1
