@@ -20,3 +20,12 @@ alib-52/
 *.synopsys_dc.setup
 *.log
 *.svf
+
+# delT
+*.nfs
+*.vcd
+*simv
+csrc/
+sub_module/delT/syn/delT
+sub_module/delT/syn/netlist
+ucli.key

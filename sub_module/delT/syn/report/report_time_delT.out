@@ -1,0 +1,67 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : delT
+Version: R-2020.09-SP5
+Date   : Sun Dec 21 14:30:49 2025
+****************************************
+
+Operating Conditions: PVT_1P08V_125C   Library: slow_vdd1v2
+Wire Load Model Mode: enclosed
+
+  Startpoint: state_reg_0_
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: clk_gate_row_cnt_in_reg/latch
+            (negative level-sensitive latch clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  delT               Large                 slow_vdd1v2
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                 0.0000     0.0000
+  clock network delay (ideal)                           0.0000     0.0000
+  state_reg_0_/CK (DFFRHQX1)                            0.0000     0.0000 r
+  state_reg_0_/Q (DFFRHQX1)                             0.1485     0.1485 f
+  U4472/Y (INVX1)                                       0.0765     0.2250 r
+  U3554/Y (INVXL)                                       0.0758     0.3009 f
+  U3972/Y (OR2XL)                                       0.1195     0.4203 f
+  U3892/Y (INVXL)                                       0.1106     0.5309 r
+  U4492/Y (NAND2XL)                                     0.1096     0.6405 f
+  U4498/Y (NAND2XL)                                     0.0656     0.7060 r
+  U4500/Y (INVXL)                                       0.0792     0.7852 f
+  U3555/Y (AOI31XL)                                     0.0762     0.8615 r
+  U3635/Y (OAI31XL)                                     0.0964     0.9578 f
+  clk_gate_row_cnt_in_reg/EN (SNPS_CLOCK_GATE_HIGH_delT_mydesign_16)
+                                                        0.0000     0.9578 f
+  clk_gate_row_cnt_in_reg/latch/D (TLATNXL)             0.0275     0.9853 f
+  data arrival time                                                0.9853
+
+  clock clk (fall edge)                                 1.7500     1.7500
+  clock network delay (ideal)                           0.0000     1.7500
+  clk_gate_row_cnt_in_reg/latch/GN (TLATNXL)            0.0000     1.7500 f
+  time borrowed from endpoint                           0.0000     1.7500
+  data required time                                               1.7500
+  --------------------------------------------------------------------------
+  data required time                                               1.7500
+  data arrival time                                               -0.9853
+  --------------------------------------------------------------------------
+  slack (MET)                                                      0.7647
+
+  Time Borrowing Information
+  --------------------------------------------------------------
+  clk nominal pulse width                               1.7500   
+  library setup time                                   -0.0474   
+  --------------------------------------------------------------
+  max time borrow                                       1.7026   
+  actual time borrow                                    0.0000   
+  --------------------------------------------------------------
+
+
+1

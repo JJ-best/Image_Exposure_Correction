@@ -1,0 +1,76 @@
+Information: Propagating switching activity (low effort zero delay simulation). (PWR-6)
+Warning: Design has unannotated primary inputs. (PWR-414)
+Warning: Design has unannotated sequential cell outputs. (PWR-415)
+ 
+****************************************
+Report : power
+        -hier
+        -analysis_effort low
+Design : delT
+Version: R-2020.09-SP5
+Date   : Sun Dec 21 14:30:51 2025
+****************************************
+
+
+Library(s) Used:
+
+    slow_vdd1v2 (File: /usr/cadtool/GPDK45/gsclib045_svt_v4.4/gsclib045/db/slow_vdd1v2_basicCells_wl.db)
+
+
+Operating Conditions: PVT_1P08V_125C   Library: slow_vdd1v2
+Wire Load Model Mode: enclosed
+
+Design        Wire Load Model            Library
+------------------------------------------------
+delT                   Large             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_delT_mydesign_0
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_delT_mydesign_16
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_delT_mydesign_15
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_delT_mydesign_1
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_delT_mydesign_2
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_delT_mydesign_3
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_delT_mydesign_4
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_delT_mydesign_5
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_delT_mydesign_6
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_delT_mydesign_7
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_delT_mydesign_8
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_delT_mydesign_9
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_delT_mydesign_10
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_delT_mydesign_11
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_delT_mydesign_12
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_delT_mydesign_13
+                       Small             slow_vdd1v2
+SNPS_CLOCK_GATE_HIGH_delT_mydesign_14
+                       Small             slow_vdd1v2
+
+
+Global Operating Voltage = 1.08 
+Power-specific unit information :
+    Voltage Units = 1V
+    Capacitance Units = 1.000000pf
+    Time Units = 1ns
+    Dynamic Power Units = 1mW    (derived from V,C,T units)
+    Leakage Power Units = 1pW
+
+
+--------------------------------------------------------------------------------
+                                       Switch   Int      Leak     Total
+Hierarchy                              Power    Power    Power    Power    %
+--------------------------------------------------------------------------------
+delT                                   4.90e-02    0.366 2.02e+05    0.415 100.0
+1
