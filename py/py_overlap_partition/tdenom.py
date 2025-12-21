@@ -53,7 +53,7 @@ if __name__ == "__main__":
     Tmat = tdenom_mat(m, n)
     print("Tmat: \n", Tmat)
     root = Path(__file__).resolve().parent
-    dat_dir = root / "dat"
+    dat_dir = root.parent.parent / "sim" / "tdenom_pat"
     dat_dir.mkdir(parents=True, exist_ok=True)
     save_tdenom_hex(dat_dir / "tdenom_32x32_hex.txt", m, n)
     save_tdenom_fp(dat_dir / "tdenom_32x32_fp.txt", m, n)

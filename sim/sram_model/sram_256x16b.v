@@ -645,6 +645,58 @@ begin
 end
 endtask
 
+task load_param_hex;
+    input [256*8-1:0] hex_filename;
+    input [19:0] dat_num;
+    
+    integer file_in;
+    integer addr;
+    integer bank_idx, bank_addr;
+    reg [63:0] real_hex, imag_hex;
+    reg [127:0] complex_data;
+    reg file_ok;
+
+    begin
+         $display("Loading param from: %s", hex_filename);
+        
+        file_ok = 1;
+        file_in = $fopen(hex_filename, "r");
+        if (file_in == 0) begin
+            $display("ERROR: Cannot open param file %s", hex_filename);
+            file_ok = 0;
+        end
+
+        if (file_ok) begin
+            addr = 0;
+            
+            // Read hex file line by line
+            while (!$feof(file_in) && addr < (dat_num)) begin
+                // Read one line (real_hex imag_hex)
+                if ($fscanf(file_in, "%16h_%16h", real_hex, imag_hex) == 2) begin
+                    // Combine real and imag into 128-bit complex number
+                    complex_data = {real_hex, imag_hex};
+                    
+                    case (addr[1:0])
+                        0: bank0[addr[19:2]] = complex_data;
+                        1: bank1[addr[19:2]] = complex_data;
+                        2: bank2[addr[19:2]] = complex_data;
+                        3: bank3[addr[19:2]] = complex_data;
+                    endcase
+                    
+                    addr = addr + 1;
+                end
+            end
+            
+            $fclose(file_in);
+            $display("Loaded %0d parameter into sram (distributed to 4 banks)", addr);
+            $display("sram initialization flag set");
+        end else begin
+            $display("WARNING: sram initialization failed - file not opened");
+        end
+    end
+    
+endtask
+
 task clear_sram;
     input [BW_PER_ADDR-1:0] value;
     integer addr;

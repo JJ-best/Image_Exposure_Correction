@@ -152,8 +152,10 @@ begin
 
     // addr : 0~255
     addr = 0;
-    for(row = 31; row >= 0; row = row - 1) begin  // BMP bottom-up
+    for(row = 31; row >= 0; row = row - 1) begin  // BMP non-bottom-up
         for(col = 0; col < 32; col = col + 4) begin  // 4 pixel -> 4 bank
+            addr = row * 8 + (col >> 2); // 32x32, 4 pixels per addr
+
             // Read 4 pixels and write directly into the 4 banks
             // bmp order: B-> G -> R
             // pixel0 -> bank0
@@ -183,8 +185,6 @@ begin
             r = $fgetc(file_in);
             pixel_data = {r, g, b};
             bank3[addr] = pixel_data;
-
-            addr = addr + 1;
         end
     end
 

@@ -6,14 +6,14 @@ module fp64_reciprocal #(
     
     input  wire in_valid,
     input  wire [(pFP_WIDTH-1):0] in_A,
-    output reg  [(pFP_WIDTH-1):0] in_B,
+    output reg  [(pFP_WIDTH-1):0] out_B,
     output reg  output_valid
 );
 
     reg sign_0, sign_1, sign_2, sign_3, sign_next;
     reg [11-1:0] exponent_0, exponent_1, exponent_2, exponent_3, exponent_next;
     reg [52-1:0] mantissa_0, mantissa_1, mantissa_2, mantissa_3, mantissa_next;
-    reg [(pFP_WIDTH-1):0] in_B_next;
+    reg [(pFP_WIDTH-1):0] out_B_next;
     reg valid_0, valid_1, valid_2, valid_3;
     reg skip0, skip1, skip2, skip3, skip_next;
 
@@ -70,7 +70,7 @@ module fp64_reciprocal #(
         N_reg3 <= N_reg3_next;
         F_reg3 <= F_reg3_next;
 
-        in_B <= in_B_next;
+        out_B <= out_B_next;
     end
 
     always @(*) begin
@@ -89,19 +89,12 @@ module fp64_reciprocal #(
                         skip_next = 1'b1;
                         {sign_next, exponent_next, mantissa_next} = {in_A[63], 11'h7FF, 52'd0}; 
                     end
-                    else begin // Denormal -> Max Normal
-                        skip_next = 1'b1;
-                        {sign_next, exponent_next, mantissa_next} = {in_A[63], 11'd2046, {52{1'b1}}}; 
+                    else begin
+                        {sign_next, exponent_next, mantissa_next} = {in_A[63], 11'd2046, in_A[51:1], 1'b0}; 
                     end
                 end
                 default: begin // Normal
-                    if (in_A[62:54] == {9{1'b1}} && (in_A[53] ^ in_A[52])) begin // Normal (in_A exp=2046 or 2045) -> Denormal
-                        skip_next = 1'b1;
-                        {sign_next, exponent_next, mantissa_next} = {in_A[63], 63'd0}; 
-                    end
-                    else begin
-                        {sign_next, exponent_next, mantissa_next} = {in_A[63], 11'd2046 - in_A[62:52], in_A[51:0]}; 
-                    end
+                    {sign_next, exponent_next, mantissa_next} = {in_A[63], 11'd2046 - in_A[62:52], in_A[51:0]}; 
                 end
             endcase
         end
@@ -145,17 +138,17 @@ module fp64_reciprocal #(
         N_reg4_next = NF_reg4_next[111:55];
 
         if (skip3) begin
-            in_B_next = {sign_3, exponent_3, mantissa_3};
+            out_B_next = {sign_3, exponent_3, mantissa_3};
         end
         else begin
             
             rounded_mant = N_reg4_next[56:2] + N_reg4_next[1]; // rounding for 55 bits mantissa
 
             if (rounded_mant[53] == 1'b1) begin // if result >= 2.0 (1.0xxxxx)
-                in_B_next = {sign_3, exponent_3, rounded_mant[52:1]};
+                out_B_next = {sign_3, exponent_3, rounded_mant[52:1]};
             end 
             else begin // if result < 2.0 (0.1xxxxx)
-                in_B_next = {sign_3, exponent_3 - 11'd1, rounded_mant[51:0]};
+                out_B_next = {sign_3, exponent_3 - 11'd1, rounded_mant[51:0]};
             end
         end
     end

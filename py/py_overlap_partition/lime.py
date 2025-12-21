@@ -45,6 +45,12 @@ def run_lime(
 
     # ----- initialize illumination map ----- #
     illum = initial_map(img_in)
+    
+    # illum_u8 = (np.clip(illum, 0, 1) * 255).astype(np.uint8)
+    # print("\nillum hex (row-major, top row first):")
+    # for r in range(illum_u8.shape[0]):
+    #     print(" ".join(f"{v:02x}" for v in illum_u8[r]))
+    
     #print("initial illu map size: ", illum.shape)
     illum_out = stage_path("initial_illum_map")
     Image.fromarray((illum * 255).astype(np.uint8), mode="L").save(illum_out)

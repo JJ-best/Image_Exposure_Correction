@@ -17,98 +17,98 @@
 # # # Layer2: initial_illum_map #
 # vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer2.log \
 #     +define+INIT \
-#     +define+INIT_EN=1 \
+#     +define+INIT_EN=0 \
 #     +define+PAT=1 \
-#     +define+PATCH_I=20 \
-#     +define+PATCH_J=20 \
+#     +define+PATCH_I=0 \
+#     +define+PATCH_J=0 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
-#     +define+END_CYCLES=5000
+#     +define+END_CYCLES=30000
 
 # # # Layer3: ALM_U #
 # vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer3.log \
 #     +define+ALM_U \
-#     +define+INIT_EN=1 \
-#     +define+PAT=2 \
-#     +define+PATCH_I=20 \
-#     +define+PATCH_J=20 \
+#     +define+INIT_EN=0 \
+#     +define+PAT=1 \
+#     +define+PATCH_I=0 \
+#     +define+PATCH_J=0 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
-#     +define+END_CYCLES=5000
+#     +define+END_CYCLES=10000
 
 # # # # Layer4: ALM_A #
 # vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer4.log \
 #     +define+ALM_A \
-#     +define+INIT_EN=1 \
+#     +define+INIT_EN=0 \
 #     +define+PAT=1 \
-#     +define+PATCH_I=20 \
-#     +define+PATCH_J=20 \
+#     +define+PATCH_I=0 \
+#     +define+PATCH_J=0 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
-#     +define+END_CYCLES=5000
+#     +define+END_CYCLES=10000
 
 # # # # Layer5: ALM_delG #
 # vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer5.log \
 #     +define+ALM_delG \
-#     +define+INIT_EN=1 \
+#     +define+INIT_EN=0 \
 #     +define+PAT=1 \
 #     +define+PATCH_I=20 \
 #     +define+PATCH_J=20 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
-#     +define+END_CYCLES=5000
+#     +define+END_CYCLES=10000
 
 # # Layer6: ALM_Tnum #
 # vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer6.log \
 #     +define+ALM_Tnum \
-#     +define+INIT_EN=1 \
+#     +define+INIT_EN=0 \
 #     +define+PAT=1 \
-#     +define+PATCH_I=20 \
-#     +define+PATCH_J=20 \
+#     +define+PATCH_I=0 \
+#     +define+PATCH_J=0 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
-#     +define+END_CYCLES=5000
+#     +define+END_CYCLES=10000
 
 # # # Layer7: ALM_Tn #
 # vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer7.log \
 #     +define+ALM_Tn \
-#     +define+INIT_EN=1 \
+#     +define+INIT_EN=0 \
 #     +define+PAT=1 \
-#     +define+PATCH_I=20 \
-#     +define+PATCH_J=20 \
+#     +define+PATCH_I=0 \
+#     +define+PATCH_J=0 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
-#     +define+END_CYCLES=5000
+#     +define+END_CYCLES=30000
 
 # # # Layer8: ALM_Td #
 # vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer8.log \
 #     +define+ALM_Td \
-#     +define+INIT_EN=1 \
+#     +define+INIT_EN=0 \
 #     +define+PAT=1 \
-#     +define+PATCH_I=20 \
-#     +define+PATCH_J=20 \
+#     +define+PATCH_I=0 \
+#     +define+PATCH_J=0 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
-#     +define+END_CYCLES=5000
+#     +define+END_CYCLES=35000
 
 # # # Layer9: ALM_Tnd #
-# vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer9.log \
-#     +define+ALM_Tnd \
-#     +define+INIT_EN=1 \
-#     +define+PAT=1 \
-#     +define+PATCH_I=20 \
-#     +define+PATCH_J=20 \
-#     +define+FLAG_VERBOSE=1 \
-#     +define+FLAG_DUMPWV=1 \
-#     +define+END_CYCLES=5000
+vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer9.log \
+    +define+ALM_Tnd \
+    +define+INIT_EN=0 \
+    +define+PAT=1 \
+    +define+PATCH_I=0 \
+    +define+PATCH_J=0 \
+    +define+FLAG_VERBOSE=1 \
+    +define+FLAG_DUMPWV=1 \
+    +define+END_CYCLES=30000
 
 # # # Layer10: ALM_Tout #
 # vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer10.log \
 #     +define+ALM_Tout \
-#     +define+INIT_EN=1 \
+#     +define+INIT_EN=0 \
 #     +define+PAT=1 \
-#     +define+PATCH_I=20 \
-#     +define+PATCH_J=20 \
+#     +define+PATCH_I=0 \
+#     +define+PATCH_J=0 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
 #     +define+END_CYCLES=5000
@@ -116,10 +116,10 @@
 # # # Layer11: ALM_delT #
 # vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer11.log \
 #     +define+ALM_delT \
-#     +define+INIT_EN=1 \
+#     +define+INIT_EN=0 \
 #     +define+PAT=1 \
-#     +define+PATCH_I=20 \
-#     +define+PATCH_J=20 \
+#     +define+PATCH_I=0 \
+#     +define+PATCH_J=0 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
 #     +define+END_CYCLES=5000

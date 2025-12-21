@@ -466,27 +466,52 @@ reg [(ADDR_WIDTH_D-1):0] sram_d_addr;
 reg [(ADDR_WIDTH_D-1):0] sram_d_addr_n;
 reg valid_8;
 reg valid_8_n;
-// ===== top state ===== //
 
+// ----- fprecip
+reg fp_recip_in_valid;
+reg [(pFP_WIDTH-1):0]fp_recip_in_dat;
+wire fp_recip_out_valid;
+wire [(pFP_WIDTH-1):0]fp_recip_out_dat;
+reg [(pFP_WIDTH-1):0]fp_recip_in_dat_sel;
+reg [3:0] fp_recip_cnt16;
+// ----- read sram t
+reg [3:0]cnt16_recip_t;
+reg [3:0]cnt16_recip;
+reg read_sram_t;
+reg [(ADDR_WIDTH_T-1):0] sram_t_addr;
+reg [(ADDR_WIDTH_T-1):0] sram_t_addr_n;
+// ----- write sram c
+reg [(ADDR_WIDTH_C-1):0] sram_c_addr;
+reg [(ADDR_WIDTH_C-1):0] sram_c_addr_n;
+reg [3:0]ifft_cnt16;
+// ===== top state ===== //
 
 localparam IDLE      = 7'd0;
 localparam RGB_MAX   = 7'd1;
 localparam RGB_MAX_t = 7'd2;
 localparam NORMAL    = 7'd3;
 localparam NORMAL_t  = 7'd4;
-localparam Z_DIV_U   = 7'd5;
-localparam Z_DIV_U_t = 7'd6;
-localparam WRITE_X1  = 7'd7;
-localparam WRITE_X1_t= 7'd8;
-localparam WRITE_X2  = 7'd9;
-localparam WRITE_X2_t= 7'd10;
-localparam PRE_FFT   = 7'd11;
-localparam PRE_FFT_t = 7'd12;
-localparam FFT       = 7'd13;
-localparam FFT_D     = 7'd14;
-localparam FFT_D_t   = 7'd15;
-localparam iFFT      = 7'd18;
-localparam DONE      = 7'd20;
+// TODO: 
+localparam MOV_INIT  = 7'd5; // move init map from sram b to sram e(pull input valid)
+localparam MOV_INIT_t= 7'd6; // if switch to this state(input valid=0, but compute the remain data)
+localparam WEIGHT    = 7'd7; // (del(Ti) + epsilon) from sram e to sram w(pull input valid)
+localparam WEIGHT_t  = 7'd8; // if switch to this state(input valid=0, but compute the remain data)
+
+localparam Z_DIV_U   = 7'd9;
+localparam Z_DIV_U_t = 7'd10;
+localparam WRITE_X1  = 7'd11;
+localparam WRITE_X1_t= 7'd12;
+localparam WRITE_X2  = 7'd13;
+localparam WRITE_X2_t= 7'd14;
+localparam PRE_FFT   = 7'd15;
+localparam PRE_FFT_t = 7'd16;
+localparam FFT       = 7'd17;
+localparam FFT_D     = 7'd18;
+localparam FFT_D_t   = 7'd19;
+localparam PRE_iFFT  = 7'd20;
+localparam PRE_iFFT_t= 7'd21;
+localparam iFFT      = 7'd22;
+localparam DONE      = 7'd23;
 
 always @(*) begin
     case (top_state)
@@ -520,11 +545,12 @@ always @(*) begin
         end
         NORMAL_t: begin
             if (sram_b_addr == 8'd255) begin
-                top_state_n = Z_DIV_U;
+                top_state_n = Z_DIV_U; // TODO: you may switch to MOV_INIT
             end else begin
                 top_state_n = NORMAL_t;
             end
         end
+        // TODO: MOV_INIT -> MOV_INTI_t -> WETGHT -> WEIGHT_t -> Z_DIV_U
         Z_DIV_U: begin
             if (sram_z_addr == 9'd511) begin
                 top_state_n = Z_DIV_U_t;
@@ -597,9 +623,23 @@ always @(*) begin
         end
         FFT_D_t: begin
             if (sram_e_addr == 6'd63 && sram_wen_e15 == 1'b0) begin
-                top_state_n = DONE;
+                top_state_n = PRE_iFFT;
             end else begin
                 top_state_n = FFT_D_t;
+            end
+        end
+        PRE_iFFT: begin
+            if (sram_addr_e0 == 6'd63 && cnt16_recip == 4'd15) begin
+                top_state_n = PRE_iFFT_t;
+            end else begin
+                top_state_n = PRE_iFFT;
+            end
+        end
+        PRE_iFFT_t: begin
+            if (sram_c_addr == 6'd63 && sram_wen_c15 == 1'b0) begin
+                top_state_n = DONE;
+            end else begin
+                top_state_n = PRE_iFFT_t;
             end
         end
         DONE: begin
@@ -898,6 +938,7 @@ always @(*) begin
             sram_addr_b2 = sram_b_addr;
             sram_addr_b3 = sram_b_addr;
         end
+        // TODO: add your control for sram b at MOV_INIT, MOV_INIT_t
         default: begin
             sram_b_addr_n = 0;
             sram_wen_b0 = 1'b1;
@@ -1336,7 +1377,7 @@ always @(*) begin
                 sram_wen_x3 = 1'b0 || !(add_out_valid[4] && rowoneblock);
             end
         end
-        PRE_FFT, PRE_FFT: begin
+        PRE_FFT, PRE_FFT_t: begin
             sram_addr_x0 = sram_x_raddr;
             sram_addr_x1 = sram_x_raddr;
             sram_addr_x2 = sram_x_raddr;
@@ -1633,6 +1674,19 @@ always @(posedge clk) begin
     end
 end
 
+// ----- ifft stage ----- //
+// since we only put 1 recip module, no parallel
+// so we only fetch one data from the sram e
+// sram_e_addr will up count every 16 cycle
+
+always @(posedge clk) begin
+    if (top_state == PRE_iFFT || top_state == PRE_iFFT) begin
+        cnt16_recip <= cnt16_recip + 1;
+    end else begin
+        cnt16_recip <= 0;
+    end
+end
+
 always @(*) begin
     case (top_state)
         PRE_FFT, PRE_FFT_t: begin
@@ -1783,6 +1837,32 @@ always @(*) begin
                 sram_wen_e12 = 1'b1; sram_wen_e13 = 1'b1; sram_wen_e14 = 1'b1; sram_wen_e15 = 1'b1;
             end
         end
+        PRE_iFFT: begin
+            sram_e_addr_n = (cnt16_recip == 4'b1111)? sram_e_addr + 1: sram_e_addr;
+
+            sram_addr_e0  = sram_e_addr; sram_addr_e1  = sram_e_addr;
+            sram_addr_e2  = sram_e_addr; sram_addr_e3  = sram_e_addr;
+
+            sram_addr_e4  = sram_e_addr; sram_addr_e5  = sram_e_addr;
+            sram_addr_e6  = sram_e_addr; sram_addr_e7  = sram_e_addr;
+
+            sram_addr_e8  = sram_e_addr; sram_addr_e9  = sram_e_addr;
+            sram_addr_e10 = sram_e_addr; sram_addr_e11 = sram_e_addr;
+
+            sram_addr_e12 = sram_e_addr; sram_addr_e13 = sram_e_addr;
+            sram_addr_e14 = sram_e_addr; sram_addr_e15 = sram_e_addr;
+
+            sram_wdata_e0  = 0; sram_wdata_e1  = 0; sram_wdata_e2  = 0; sram_wdata_e3  = 0;
+            sram_wdata_e4  = 0; sram_wdata_e5  = 0; sram_wdata_e6  = 0; sram_wdata_e7  = 0;
+            sram_wdata_e8  = 0; sram_wdata_e9  = 0; sram_wdata_e10 = 0; sram_wdata_e11 = 0;
+            sram_wdata_e12 = 0; sram_wdata_e13 = 0; sram_wdata_e14 = 0; sram_wdata_e15 = 0;
+
+            sram_wen_e0  = 1'b1; sram_wen_e1  = 1'b1; sram_wen_e2  = 1'b1; sram_wen_e3  = 1'b1;
+            sram_wen_e4  = 1'b1; sram_wen_e5  = 1'b1; sram_wen_e6  = 1'b1; sram_wen_e7  = 1'b1;
+            sram_wen_e8  = 1'b1; sram_wen_e9  = 1'b1; sram_wen_e10 = 1'b1; sram_wen_e11 = 1'b1;
+            sram_wen_e12 = 1'b1; sram_wen_e13 = 1'b1; sram_wen_e14 = 1'b1; sram_wen_e15 = 1'b1;
+        end
+        // TODO: add your control from sram e (MOV_INTT, MOV_INIT_t, WEIGHT, WEIGHT_t)
         default: begin
             sram_e_addr_n = 0;
 
@@ -1804,10 +1884,14 @@ always @(*) begin
     endcase
 end
 
+// ----- sram W ----- //
+// TODO: you may add sram W control at here
+// please use always @(*) begin case() end to control, since other state may need this sram
+
+
 // ----- fft stage ----- //
 // fft module(addr generator) connect to 3 sram: 
 // SRAM-E(32x32x128), SRAM-T(32x32x128), twiddle-rom(31x128)
-
 reg fft_start_flag;
 reg fft_start_flag_d1;
 // generate 1 cycle fft start
@@ -2012,7 +2096,22 @@ always @(*) begin
             sram_wdata_t8  = sramB_wdata_8_dut;   sram_wdata_t9  = sramB_wdata_9_dut;   sram_wdata_t10 = sramB_wdata_10_dut;  sram_wdata_t11 = sramB_wdata_11_dut;
             sram_wdata_t12 = sramB_wdata_12_dut;  sram_wdata_t13 = sramB_wdata_13_dut;  sram_wdata_t14 = sramB_wdata_14_dut;  sram_wdata_t15 = sramB_wdata_15_dut;
         end
+        PRE_iFFT, PRE_iFFT_t: begin
+            sram_wen_t0  = 1'b1;  sram_wen_t1  = 1'b1;  sram_wen_t2  = 1'b1;  sram_wen_t3  = 1'b1;
+            sram_wen_t4  = 1'b1;  sram_wen_t5  = 1'b1;  sram_wen_t6  = 1'b1;  sram_wen_t7  = 1'b1;
+            sram_wen_t8  = 1'b1;  sram_wen_t9  = 1'b1;  sram_wen_t10 = 1'b1;  sram_wen_t11 = 1'b1;
+            sram_wen_t12 = 1'b1;  sram_wen_t13 = 1'b1;  sram_wen_t14 = 1'b1;  sram_wen_t15 = 1'b1;
 
+            sram_addr_t0  = sram_t_addr;  sram_addr_t1  = sram_t_addr;  sram_addr_t2  = sram_t_addr;  sram_addr_t3  = sram_t_addr;
+            sram_addr_t4  = sram_t_addr;  sram_addr_t5  = sram_t_addr;  sram_addr_t6  = sram_t_addr;  sram_addr_t7  = sram_t_addr;
+            sram_addr_t8  = sram_t_addr;  sram_addr_t9  = sram_t_addr;  sram_addr_t10 = sram_t_addr;  sram_addr_t11 = sram_t_addr;
+            sram_addr_t12 = sram_t_addr;  sram_addr_t13 = sram_t_addr;  sram_addr_t14 = sram_t_addr;  sram_addr_t15 = sram_t_addr;
+
+            sram_wdata_t0  = 0;  sram_wdata_t1  = 0;  sram_wdata_t2  = 0;  sram_wdata_t3  = 0;
+            sram_wdata_t4  = 0;  sram_wdata_t5  = 0;  sram_wdata_t6  = 0;  sram_wdata_t7  = 0;
+            sram_wdata_t8  = 0;  sram_wdata_t9  = 0;  sram_wdata_t10 = 0;  sram_wdata_t11 = 0;
+            sram_wdata_t12 = 0;  sram_wdata_t13 = 0;  sram_wdata_t14 = 0;  sram_wdata_t15 = 0;
+        end
         default: begin
             // idle: disable write
             sram_wen_t0  = 1'b1;  sram_wen_t1  = 1'b1;  sram_wen_t2  = 1'b1;  sram_wen_t3  = 1'b1;
@@ -2072,6 +2171,166 @@ always @(*) begin
     sram_wen_d1 = 1'b1;
     sram_wen_d2 = 1'b1;
     sram_wen_d3 = 1'b1;
+end
+
+// ----- pre ifft ----- //
+// pre ifft control is in the sram e part
+// every cycle we read one data from SRAM-E(read + 0, 2+mu*F{D^TD}), 
+// and transmit to fp_recip => 1/ 2+mu*F{D^TD}
+// we read one data from SRAM-T(real + imag)
+// and multiply the read and imag part of SRAM-T to fp_recip result
+reg valid_9;
+reg [(2*pFP_WIDTH-1):0] sram_t_rdata_sel;
+reg [3:0]cnt16_recip_t_d;
+always @(posedge clk) begin
+   if (top_state == PRE_iFFT) begin
+        valid_9 <= 1;
+   end else begin
+        valid_9 <= 0;
+   end
+end
+
+always @(posedge clk) begin
+    if (fp_recip_cnt16 ==4'd4) begin
+        read_sram_t <= 1;
+    end  else if (top_state == PRE_iFFT || top_state == PRE_iFFT_t) begin
+        read_sram_t <= read_sram_t;
+    end else begin
+        read_sram_t <= 0;
+    end
+end
+
+always @(posedge clk) begin
+    if ((top_state == PRE_iFFT || top_state == PRE_iFFT_t) && read_sram_t) begin
+        cnt16_recip_t <= cnt16_recip_t + 1;
+    end else begin
+        cnt16_recip_t <= 0;
+    end
+end
+
+
+always @(posedge clk) begin
+    if (!rst_n) begin
+        sram_t_addr <= 0;
+        cnt16_recip_t_d <= 0;
+    end else begin
+        sram_t_addr <= sram_t_addr_n;
+        cnt16_recip_t_d <= cnt16_recip_t;
+    end
+end
+
+always @(*) begin
+    case (top_state)
+        PRE_iFFT, PRE_iFFT_t: begin
+            sram_t_addr_n = (cnt16_recip_t == 4'b1111)? sram_t_addr + 1: sram_t_addr;
+        end  
+        default: begin
+            sram_t_addr_n = 0;
+        end
+    endcase
+end
+
+always @(*) begin
+    case (cnt16_recip_t_d)
+        0 : sram_t_rdata_sel = sram_rdata_t0; 
+        1 : sram_t_rdata_sel = sram_rdata_t1; 
+        2 : sram_t_rdata_sel = sram_rdata_t2; 
+        3 : sram_t_rdata_sel = sram_rdata_t3; 
+        4 : sram_t_rdata_sel = sram_rdata_t4; 
+        5 : sram_t_rdata_sel = sram_rdata_t5; 
+        6 : sram_t_rdata_sel = sram_rdata_t6; 
+        7 : sram_t_rdata_sel = sram_rdata_t7; 
+        8 : sram_t_rdata_sel = sram_rdata_t8; 
+        9 : sram_t_rdata_sel = sram_rdata_t9; 
+        10: sram_t_rdata_sel = sram_rdata_t10; 
+        11: sram_t_rdata_sel = sram_rdata_t11; 
+        12: sram_t_rdata_sel = sram_rdata_t12; 
+        13: sram_t_rdata_sel = sram_rdata_t13; 
+        14: sram_t_rdata_sel = sram_rdata_t14; 
+        15: sram_t_rdata_sel = sram_rdata_t15; 
+    endcase
+end
+// ----- write the pre ifft result into sram C ----- //
+
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        sram_c_addr <= 0;
+    end else begin
+        sram_c_addr <= sram_c_addr_n;
+    end
+end
+
+always @(*) begin
+    case (top_state)
+        PRE_iFFT, PRE_iFFT_t: begin
+            sram_c_addr_n = (ifft_cnt16 == 4'b1111 && mul0_out_valid)? sram_c_addr + 1: sram_c_addr;
+
+            sram_wdata_c0  = mul0_out;  sram_wdata_c1  = mul0_out;  sram_wdata_c2  = mul0_out;  sram_wdata_c3  = mul0_out;
+            sram_wdata_c4  = mul0_out;  sram_wdata_c5  = mul0_out;  sram_wdata_c6  = mul0_out;  sram_wdata_c7  = mul0_out;
+            sram_wdata_c8  = mul0_out;  sram_wdata_c9  = mul0_out;  sram_wdata_c10 = mul0_out;  sram_wdata_c11 = mul0_out;
+            sram_wdata_c12 = mul0_out;  sram_wdata_c13 = mul0_out;  sram_wdata_c14 = mul0_out;  sram_wdata_c15 = mul0_out;
+             
+            sram_addr_c0  = sram_c_addr;  sram_addr_c1  = sram_c_addr;  sram_addr_c2  = sram_c_addr;  sram_addr_c3  = sram_c_addr;
+            sram_addr_c4  = sram_c_addr;  sram_addr_c5  = sram_c_addr;  sram_addr_c6  = sram_c_addr;  sram_addr_c7  = sram_c_addr;
+            sram_addr_c8  = sram_c_addr;  sram_addr_c9  = sram_c_addr;  sram_addr_c10 = sram_c_addr;  sram_addr_c11 = sram_c_addr;
+            sram_addr_c12 = sram_c_addr;  sram_addr_c13 = sram_c_addr;  sram_addr_c14 = sram_c_addr;  sram_addr_c15 = sram_c_addr;
+            
+            if (mul0_out_valid) begin
+                sram_wen_c0  = (ifft_cnt16 == 4'd0 )? 1'b0: 1'b1;  
+                sram_wen_c1  = (ifft_cnt16 == 4'd1 )? 1'b0: 1'b1;  
+                sram_wen_c2  = (ifft_cnt16 == 4'd2 )? 1'b0: 1'b1;  
+                sram_wen_c3  = (ifft_cnt16 == 4'd3 )? 1'b0: 1'b1;
+
+                sram_wen_c4  = (ifft_cnt16 == 4'd4 )? 1'b0: 1'b1;  
+                sram_wen_c5  = (ifft_cnt16 == 4'd5 )? 1'b0: 1'b1;  
+                sram_wen_c6  = (ifft_cnt16 == 4'd6 )? 1'b0: 1'b1;  
+                sram_wen_c7  = (ifft_cnt16 == 4'd7 )? 1'b0: 1'b1;
+
+                sram_wen_c8  = (ifft_cnt16 == 4'd8 )? 1'b0: 1'b1;  
+                sram_wen_c9  = (ifft_cnt16 == 4'd9 )? 1'b0: 1'b1;  
+                sram_wen_c10 = (ifft_cnt16 == 4'd10 )? 1'b0: 1'b1;  
+                sram_wen_c11 = (ifft_cnt16 == 4'd11 )? 1'b0: 1'b1;
+
+                sram_wen_c12 = (ifft_cnt16 == 4'd12)? 1'b0: 1'b1;  
+                sram_wen_c13 = (ifft_cnt16 == 4'd13)? 1'b0: 1'b1;  
+                sram_wen_c14 = (ifft_cnt16 == 4'd14)? 1'b0: 1'b1;  
+                sram_wen_c15 = (ifft_cnt16 == 4'd15)? 1'b0: 1'b1;
+            end else begin
+                sram_wen_c0  = 1'b1;  sram_wen_c1  = 1'b1;  sram_wen_c2  = 1'b1;  sram_wen_c3  = 1'b1;
+                sram_wen_c4  = 1'b1;  sram_wen_c5  = 1'b1;  sram_wen_c6  = 1'b1;  sram_wen_c7  = 1'b1;
+                sram_wen_c8  = 1'b1;  sram_wen_c9  = 1'b1;  sram_wen_c10 = 1'b1;  sram_wen_c11 = 1'b1;
+                sram_wen_c12 = 1'b1;  sram_wen_c13 = 1'b1;  sram_wen_c14 = 1'b1;  sram_wen_c15 = 1'b1;
+            end
+        end
+        default: begin
+            sram_c_addr_n = 0;
+
+            sram_wen_c0  = 1'b1;  sram_wen_c1  = 1'b1;  sram_wen_c2  = 1'b1;  sram_wen_c3  = 1'b1;
+            sram_wen_c4  = 1'b1;  sram_wen_c5  = 1'b1;  sram_wen_c6  = 1'b1;  sram_wen_c7  = 1'b1;
+            sram_wen_c8  = 1'b1;  sram_wen_c9  = 1'b1;  sram_wen_c10 = 1'b1;  sram_wen_c11 = 1'b1;
+            sram_wen_c12 = 1'b1;  sram_wen_c13 = 1'b1;  sram_wen_c14 = 1'b1;  sram_wen_c15 = 1'b1;
+
+            sram_addr_c0  = 0;  sram_addr_c1  = 0;  sram_addr_c2  = 0;  sram_addr_c3  = 0;
+            sram_addr_c4  = 0;  sram_addr_c5  = 0;  sram_addr_c6  = 0;  sram_addr_c7  = 0;
+            sram_addr_c8  = 0;  sram_addr_c9  = 0;  sram_addr_c10 = 0;  sram_addr_c11 = 0;
+            sram_addr_c12 = 0;  sram_addr_c13 = 0;  sram_addr_c14 = 0;  sram_addr_c15 = 0;
+
+            sram_wdata_c0  = 0;  sram_wdata_c1  = 0;  sram_wdata_c2  = 0;  sram_wdata_c3  = 0;
+            sram_wdata_c4  = 0;  sram_wdata_c5  = 0;  sram_wdata_c6  = 0;  sram_wdata_c7  = 0;
+            sram_wdata_c8  = 0;  sram_wdata_c9  = 0;  sram_wdata_c10 = 0;  sram_wdata_c11 = 0;
+            sram_wdata_c12 = 0;  sram_wdata_c13 = 0;  sram_wdata_c14 = 0;  sram_wdata_c15 = 0;
+        end 
+    endcase
+end
+
+// ifft cnt4
+
+always @(posedge clk) begin
+    if (top_state == PRE_iFFT || top_state == PRE_iFFT_t) begin
+        ifft_cnt16 <= (mul0_out_valid)? ifft_cnt16 + 1: ifft_cnt16;
+    end else begin
+        ifft_cnt16 <= 0;
+    end
 end
 
 // ========================================================== //
@@ -2178,6 +2437,17 @@ always @(posedge clk) begin
             mul1_mode     <= 2'b10;
             mul1_in_valid <= valid_8;
         end
+        PRE_iFFT, PRE_iFFT_t: begin
+            mul0_ina      <= {sram_t_rdata_sel[(pFP_WIDTH*2-1):(pFP_WIDTH)], sram_t_rdata_sel[(pFP_WIDTH-1):0]};
+            mul0_inb      <= {fp_recip_out_dat, fp_recip_out_dat};
+            mul0_mode     <= 2'b10; // fp mul
+            mul0_in_valid <= fp_recip_out_valid;
+            mul1_ina <= 0;
+            mul1_inb <= 0;
+            mul1_mode <= 0;
+            mul1_in_valid <= 0;
+        end
+        // TODO: you may add your control at here for WEIGHT, WEIGHT_t
         default: begin
             mul0_ina <= 0;
             mul0_inb <= 0;
@@ -2368,6 +2638,7 @@ always @(posedge clk) begin
                 add_in_valid[i] <= 1'b0;
             end
         end 
+        // TODO: add your control for the WEIGHT and WEIGHT_t
         default: begin
             for (i = 0; i < 8; i = i + 1) begin
                 add_ina[i] <= {pFP_WIDTH{1'b0}};
@@ -2393,6 +2664,59 @@ generate
         );
     end
 endgenerate
+
+always @(posedge clk) begin
+    if (top_state == PRE_iFFT || top_state == PRE_iFFT_t) begin
+        fp_recip_cnt16 <= cnt16_recip;
+    end else begin
+        fp_recip_cnt16 <= 0;
+    end
+end
+
+always @(*) begin
+    case (fp_recip_cnt16)
+        0 : fp_recip_in_dat_sel = sram_rdata_e0[(2*pFP_WIDTH-1):(pFP_WIDTH)]; 
+        1 : fp_recip_in_dat_sel = sram_rdata_e1[(2*pFP_WIDTH-1):(pFP_WIDTH)]; 
+        2 : fp_recip_in_dat_sel = sram_rdata_e2[(2*pFP_WIDTH-1):(pFP_WIDTH)]; 
+        3 : fp_recip_in_dat_sel = sram_rdata_e3[(2*pFP_WIDTH-1):(pFP_WIDTH)]; 
+        4 : fp_recip_in_dat_sel = sram_rdata_e4[(2*pFP_WIDTH-1):(pFP_WIDTH)]; 
+        5 : fp_recip_in_dat_sel = sram_rdata_e5[(2*pFP_WIDTH-1):(pFP_WIDTH)]; 
+        6 : fp_recip_in_dat_sel = sram_rdata_e6[(2*pFP_WIDTH-1):(pFP_WIDTH)]; 
+        7 : fp_recip_in_dat_sel = sram_rdata_e7[(2*pFP_WIDTH-1):(pFP_WIDTH)]; 
+        8 : fp_recip_in_dat_sel = sram_rdata_e8[(2*pFP_WIDTH-1):(pFP_WIDTH)]; 
+        9 : fp_recip_in_dat_sel = sram_rdata_e9[(2*pFP_WIDTH-1):(pFP_WIDTH)]; 
+        10: fp_recip_in_dat_sel = sram_rdata_e10[(2*pFP_WIDTH-1):(pFP_WIDTH)]; 
+        11: fp_recip_in_dat_sel = sram_rdata_e11[(2*pFP_WIDTH-1):(pFP_WIDTH)]; 
+        12: fp_recip_in_dat_sel = sram_rdata_e12[(2*pFP_WIDTH-1):(pFP_WIDTH)]; 
+        13: fp_recip_in_dat_sel = sram_rdata_e13[(2*pFP_WIDTH-1):(pFP_WIDTH)]; 
+        14: fp_recip_in_dat_sel = sram_rdata_e14[(2*pFP_WIDTH-1):(pFP_WIDTH)]; 
+        15: fp_recip_in_dat_sel = sram_rdata_e15[(2*pFP_WIDTH-1):(pFP_WIDTH)]; 
+    endcase
+end
+
+always @(posedge clk) begin
+    case (top_state)
+        PRE_iFFT, PRE_iFFT_t: begin
+            fp_recip_in_valid <= valid_9;
+            fp_recip_in_dat <= fp_recip_in_dat_sel;
+        end 
+        // TODO: dont use this module, i will put after sram W
+        default: begin
+            fp_recip_in_valid <= 0;
+            fp_recip_in_dat <= 0;
+        end
+    endcase
+end
+
+
+fp64_reciprocal fp_recip_U0(
+    .clk(clk),
+    .srst_n(rst_n),
+    .in_valid(fp_recip_in_valid),
+    .in_A(fp_recip_in_dat),
+    .output_valid(fp_recip_out_valid),
+    .out_B(fp_recip_out_dat)
+);
 
 
 endmodule

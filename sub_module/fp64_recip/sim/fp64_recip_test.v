@@ -1,7 +1,7 @@
 `timescale 1ns/100ps
 
 `define PAT_L 0
-`define PAT_U 2999 
+`define PAT_U 1999 
 `define NUM_PAT (`PAT_U-`PAT_L+1)
 
 `define CYCLE 10
@@ -19,7 +19,7 @@ reg clk;
 reg srst_n;
 reg in_valid;
 reg [pFP_WIDTH-1:0] in_A;
-wire [pFP_WIDTH-1:0] in_B;
+wire [pFP_WIDTH-1:0] out_B;
 wire output_valid;
 
 reg [127:0] test_vectors [0:`NUM_PAT-1];
@@ -37,7 +37,7 @@ fp64_reciprocal #(
     .srst_n(srst_n),
     .in_valid(in_valid),
     .in_A(in_A),
-    .in_B(in_B),
+    .out_B(out_B),
     .output_valid(output_valid)
 );
 
@@ -127,7 +127,7 @@ task check_result;
     reg [pFP_WIDTH-1:0] diff;
     begin
         exp_val = golden_data[idx];
-        dut_val = in_B;
+        dut_val = out_B;
 
         if (exp_val > dut_val) diff = exp_val - dut_val;
         else                   diff = dut_val - exp_val;

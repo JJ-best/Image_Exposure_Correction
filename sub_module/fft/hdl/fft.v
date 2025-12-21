@@ -1,6 +1,6 @@
 module fft #(
     parameter BW_PER_ADDR = 128,  // 64-bit real + 64-bit imag
-    parameter ADDR_WIDTH = 8,     // 256 addresses per bank
+    parameter ADDR_WIDTH = 6,     // 64 addresses per bank
     parameter TWIDDLE_ADDR_WIDTH = 6  // 31 twiddle factors
 )(
     input clk,
@@ -230,39 +230,39 @@ always@* begin
     nxt_cnt_out = 0;
     nxt_round_cnt = round_cnt;
 
-    sramA_wsb_0  = 0;
-    sramA_wsb_1  = 0;
-    sramA_wsb_2  = 0;
-    sramA_wsb_3  = 0;
-    sramA_wsb_4  = 0;
-    sramA_wsb_5  = 0;
-    sramA_wsb_6  = 0;
-    sramA_wsb_7  = 0;
-    sramA_wsb_8  = 0;
-    sramA_wsb_9  = 0;
-    sramA_wsb_10 = 0;
-    sramA_wsb_11 = 0;
-    sramA_wsb_12 = 0;
-    sramA_wsb_13 = 0;
-    sramA_wsb_14 = 0;
-    sramA_wsb_15 = 0;
+    sramA_wsb_0  = 1;
+    sramA_wsb_1  = 1;
+    sramA_wsb_2  = 1;
+    sramA_wsb_3  = 1;
+    sramA_wsb_4  = 1;
+    sramA_wsb_5  = 1;
+    sramA_wsb_6  = 1;
+    sramA_wsb_7  = 1;
+    sramA_wsb_8  = 1;
+    sramA_wsb_9  = 1;
+    sramA_wsb_10 = 1;
+    sramA_wsb_11 = 1;
+    sramA_wsb_12 = 1;
+    sramA_wsb_13 = 1;
+    sramA_wsb_14 = 1;
+    sramA_wsb_15 = 1;
 
-    sramB_wsb_0  = 0;
-    sramB_wsb_1  = 0;
-    sramB_wsb_2  = 0;
-    sramB_wsb_3  = 0;
-    sramB_wsb_4  = 0;
-    sramB_wsb_5  = 0;
-    sramB_wsb_6  = 0;
-    sramB_wsb_7  = 0;
-    sramB_wsb_8  = 0;
-    sramB_wsb_9  = 0;
-    sramB_wsb_10 = 0;
-    sramB_wsb_11 = 0;
-    sramB_wsb_12 = 0;
-    sramB_wsb_13 = 0;
-    sramB_wsb_14 = 0;
-    sramB_wsb_15 = 0;
+    sramB_wsb_0  = 1;
+    sramB_wsb_1  = 1;
+    sramB_wsb_2  = 1;
+    sramB_wsb_3  = 1;
+    sramB_wsb_4  = 1;
+    sramB_wsb_5  = 1;
+    sramB_wsb_6  = 1;
+    sramB_wsb_7  = 1;
+    sramB_wsb_8  = 1;
+    sramB_wsb_9  = 1;
+    sramB_wsb_10 = 1;
+    sramB_wsb_11 = 1;
+    sramB_wsb_12 = 1;
+    sramB_wsb_13 = 1;
+    sramB_wsb_14 = 1;
+    sramB_wsb_15 = 1;
 
     sramA_addr_0 =  0;
     sramA_addr_1 =  0;
