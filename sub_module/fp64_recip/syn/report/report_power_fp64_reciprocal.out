@@ -8,7 +8,7 @@ Report : power
         -analysis_effort low
 Design : fp64_reciprocal
 Version: R-2020.09-SP5
-Date   : Wed Dec 17 10:42:31 2025
+Date   : Sun Dec 21 14:30:16 2025
 ****************************************
 
 
@@ -39,6 +39,6 @@ Power-specific unit information :
                                        Switch   Int      Leak     Total
 Hierarchy                              Power    Power    Power    Power    %
 --------------------------------------------------------------------------------
-fp64_reciprocal                           2.000    5.167 2.55e+06    7.169 100.0
-  u_lut (recip_lut)                    1.21e-03 2.00e-03 3.82e+03 3.21e-03   0.0
+fp64_reciprocal                           1.972    5.149 2.53e+06    7.124 100.0
+  u_lut (recip_lut)                    1.26e-03 2.13e-03 3.83e+03 3.39e-03   0.0
 1

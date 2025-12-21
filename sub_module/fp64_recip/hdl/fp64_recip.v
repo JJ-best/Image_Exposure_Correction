@@ -89,12 +89,19 @@ module fp64_reciprocal #(
                         skip_next = 1'b1;
                         {sign_next, exponent_next, mantissa_next} = {in_A[63], 11'h7FF, 52'd0}; 
                     end
-                    else begin
-                        {sign_next, exponent_next, mantissa_next} = {in_A[63], 11'd2046, in_A[51:1], 1'b0}; 
+                    else begin // Denormal -> Max Normal
+                        skip_next = 1'b1;
+                        {sign_next, exponent_next, mantissa_next} = {in_A[63], 11'd2046, {52{1'b1}}}; 
                     end
                 end
                 default: begin // Normal
-                    {sign_next, exponent_next, mantissa_next} = {in_A[63], 11'd2046 - in_A[62:52], in_A[51:0]}; 
+                    if (in_A[62:54] == {9{1'b1}} && (in_A[53] ^ in_A[52])) begin // Normal (in_A exp=2046 or 2045) -> Denormal
+                        skip_next = 1'b1;
+                        {sign_next, exponent_next, mantissa_next} = {in_A[63], 63'd0}; 
+                    end
+                    else begin
+                        {sign_next, exponent_next, mantissa_next} = {in_A[63], 11'd2046 - in_A[62:52], in_A[51:0]}; 
+                    end
                 end
             endcase
         end

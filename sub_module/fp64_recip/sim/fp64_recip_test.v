@@ -1,7 +1,7 @@
 `timescale 1ns/100ps
 
 `define PAT_L 0
-`define PAT_U 1999 
+`define PAT_U 2999 
 `define NUM_PAT (`PAT_U-`PAT_L+1)
 
 `define CYCLE 10
