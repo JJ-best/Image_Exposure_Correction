@@ -220,6 +220,7 @@ endmodule
 ## Function
 * Implement sramT_2 -> sramX_2
 * Two parts to calculate: $\nabla T_n (D_x)$ and $\nabla T_v (D_y)$.
+* When receiving `enable`, calculate start, when storing back all sramX, set `done = 1`. Both signal are 1-cycle.
 ### 1.  $\nabla T_n (D_x)$ ###
 - Interior columns (`0 ≤ j < 31`): $\[(D_x T)(i, j) = T(i, j+1) - T(i, j)\]$
 - Last column (wrap-around) (`j = 31`): $\[(D_x T)(i, 31) = T(i, 0) - T(i, 31)\]$
