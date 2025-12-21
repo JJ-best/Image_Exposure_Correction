@@ -484,6 +484,69 @@ reg [(ADDR_WIDTH_T-1):0] sram_t_addr_n;
 reg [(ADDR_WIDTH_C-1):0] sram_c_addr;
 reg [(ADDR_WIDTH_C-1):0] sram_c_addr_n;
 reg [3:0]ifft_cnt16;
+
+// ----- delT
+// ===== delT control =====
+wire delt_done;
+reg delt_start;
+reg delt_start_flag;
+reg delt_start_flag_d1;
+
+// ===== SRAM T (16 banks) =====
+wire delt_sram_wen_t0,  delt_sram_wen_t1,  delt_sram_wen_t2,  delt_sram_wen_t3;
+wire delt_sram_wen_t4,  delt_sram_wen_t5,  delt_sram_wen_t6,  delt_sram_wen_t7;
+wire delt_sram_wen_t8,  delt_sram_wen_t9,  delt_sram_wen_t10, delt_sram_wen_t11;
+wire delt_sram_wen_t12, delt_sram_wen_t13, delt_sram_wen_t14, delt_sram_wen_t15;
+
+reg [127:0] delt_sram_rdata_t0,  delt_sram_rdata_t1,  delt_sram_rdata_t2,  delt_sram_rdata_t3;
+reg [127:0] delt_sram_rdata_t4,  delt_sram_rdata_t5,  delt_sram_rdata_t6,  delt_sram_rdata_t7;
+reg [127:0] delt_sram_rdata_t8,  delt_sram_rdata_t9,  delt_sram_rdata_t10, delt_sram_rdata_t11;
+reg [127:0] delt_sram_rdata_t12, delt_sram_rdata_t13, delt_sram_rdata_t14, delt_sram_rdata_t15;
+
+wire [5:0] delt_sram_addr_t0,  delt_sram_addr_t1,  delt_sram_addr_t2,  delt_sram_addr_t3;
+wire [5:0] delt_sram_addr_t4,  delt_sram_addr_t5,  delt_sram_addr_t6,  delt_sram_addr_t7;
+wire [5:0] delt_sram_addr_t8,  delt_sram_addr_t9,  delt_sram_addr_t10, delt_sram_addr_t11;
+wire [5:0] delt_sram_addr_t12, delt_sram_addr_t13, delt_sram_addr_t14, delt_sram_addr_t15;
+
+wire [127:0] delt_sram_wdata_t0,  delt_sram_wdata_t1,  delt_sram_wdata_t2,  delt_sram_wdata_t3;
+wire [127:0] delt_sram_wdata_t4,  delt_sram_wdata_t5,  delt_sram_wdata_t6,  delt_sram_wdata_t7;
+wire [127:0] delt_sram_wdata_t8,  delt_sram_wdata_t9,  delt_sram_wdata_t10, delt_sram_wdata_t11;
+wire [127:0] delt_sram_wdata_t12, delt_sram_wdata_t13, delt_sram_wdata_t14, delt_sram_wdata_t15;
+
+// ===== SRAM X (4 banks) =====
+wire delt_sram_wen_x0, delt_sram_wen_x1, delt_sram_wen_x2, delt_sram_wen_x3;
+
+reg [63:0]  delt_sram_rdata_x0, delt_sram_rdata_x1,
+            delt_sram_rdata_x2, delt_sram_rdata_x3;
+
+wire [8:0]  delt_sram_addr_x0,  delt_sram_addr_x1,
+            delt_sram_addr_x2,  delt_sram_addr_x3;
+
+wire [63:0] delt_sram_wdata_x0, delt_sram_wdata_x1,
+            delt_sram_wdata_x2, delt_sram_wdata_x3;
+
+// ===== FP ADD =====
+wire [63:0] delt_fp_add_01_in_A, delt_fp_add_01_in_B;
+wire        delt_fp_add_01_in_valid;
+reg  [63:0] delt_fp_add_01_result;
+reg         delt_fp_add_01_out_valid;
+
+wire [63:0] delt_fp_add_02_in_A, delt_fp_add_02_in_B;
+wire        delt_fp_add_02_in_valid;
+reg  [63:0] delt_fp_add_02_result;
+reg         delt_fp_add_02_out_valid;
+
+wire [63:0] delt_fp_add_11_in_A, delt_fp_add_11_in_B;
+wire        delt_fp_add_11_in_valid;
+reg  [63:0] delt_fp_add_11_result;
+reg         delt_fp_add_11_out_valid;
+
+wire [63:0] delt_fp_add_12_in_A, delt_fp_add_12_in_B;
+wire        delt_fp_add_12_in_valid;
+reg  [63:0] delt_fp_add_12_result;
+reg         delt_fp_add_12_out_valid;
+
+
 // ===== top state ===== //
 
 localparam IDLE      = 7'd0;
@@ -511,8 +574,9 @@ localparam FFT_D_t   = 7'd19;
 localparam PRE_iFFT  = 7'd20;
 localparam PRE_iFFT_t= 7'd21;
 localparam iFFT      = 7'd22;
-localparam iFFT_t    = 7'd23;
-localparam DONE      = 7'd24;
+localparam DelT      = 7'd23;
+
+localparam DONE      = 7'd30;
 
 always @(*) begin
     case (top_state)
@@ -645,9 +709,16 @@ always @(*) begin
         end
         iFFT: begin
             if (fft_done) begin
-                top_state_n = DONE;
+                top_state_n = DelT;
             end else begin
                 top_state_n = iFFT;
+            end
+        end
+        DelT: begin
+            if (delt_done) begin
+                top_state_n = DONE;
+            end else begin
+                top_state_n = DelT;
             end
         end
         DONE: begin
@@ -1330,6 +1401,7 @@ always @(posedge clk or negedge rst_n) begin
     end
 end
 
+// SRAM X controll
 always @(*) begin
     case (top_state)
         WRITE_X1, WRITE_X1_t: begin
@@ -1399,6 +1471,28 @@ always @(*) begin
             sram_wdata_x2 = 0;
             sram_wdata_x3 = 0;
         end
+        DelT: begin
+            // address
+            sram_addr_x0 = delt_sram_addr_x0;
+            sram_addr_x1 = delt_sram_addr_x1;
+            sram_addr_x2 = delt_sram_addr_x2;
+            sram_addr_x3 = delt_sram_addr_x3;
+
+            // write data
+            sram_wdata_x0 = delt_sram_wdata_x0;
+            sram_wdata_x1 = delt_sram_wdata_x1;
+            sram_wdata_x2 = delt_sram_wdata_x2;
+            sram_wdata_x3 = delt_sram_wdata_x3;
+
+            // write enable (low active)
+            sram_wen_x0 = delt_sram_wen_x0;
+            sram_wen_x1 = delt_sram_wen_x1;
+            sram_wen_x2 = delt_sram_wen_x2;
+            sram_wen_x3 = delt_sram_wen_x3;
+
+            sram_x_addr_n = 0;
+        end
+
         default: begin
             sram_addr_x0 = 0;
             sram_addr_x1 = 0;
@@ -2156,6 +2250,25 @@ always @(*) begin
             sram_wdata_t8  = sramB_wdata_8_dut;   sram_wdata_t9  = sramB_wdata_9_dut;   sram_wdata_t10 = sramB_wdata_10_dut;  sram_wdata_t11 = sramB_wdata_11_dut;
             sram_wdata_t12 = sramB_wdata_12_dut;  sram_wdata_t13 = sramB_wdata_13_dut;  sram_wdata_t14 = sramB_wdata_14_dut;  sram_wdata_t15 = sramB_wdata_15_dut;
         end
+        DelT: begin
+            // write enable (low active)
+            sram_wen_t0  = delt_sram_wen_t0;   sram_wen_t1  = delt_sram_wen_t1;   sram_wen_t2  = delt_sram_wen_t2;   sram_wen_t3  = delt_sram_wen_t3;
+            sram_wen_t4  = delt_sram_wen_t4;   sram_wen_t5  = delt_sram_wen_t5;   sram_wen_t6  = delt_sram_wen_t6;   sram_wen_t7  = delt_sram_wen_t7;
+            sram_wen_t8  = delt_sram_wen_t8;   sram_wen_t9  = delt_sram_wen_t9;   sram_wen_t10 = delt_sram_wen_t10;  sram_wen_t11 = delt_sram_wen_t11;
+            sram_wen_t12 = delt_sram_wen_t12;  sram_wen_t13 = delt_sram_wen_t13;  sram_wen_t14 = delt_sram_wen_t14;  sram_wen_t15 = delt_sram_wen_t15;
+
+            // address
+            sram_addr_t0  = delt_sram_addr_t0;   sram_addr_t1  = delt_sram_addr_t1;   sram_addr_t2  = delt_sram_addr_t2;   sram_addr_t3  = delt_sram_addr_t3;
+            sram_addr_t4  = delt_sram_addr_t4;   sram_addr_t5  = delt_sram_addr_t5;   sram_addr_t6  = delt_sram_addr_t6;   sram_addr_t7  = delt_sram_addr_t7;
+            sram_addr_t8  = delt_sram_addr_t8;   sram_addr_t9  = delt_sram_addr_t9;   sram_addr_t10 = delt_sram_addr_t10;  sram_addr_t11 = delt_sram_addr_t11;
+            sram_addr_t12 = delt_sram_addr_t12;  sram_addr_t13 = delt_sram_addr_t13;  sram_addr_t14 = delt_sram_addr_t14;  sram_addr_t15 = delt_sram_addr_t15;
+
+            // write data
+            sram_wdata_t0  = delt_sram_wdata_t0;   sram_wdata_t1  = delt_sram_wdata_t1;   sram_wdata_t2  = delt_sram_wdata_t2;   sram_wdata_t3  = delt_sram_wdata_t3;
+            sram_wdata_t4  = delt_sram_wdata_t4;   sram_wdata_t5  = delt_sram_wdata_t5;   sram_wdata_t6  = delt_sram_wdata_t6;   sram_wdata_t7  = delt_sram_wdata_t7;
+            sram_wdata_t8  = delt_sram_wdata_t8;   sram_wdata_t9  = delt_sram_wdata_t9;   sram_wdata_t10 = delt_sram_wdata_t10;  sram_wdata_t11 = delt_sram_wdata_t11;
+            sram_wdata_t12 = delt_sram_wdata_t12;  sram_wdata_t13 = delt_sram_wdata_t13;  sram_wdata_t14 = delt_sram_wdata_t14;  sram_wdata_t15 = delt_sram_wdata_t15;
+        end
         default: begin
             // idle: disable write
             sram_wen_t0  = 1'b1;  sram_wen_t1  = 1'b1;  sram_wen_t2  = 1'b1;  sram_wen_t3  = 1'b1;
@@ -2409,6 +2522,25 @@ always @(posedge clk) begin
     end
 end
 
+// ----- delT enable control
+// generate 1 cycle delt start
+
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        delt_start_flag <= 0;
+        delt_start_flag_d1 <= 0;
+    end else if (top_state == DelT) begin
+        delt_start_flag <= 1;
+        delt_start_flag_d1 <= delt_start_flag;
+    end else begin
+        delt_start_flag <= 0;
+        delt_start_flag_d1 <= 0;
+    end
+end
+
+always @(*) begin
+    delt_start = delt_start_flag ^ delt_start_flag_d1;
+end
 // ========================================================== //
 // ===               computation resource                 === //
 // ========================================================== //
@@ -2559,7 +2691,7 @@ mul mul_U1(
 );
 
 
-
+// Adder io mux
 always @(posedge clk) begin
     case (top_state)
         WRITE_X1, WRITE_X1_t: begin // G - Z/mu
@@ -2714,6 +2846,41 @@ always @(posedge clk) begin
                 add_in_valid[i] <= 1'b0;
             end
         end 
+        DelT: begin
+            // ===== delT uses 4 fp_add : map to add[0..3], disable add[4..7] =====
+            add_ina[0]      <= delt_fp_add_01_in_A;
+            add_inb[0]      <= delt_fp_add_01_in_B;
+            add_in_valid[0] <= delt_fp_add_01_in_valid;
+
+            add_ina[1]      <= delt_fp_add_02_in_A;
+            add_inb[1]      <= delt_fp_add_02_in_B;
+            add_in_valid[1] <= delt_fp_add_02_in_valid;
+
+            add_ina[2]      <= delt_fp_add_11_in_A;
+            add_inb[2]      <= delt_fp_add_11_in_B;
+            add_in_valid[2] <= delt_fp_add_11_in_valid;
+
+            add_ina[3]      <= delt_fp_add_12_in_A;
+            add_inb[3]      <= delt_fp_add_12_in_B;
+            add_in_valid[3] <= delt_fp_add_12_in_valid;
+
+            // unused adders
+            add_ina[4]      <= {pFP_WIDTH{1'b0}};
+            add_inb[4]      <= {pFP_WIDTH{1'b0}};
+            add_in_valid[4] <= 1'b0;
+
+            add_ina[5]      <= {pFP_WIDTH{1'b0}};
+            add_inb[5]      <= {pFP_WIDTH{1'b0}};
+            add_in_valid[5] <= 1'b0;
+
+            add_ina[6]      <= {pFP_WIDTH{1'b0}};
+            add_inb[6]      <= {pFP_WIDTH{1'b0}};
+            add_in_valid[6] <= 1'b0;
+
+            add_ina[7]      <= {pFP_WIDTH{1'b0}};
+            add_inb[7]      <= {pFP_WIDTH{1'b0}};
+            add_in_valid[7] <= 1'b0;
+        end
         // TODO: add your control for the WEIGHT and WEIGHT_t
         default: begin
             for (i = 0; i < 8; i = i + 1) begin
@@ -2724,7 +2891,7 @@ always @(posedge clk) begin
         end
     endcase
 end
-
+   
 
 genvar k;
 generate
@@ -2793,6 +2960,176 @@ fp64_reciprocal fp_recip_U0(
     .output_valid(fp_recip_out_valid),
     .out_B(fp_recip_out_dat)
 );
+
+
+// ===== delT input mux (NO FF, pure combinational) =====
+always @(*) begin
+    case (top_state)
+        DelT: begin
+            // ===== SRAM T =====
+            delt_sram_rdata_t0  = sram_rdata_t0;
+            delt_sram_rdata_t1  = sram_rdata_t1;
+            delt_sram_rdata_t2  = sram_rdata_t2;
+            delt_sram_rdata_t3  = sram_rdata_t3;
+            delt_sram_rdata_t4  = sram_rdata_t4;
+            delt_sram_rdata_t5  = sram_rdata_t5;
+            delt_sram_rdata_t6  = sram_rdata_t6;
+            delt_sram_rdata_t7  = sram_rdata_t7;
+            delt_sram_rdata_t8  = sram_rdata_t8;
+            delt_sram_rdata_t9  = sram_rdata_t9;
+            delt_sram_rdata_t10 = sram_rdata_t10;
+            delt_sram_rdata_t11 = sram_rdata_t11;
+            delt_sram_rdata_t12 = sram_rdata_t12;
+            delt_sram_rdata_t13 = sram_rdata_t13;
+            delt_sram_rdata_t14 = sram_rdata_t14;
+            delt_sram_rdata_t15 = sram_rdata_t15;
+
+            // ===== SRAM X =====
+            delt_sram_rdata_x0 = sram_rdata_x0;
+            delt_sram_rdata_x1 = sram_rdata_x1;
+            delt_sram_rdata_x2 = sram_rdata_x2;
+            delt_sram_rdata_x3 = sram_rdata_x3;
+
+            // ===== FP ADD return =====
+            delt_fp_add_01_result    = add_result[0];
+            delt_fp_add_02_result    = add_result[1];
+            delt_fp_add_11_result    = add_result[2];
+            delt_fp_add_12_result    = add_result[3];
+
+            delt_fp_add_01_out_valid = add_out_valid[0];
+            delt_fp_add_02_out_valid = add_out_valid[1];
+            delt_fp_add_11_out_valid = add_out_valid[2];
+            delt_fp_add_12_out_valid = add_out_valid[3];
+        end
+
+        default: begin
+            // SRAM T
+            delt_sram_rdata_t0  = 0;  delt_sram_rdata_t1  = 0;
+            delt_sram_rdata_t2  = 0;  delt_sram_rdata_t3  = 0;
+            delt_sram_rdata_t4  = 0;  delt_sram_rdata_t5  = 0;
+            delt_sram_rdata_t6  = 0;  delt_sram_rdata_t7  = 0;
+            delt_sram_rdata_t8  = 0;  delt_sram_rdata_t9  = 0;
+            delt_sram_rdata_t10 = 0;  delt_sram_rdata_t11 = 0;
+            delt_sram_rdata_t12 = 0;  delt_sram_rdata_t13 = 0;
+            delt_sram_rdata_t14 = 0;  delt_sram_rdata_t15 = 0;
+
+            // SRAM X
+            delt_sram_rdata_x0 = 0;
+            delt_sram_rdata_x1 = 0;
+            delt_sram_rdata_x2 = 0;
+            delt_sram_rdata_x3 = 0;
+
+            // FP ADD return
+            delt_fp_add_01_result    = 0;
+            delt_fp_add_02_result    = 0;
+            delt_fp_add_11_result    = 0;
+            delt_fp_add_12_result    = 0;
+            delt_fp_add_01_out_valid = 1'b0;
+            delt_fp_add_02_out_valid = 1'b0;
+            delt_fp_add_11_out_valid = 1'b0;
+            delt_fp_add_12_out_valid = 1'b0;
+        end
+    endcase
+end
+
+
+delT #(
+    .BW_PER_ADDR_T (128),
+    .BW_PER_ADDR_X (64),
+    .ADDR_WIDTH_T  (6),
+    .ADDR_WIDTH_X  (9)
+) u_delT (
+    .clk        (clk),         .rst_n      (rst_n),
+    .enable     (delt_start), .done       (delt_done),
+
+    // ===== SRAM T =====
+    // output 
+    .sram_wen_t0  (delt_sram_wen_t0),   .sram_wen_t1  (delt_sram_wen_t1),
+    .sram_wen_t2  (delt_sram_wen_t2),   .sram_wen_t3  (delt_sram_wen_t3),
+    .sram_wen_t4  (delt_sram_wen_t4),   .sram_wen_t5  (delt_sram_wen_t5),
+    .sram_wen_t6  (delt_sram_wen_t6),   .sram_wen_t7  (delt_sram_wen_t7),
+    .sram_wen_t8  (delt_sram_wen_t8),   .sram_wen_t9  (delt_sram_wen_t9),
+    .sram_wen_t10 (delt_sram_wen_t10),  .sram_wen_t11 (delt_sram_wen_t11),
+    .sram_wen_t12 (delt_sram_wen_t12),  .sram_wen_t13 (delt_sram_wen_t13),
+    .sram_wen_t14 (delt_sram_wen_t14),  .sram_wen_t15 (delt_sram_wen_t15),
+
+    // input 
+    .sram_rdata_t0  (delt_sram_rdata_t0),   .sram_rdata_t1  (delt_sram_rdata_t1),
+    .sram_rdata_t2  (delt_sram_rdata_t2),   .sram_rdata_t3  (delt_sram_rdata_t3),
+    .sram_rdata_t4  (delt_sram_rdata_t4),   .sram_rdata_t5  (delt_sram_rdata_t5),
+    .sram_rdata_t6  (delt_sram_rdata_t6),   .sram_rdata_t7  (delt_sram_rdata_t7),
+    .sram_rdata_t8  (delt_sram_rdata_t8),   .sram_rdata_t9  (delt_sram_rdata_t9),
+    .sram_rdata_t10 (delt_sram_rdata_t10),  .sram_rdata_t11 (delt_sram_rdata_t11),
+    .sram_rdata_t12 (delt_sram_rdata_t12),  .sram_rdata_t13 (delt_sram_rdata_t13),
+    .sram_rdata_t14 (delt_sram_rdata_t14),  .sram_rdata_t15 (delt_sram_rdata_t15),
+
+    // output 
+    .sram_addr_t0  (delt_sram_addr_t0),   .sram_addr_t1  (delt_sram_addr_t1),
+    .sram_addr_t2  (delt_sram_addr_t2),   .sram_addr_t3  (delt_sram_addr_t3),
+    .sram_addr_t4  (delt_sram_addr_t4),   .sram_addr_t5  (delt_sram_addr_t5),
+    .sram_addr_t6  (delt_sram_addr_t6),   .sram_addr_t7  (delt_sram_addr_t7),
+    .sram_addr_t8  (delt_sram_addr_t8),   .sram_addr_t9  (delt_sram_addr_t9),
+    .sram_addr_t10 (delt_sram_addr_t10),  .sram_addr_t11 (delt_sram_addr_t11),
+    .sram_addr_t12 (delt_sram_addr_t12),  .sram_addr_t13 (delt_sram_addr_t13),
+    .sram_addr_t14 (delt_sram_addr_t14),  .sram_addr_t15 (delt_sram_addr_t15),
+
+    // output 
+    .sram_wdata_t0  (delt_sram_wdata_t0),   .sram_wdata_t1  (delt_sram_wdata_t1),
+    .sram_wdata_t2  (delt_sram_wdata_t2),   .sram_wdata_t3  (delt_sram_wdata_t3),
+    .sram_wdata_t4  (delt_sram_wdata_t4),   .sram_wdata_t5  (delt_sram_wdata_t5),
+    .sram_wdata_t6  (delt_sram_wdata_t6),   .sram_wdata_t7  (delt_sram_wdata_t7),
+    .sram_wdata_t8  (delt_sram_wdata_t8),   .sram_wdata_t9  (delt_sram_wdata_t9),
+    .sram_wdata_t10 (delt_sram_wdata_t10),  .sram_wdata_t11 (delt_sram_wdata_t11),
+    .sram_wdata_t12 (delt_sram_wdata_t12),  .sram_wdata_t13 (delt_sram_wdata_t13),
+    .sram_wdata_t14 (delt_sram_wdata_t14),  .sram_wdata_t15 (delt_sram_wdata_t15),
+
+    // ===== SRAM X =====
+    // output 
+    .sram_wen_x0   (delt_sram_wen_x0),   .sram_wen_x1   (delt_sram_wen_x1),
+    .sram_wen_x2   (delt_sram_wen_x2),   .sram_wen_x3   (delt_sram_wen_x3),
+
+    // input
+    .sram_rdata_x0 (delt_sram_rdata_x0), .sram_rdata_x1 (delt_sram_rdata_x1),
+    .sram_rdata_x2 (delt_sram_rdata_x2), .sram_rdata_x3 (delt_sram_rdata_x3),
+
+    // output 
+    .sram_addr_x0  (delt_sram_addr_x0),  .sram_addr_x1  (delt_sram_addr_x1),
+    .sram_addr_x2  (delt_sram_addr_x2),  .sram_addr_x3  (delt_sram_addr_x3),
+
+    // output
+    .sram_wdata_x0 (delt_sram_wdata_x0), .sram_wdata_x1 (delt_sram_wdata_x1),
+    .sram_wdata_x2 (delt_sram_wdata_x2), .sram_wdata_x3 (delt_sram_wdata_x3),
+
+    // ===== FP ADD =====
+    // output 
+    .fp_add_01_in_A      (delt_fp_add_01_in_A),      .fp_add_01_in_B      (delt_fp_add_01_in_B),
+    .fp_add_01_in_valid  (delt_fp_add_01_in_valid),  
+    // input
+    .fp_add_01_result    (delt_fp_add_01_result),
+    .fp_add_01_out_valid (delt_fp_add_01_out_valid),
+
+    // output 
+    .fp_add_02_in_A      (delt_fp_add_02_in_A),      .fp_add_02_in_B      (delt_fp_add_02_in_B),
+    .fp_add_02_in_valid  (delt_fp_add_02_in_valid),  
+    // input
+    .fp_add_02_result    (delt_fp_add_02_result),
+    .fp_add_02_out_valid (delt_fp_add_02_out_valid),
+
+    // output 
+    .fp_add_11_in_A      (delt_fp_add_11_in_A),      .fp_add_11_in_B      (delt_fp_add_11_in_B),
+    .fp_add_11_in_valid  (delt_fp_add_11_in_valid), 
+    // input 
+    .fp_add_11_result    (delt_fp_add_11_result),
+    .fp_add_11_out_valid (delt_fp_add_11_out_valid),
+
+    // output 
+    .fp_add_12_in_A      (delt_fp_add_12_in_A),      .fp_add_12_in_B      (delt_fp_add_12_in_B),
+    .fp_add_12_in_valid  (delt_fp_add_12_in_valid),  
+    // input
+    .fp_add_12_result    (delt_fp_add_12_result),
+    .fp_add_12_out_valid (delt_fp_add_12_out_valid)
+);
+
 
 
 endmodule
