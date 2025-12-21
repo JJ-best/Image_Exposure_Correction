@@ -1,7 +1,7 @@
 module delT#(
     parameter BW_PER_ADDR_T = 128,
     parameter BW_PER_ADDR_X = 64,
-    parameter ADDR_WIDTH_T = 8,
+    parameter ADDR_WIDTH_T = 6,
     parameter ADDR_WIDTH_X = 9
 )(
     input clk,
@@ -332,22 +332,22 @@ always@* begin
     nxt_cyclic_data_2 = 0;
     nxt_cyclic_data_3 = 0;
     
-    sram_wen_t0  = 0;    
-    sram_wen_t1  = 0;
-    sram_wen_t2  = 0;
-    sram_wen_t3  = 0;    
-    sram_wen_t4  = 0;
-    sram_wen_t5  = 0;
-    sram_wen_t6  = 0;    
-    sram_wen_t7  = 0;
-    sram_wen_t8  = 0;
-    sram_wen_t9  = 0;    
-    sram_wen_t10 = 0;
-    sram_wen_t11 = 0;
-    sram_wen_t12 = 0;    
-    sram_wen_t13 = 0;
-    sram_wen_t14 = 0;
-    sram_wen_t15 = 0;    
+    sram_wen_t0  = 1;    
+    sram_wen_t1  = 1;
+    sram_wen_t2  = 1;
+    sram_wen_t3  = 1;    
+    sram_wen_t4  = 1;
+    sram_wen_t5  = 1;
+    sram_wen_t6  = 1;    
+    sram_wen_t7  = 1;
+    sram_wen_t8  = 1;
+    sram_wen_t9  = 1;    
+    sram_wen_t10 = 1;
+    sram_wen_t11 = 1;
+    sram_wen_t12 = 1;    
+    sram_wen_t13 = 1;
+    sram_wen_t14 = 1;
+    sram_wen_t15 = 1;    
 
     sram_addr_t0  = 0;
     sram_addr_t1  = 0;
@@ -366,10 +366,10 @@ always@* begin
     sram_addr_t14 = 0;
     sram_addr_t15 = 0;
 
-    sram_wen_x0 =  0;
-    sram_wen_x1 =  0;
-    sram_wen_x2 =  0;
-    sram_wen_x3 =  0;
+    sram_wen_x0 =  1;
+    sram_wen_x1 =  1;
+    sram_wen_x2 =  1;
+    sram_wen_x3 =  1;
 
     sram_addr_x0 = 0;
     sram_addr_x1 = 0;
@@ -399,22 +399,22 @@ always@* begin
             nxt_cyclic_data_0 = (cnt_in == 1) ? sram_rdata_t0[127:64] : cyclic_data_0;
             nxt_cyclic_data_1 = (cnt_in == 3) ? sram_rdata_t0[127:64] : cyclic_data_1;
             // Disable write enable (0 = read-only mode, 1 = write enable)
-            sram_wen_t0  = 0;    
-            sram_wen_t1  = 0;
-            sram_wen_t2  = 0;
-            sram_wen_t3  = 0;    
-            sram_wen_t4  = 0;
-            sram_wen_t5  = 0;
-            sram_wen_t6  = 0;    
-            sram_wen_t7  = 0;
-            sram_wen_t8  = 0;
-            sram_wen_t9  = 0;    
-            sram_wen_t10 = 0;
-            sram_wen_t11 = 0;
-            sram_wen_t12 = 0;    
-            sram_wen_t13 = 0;
-            sram_wen_t14 = 0;
-            sram_wen_t15 = 0;    
+            sram_wen_t0  = 1;    
+            sram_wen_t1  = 1;
+            sram_wen_t2  = 1;
+            sram_wen_t3  = 1;    
+            sram_wen_t4  = 1;
+            sram_wen_t5  = 1;
+            sram_wen_t6  = 1;    
+            sram_wen_t7  = 1;
+            sram_wen_t8  = 1;
+            sram_wen_t9  = 1;    
+            sram_wen_t10 = 1;
+            sram_wen_t11 = 1;
+            sram_wen_t12 = 1;    
+            sram_wen_t13 = 1;
+            sram_wen_t14 = 1;
+            sram_wen_t15 = 1;    
            
             sram_addr_t0  = (row_cnt_in << 1) + (cnt_in[1]);
             sram_addr_t1  = (row_cnt_in << 1) + (cnt_in[1]);
@@ -433,10 +433,10 @@ always@* begin
             sram_addr_t14 = (row_cnt_in << 1) + (cnt_in[1]);
             sram_addr_t15 = (row_cnt_in << 1) + (cnt_in[1]);
 
-            sram_wen_x0 = fp_add_01_out_valid;
-            sram_wen_x1 = fp_add_02_out_valid;
-            sram_wen_x2 = fp_add_11_out_valid;
-            sram_wen_x3 = fp_add_12_out_valid;
+            sram_wen_x0 = ~fp_add_01_out_valid;
+            sram_wen_x1 = ~fp_add_02_out_valid;
+            sram_wen_x2 = ~fp_add_11_out_valid;
+            sram_wen_x3 = ~fp_add_12_out_valid;
 
             sram_addr_x0 = (cnt_out>= 4 && cnt_out <= 7) ? (row_cnt_out << 3) + 256 + cnt_out[1:0] : (row_cnt_out << 3) +  cnt_out[1:0];
             sram_addr_x1 = (cnt_out>= 4 && cnt_out <= 7) ? (row_cnt_out << 3) + 256 + cnt_out[1:0] : (row_cnt_out << 3) +  cnt_out[1:0];
@@ -479,22 +479,22 @@ always@* begin
             nxt_cyclic_data_3 = buf3;
 
             // Disable write enable (0 = read-only mode, 1 = write enable)
-            sram_wen_t0  = 0;    
-            sram_wen_t1  = 0;
-            sram_wen_t2  = 0;
-            sram_wen_t3  = 0;    
-            sram_wen_t4  = 0;
-            sram_wen_t5  = 0;
-            sram_wen_t6  = 0;    
-            sram_wen_t7  = 0;
-            sram_wen_t8  = 0;
-            sram_wen_t9  = 0;    
-            sram_wen_t10 = 0;
-            sram_wen_t11 = 0;
-            sram_wen_t12 = 0;    
-            sram_wen_t13 = 0;
-            sram_wen_t14 = 0;
-            sram_wen_t15 = 0;    
+            sram_wen_t0  = 1;    
+            sram_wen_t1  = 1;
+            sram_wen_t2  = 1;
+            sram_wen_t3  = 1;    
+            sram_wen_t4  = 1;
+            sram_wen_t5  = 1;
+            sram_wen_t6  = 1;    
+            sram_wen_t7  = 1;
+            sram_wen_t8  = 1;
+            sram_wen_t9  = 1;    
+            sram_wen_t10 = 1;
+            sram_wen_t11 = 1;
+            sram_wen_t12 = 1;    
+            sram_wen_t13 = 1;
+            sram_wen_t14 = 1;
+            sram_wen_t15 = 1;    
            
             sram_addr_t0  = (cnt_in == 0 || cnt_in == 2) ? (row_cnt_in << 1) + (cnt_in[1]) + 2 : (row_cnt_in << 1) + (cnt_in[1]);
             sram_addr_t1  = (cnt_in == 4 || cnt_in == 6) ? (row_cnt_in << 1) + (cnt_in[1]) + 2 : (row_cnt_in << 1) + (cnt_in[1]);
@@ -513,10 +513,10 @@ always@* begin
             sram_addr_t14 = (cnt_in == 1 || cnt_in == 3) ? (row_cnt_in << 1) + (cnt_in[1]) + 2 : (row_cnt_in << 1) + (cnt_in[2]);
             sram_addr_t15 = (cnt_in == 5 || cnt_in == 7) ? (row_cnt_in << 1) + (cnt_in[1]) + 2 : (row_cnt_in << 1) + (cnt_in[3]);
 
-            sram_wen_x0 = fp_add_01_out_valid;
-            sram_wen_x1 = fp_add_02_out_valid;
-            sram_wen_x2 = fp_add_11_out_valid;
-            sram_wen_x3 = fp_add_12_out_valid;
+            sram_wen_x0 = ~fp_add_01_out_valid;
+            sram_wen_x1 = ~fp_add_02_out_valid;
+            sram_wen_x2 = ~fp_add_11_out_valid;
+            sram_wen_x3 = ~fp_add_12_out_valid;
 
             sram_addr_x0 = (cnt_out>= 4 && cnt_out <= 7) ? (row_cnt_out << 3) + 260 + cnt_out[1:0] : (row_cnt_out << 3) + 4 + cnt_out[1:0];
             sram_addr_x1 = (cnt_out>= 4 && cnt_out <= 7) ? (row_cnt_out << 3) + 260 + cnt_out[1:0] : (row_cnt_out << 3) + 4 + cnt_out[1:0];
@@ -557,22 +557,22 @@ always@* begin
             // nxt_cyclic_data_1 = (cnt_in == 3) ? sram_rdata_t0[127:64] : cyclic_data_1;
 
             // Disable write enable (0 = read-only mode, 1 = write enable)
-            sram_wen_t0  = 0;    
-            sram_wen_t1  = 0;
-            sram_wen_t2  = 0;
-            sram_wen_t3  = 0;    
-            sram_wen_t4  = 0;
-            sram_wen_t5  = 0;
-            sram_wen_t6  = 0;    
-            sram_wen_t7  = 0;
-            sram_wen_t8  = 0;
-            sram_wen_t9  = 0;    
-            sram_wen_t10 = 0;
-            sram_wen_t11 = 0;
-            sram_wen_t12 = 0;    
-            sram_wen_t13 = 0;
-            sram_wen_t14 = 0;
-            sram_wen_t15 = 0;    
+            sram_wen_t0  = 1;    
+            sram_wen_t1  = 1;
+            sram_wen_t2  = 1;
+            sram_wen_t3  = 1;    
+            sram_wen_t4  = 1;
+            sram_wen_t5  = 1;
+            sram_wen_t6  = 1;    
+            sram_wen_t7  = 1;
+            sram_wen_t8  = 1;
+            sram_wen_t9  = 1;    
+            sram_wen_t10 = 1;
+            sram_wen_t11 = 1;
+            sram_wen_t12 = 1;    
+            sram_wen_t13 = 1;
+            sram_wen_t14 = 1;
+            sram_wen_t15 = 1;    
            
             sram_addr_t0  = (cnt_in[2:1] == 2'b00) ? 6'd62 : (cnt_in[2:1] == 2'b01) ? 6'd63 : (cnt_in[2:1] == 2'b10) ? 6'd1  : 6'd0;
             sram_addr_t1  = (cnt_in[2:1] == 2'b00) ? 6'd0  : (cnt_in[2:1] == 2'b01) ? 6'd1  : (cnt_in[2:1] == 2'b10) ? 6'd62 : 6'd63;
@@ -591,10 +591,10 @@ always@* begin
             sram_addr_t14 = (cnt_in[2:1] == 2'b00) ? 6'd62 : (cnt_in[2:1] == 2'b01) ? 6'd63 : (cnt_in[2:1] == 2'b10) ? 6'd0  : 6'd1;
             sram_addr_t15 = (cnt_in[2:1] == 2'b00) ? 6'd0  : (cnt_in[2:1] == 2'b01) ? 6'd1  : (cnt_in[2:1] == 2'b10) ? 6'd62 : 6'd63;
 
-            sram_wen_x0 = fp_add_01_out_valid;
-            sram_wen_x1 = fp_add_02_out_valid;
-            sram_wen_x2 = fp_add_11_out_valid;
-            sram_wen_x3 = fp_add_12_out_valid;
+            sram_wen_x0 = ~fp_add_01_out_valid;
+            sram_wen_x1 = ~fp_add_02_out_valid;
+            sram_wen_x2 = ~fp_add_11_out_valid;
+            sram_wen_x3 = ~fp_add_12_out_valid;
 
             sram_addr_x0 = (cnt_out>= 4 && cnt_out <= 7) ? 248 + 260 + cnt_out[1:0] : 248 + 4 + cnt_out[1:0];
             sram_addr_x1 = (cnt_out>= 4 && cnt_out <= 7) ? 248 + 260 + cnt_out[1:0] : 248 + 4 + cnt_out[1:0];
