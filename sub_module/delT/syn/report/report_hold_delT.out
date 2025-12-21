@@ -1,0 +1,143 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay min
+        -max_paths 4
+Design : delT
+Version: R-2020.09-SP5
+Date   : Sun Dec 21 14:30:49 2025
+****************************************
+
+Operating Conditions: PVT_1P08V_125C   Library: slow_vdd1v2
+Wire Load Model Mode: enclosed
+
+  Startpoint: fp_add_01_result[3]
+              (input port clocked by clk)
+  Endpoint: sram_wdata_x0[3]
+            (output port clocked by clk)
+  Path Group: clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  delT               Large                 slow_vdd1v2
+
+  Point                                    Incr       Path
+  -----------------------------------------------------------
+  clock clk (rise edge)                    0.00       0.00
+  clock network delay (ideal)              0.00       0.00
+  input external delay                     0.00       0.00 f
+  fp_add_01_result[3] (in)                 0.00       0.00 f
+  U7150/Y (AND2XL)                         0.06       0.07 f
+  sram_wdata_x0[3] (out)                   0.04       0.11 f
+  data arrival time                                   0.11
+
+  clock clk (rise edge)                    0.00       0.00
+  clock network delay (ideal)              0.00       0.00
+  output external delay                    0.00       0.00
+  data required time                                  0.00
+  -----------------------------------------------------------
+  data required time                                  0.00
+  data arrival time                                  -0.11
+  -----------------------------------------------------------
+  slack (MET)                                         0.11
+
+
+  Startpoint: fp_add_01_result[2]
+              (input port clocked by clk)
+  Endpoint: sram_wdata_x0[2]
+            (output port clocked by clk)
+  Path Group: clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  delT               Large                 slow_vdd1v2
+
+  Point                                    Incr       Path
+  -----------------------------------------------------------
+  clock clk (rise edge)                    0.00       0.00
+  clock network delay (ideal)              0.00       0.00
+  input external delay                     0.00       0.00 f
+  fp_add_01_result[2] (in)                 0.00       0.00 f
+  U7149/Y (AND2XL)                         0.06       0.07 f
+  sram_wdata_x0[2] (out)                   0.04       0.11 f
+  data arrival time                                   0.11
+
+  clock clk (rise edge)                    0.00       0.00
+  clock network delay (ideal)              0.00       0.00
+  output external delay                    0.00       0.00
+  data required time                                  0.00
+  -----------------------------------------------------------
+  data required time                                  0.00
+  data arrival time                                  -0.11
+  -----------------------------------------------------------
+  slack (MET)                                         0.11
+
+
+  Startpoint: fp_add_01_result[1]
+              (input port clocked by clk)
+  Endpoint: sram_wdata_x0[1]
+            (output port clocked by clk)
+  Path Group: clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  delT               Large                 slow_vdd1v2
+
+  Point                                    Incr       Path
+  -----------------------------------------------------------
+  clock clk (rise edge)                    0.00       0.00
+  clock network delay (ideal)              0.00       0.00
+  input external delay                     0.00       0.00 f
+  fp_add_01_result[1] (in)                 0.00       0.00 f
+  U7148/Y (AND2XL)                         0.06       0.07 f
+  sram_wdata_x0[1] (out)                   0.04       0.11 f
+  data arrival time                                   0.11
+
+  clock clk (rise edge)                    0.00       0.00
+  clock network delay (ideal)              0.00       0.00
+  output external delay                    0.00       0.00
+  data required time                                  0.00
+  -----------------------------------------------------------
+  data required time                                  0.00
+  data arrival time                                  -0.11
+  -----------------------------------------------------------
+  slack (MET)                                         0.11
+
+
+  Startpoint: fp_add_01_result[0]
+              (input port clocked by clk)
+  Endpoint: sram_wdata_x0[0]
+            (output port clocked by clk)
+  Path Group: clk
+  Path Type: min
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  delT               Large                 slow_vdd1v2
+
+  Point                                    Incr       Path
+  -----------------------------------------------------------
+  clock clk (rise edge)                    0.00       0.00
+  clock network delay (ideal)              0.00       0.00
+  input external delay                     0.00       0.00 f
+  fp_add_01_result[0] (in)                 0.00       0.00 f
+  U7147/Y (AND2XL)                         0.06       0.07 f
+  sram_wdata_x0[0] (out)                   0.04       0.11 f
+  data arrival time                                   0.11
+
+  clock clk (rise edge)                    0.00       0.00
+  clock network delay (ideal)              0.00       0.00
+  output external delay                    0.00       0.00
+  data required time                                  0.00
+  -----------------------------------------------------------
+  data required time                                  0.00
+  data arrival time                                  -0.11
+  -----------------------------------------------------------
+  slack (MET)                                         0.11
+
+
+1
