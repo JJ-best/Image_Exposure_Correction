@@ -2762,10 +2762,10 @@ begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u0[addr]);
                     sram_val_fp64 = $bitstoreal(sram_x.bank0[addr]);
                     if((golden_val_fp64 - tolerance <= sram_val_fp64) && (sram_val_fp64 <= golden_val_fp64 + tolerance)) begin
-                        bank_errors[0] = bank_errors[0] + 1;
                         $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
                             addr, golden_bank_u0[addr], golden_val_fp64, sram_x.bank0[addr], sram_val_fp64);
                     end else begin
+                        bank_errors[0] = bank_errors[0] + 1;
                         total_errors = total_errors + 1;
                         $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
                             addr, golden_bank_u0[addr], golden_val_fp64, sram_x.bank0[addr], sram_val_fp64);
@@ -2778,10 +2778,10 @@ begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u1[addr]);
                     sram_val_fp64 = $bitstoreal(sram_x.bank1[addr]);
                     if((golden_val_fp64 - tolerance <= sram_val_fp64) && (sram_val_fp64 <= golden_val_fp64 + tolerance)) begin
-                        bank_errors[1] = bank_errors[1] + 1;
                         $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
                             addr, golden_bank_u1[addr], golden_val_fp64, sram_x.bank1[addr], sram_val_fp64);
                     end else begin
+                        bank_errors[1] = bank_errors[1] + 1;
                         total_errors = total_errors + 1;
                         $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
                             addr, golden_bank_u1[addr], golden_val_fp64, sram_x.bank1[addr], sram_val_fp64);
@@ -2810,10 +2810,10 @@ begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u3[addr]);
                     sram_val_fp64 = $bitstoreal(sram_x.bank3[addr]);
                     if((golden_val_fp64 - tolerance <= sram_val_fp64) && (sram_val_fp64 <= golden_val_fp64 + tolerance)) begin
-                        bank_errors[3] = bank_errors[3] + 1;
                         $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
                             addr, golden_bank_u3[addr], golden_val_fp64, sram_x.bank3[addr], sram_val_fp64);
                     end else begin
+                        bank_errors[3] = bank_errors[3] + 1;
                         total_errors = total_errors + 1;
                         $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
                             addr, golden_bank_u3[addr], golden_val_fp64, sram_x.bank3[addr], sram_val_fp64);
