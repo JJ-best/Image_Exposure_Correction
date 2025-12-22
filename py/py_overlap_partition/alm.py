@@ -166,17 +166,21 @@ def make_weight_matrix_2(Ti: np.ndarray, ker_size: int = 5) -> np.ndarray:
     """
     m, n = Ti.shape
     p = m * n
-    delTi = multiplyd(Ti)
+    delTi = multiplyd(Ti) 
     dtvec = delTi.reshape(2 * p, order="F")
 
     dtx = dtvec[:p]
     dty = dtvec[p:]
     
-    W_x = 1.0 / (np.abs(dtx) + 1e-4)
-    W_y = 1.0 / (np.abs(dty) + 1e-4)
+    W_x = 1.0 / (np.abs(dtx) + 1e-4) # sw
+    W_y = 1.0 / (np.abs(dty) + 1e-4) # sw
+    
+    W_x_denom = (np.abs(dtx) + 1e-4) # hw
+    W_y_denom = (np.abs(dty) + 1e-4) # hw
 
     W_vec = np.concatenate((W_x, W_y))
-    return W_vec.reshape((2 * m, n), order="F")
+    W_vec_denom = np.concatenate((W_x_denom, W_y_denom))
+    return W_vec.reshape((2 * m, n), order="F"), W_vec_denom.reshape((2 * m, n), order="F"), delTi
 # ===== strategy II ===== #
 
 # ===== strategy III ===== #
@@ -407,13 +411,13 @@ def lime_trial(
     G = np.zeros((2 * m, n), dtype=np.float64) # 2m by n matrix
     # print(f"matrix G: {2 * m} by {n}")
     # print(G)
-    W = make_weight_matrix_2(Ti, ker_size=5)
+    W, W_denom, delTi = make_weight_matrix_2(Ti, ker_size=5)
     # print("matrix W:")
     # print(W)
     
     while k < k0:
         U = Z / mu                     # sramU_1.dat, Z / μ
-        A = alpha * W / mu             # sramW.dat, Threshold matrix of each element
+        A = alpha * W / mu             
         T, delX, Tnum, Tn, Td, Tnd, Tout, delG, Ti = updateT_dat(Ti, mu, G, U) # T(t+1) = ...
         delT = multiplyd(T)            # sramX_2.dat, ∇T
         G = shrinkage(A, delT + U)     # sramG.dat, G(t+1) = Shrinkage(∇T + Z / μ)
@@ -428,7 +432,7 @@ def lime_trial(
                 k,
                 {
                     "sramU_1": U,
-                    "sramW_1": A,
+                    "sramW_1": W_denom,
                     "sramX_1": delG,
                     "sramE_1": Tnum,
                     "sramT_1": Tn,
