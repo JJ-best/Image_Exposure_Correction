@@ -4,7 +4,7 @@
 # INIT_EN: Initialize mode -> 1; hardware mode -> 0
 # ITER: iteration number for ALM layers (3-14)
 #       ITER=0 -> iter_000, ITER=1 -> iter_001, ITER=2 -> iter_002
-#       ITER=3 -> iter003, ITER=4 -> 004, ITER=10 -> iter010, ITER=19 -> iter19
+#       ITER=3 -> iter003, ITER=4 -> 004, ITER=10 -> iter010, ITER=20 -> iter20, ITER=29 -> iter29
 # TOLERANCE: Floating point comparison tolerance for layer 3-14 (default: 4e-3)
 #            Example: +define+TOLERANCE=1e-6 for stricter comparison
 
@@ -157,7 +157,7 @@ vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer13.log \
     +define+PAT=1 \
     +define+PATCH_I=0 \
     +define+PATCH_J=0 \
-    +define+ITER=1 \
+    +define+ITER=0 \
     +define+FLAG_VERBOSE=1 \
     +define+FLAG_DUMPWV=1 \
     +define+END_CYCLES=80000 \
