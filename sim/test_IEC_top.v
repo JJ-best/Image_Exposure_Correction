@@ -63,8 +63,8 @@ integer patch_j_value;
 integer init_enable;
 
 // ===== Iteration selection ===== //
-// ITER can be set via +define+ITER=0,1,2,3,4,10,19
-// Format: iter_000, iter_001, iter_002, iter003, 004, iter010, iter19
+// ITER can be set via +define+ITER=0,1,2,3,4,10,20,30
+// Format: iter_000, iter_001, iter_002, iter003, 004, iter010, iter20, iter30
 integer iter_value;
 
 // ===== Tolerance selection ===== //
@@ -142,7 +142,7 @@ initial begin
     `endif
     
     // ITER: Iteration number for ALM layers (3-14)
-    // 0 -> iter_000, 1 -> iter_001, 2 -> iter_002, 3 -> iter003, 4 -> 004, 10 -> iter010, 19 -> iter19
+    // 0 -> iter_000, 1 -> iter_001, 2 -> iter_002, 3 -> iter003, 4 -> 004, 10 -> iter010, 20 -> iter20, 30 -> iter30
     `ifdef ITER
         iter_value = `ITER;
     `else
@@ -1544,8 +1544,10 @@ begin
                 iter_str[4] = " "; iter_str[5] = " "; iter_str[6] = " "; iter_str[7] = " "; end  // Use space instead of null
         10: begin iter_str[0] = "i"; iter_str[1] = "t"; iter_str[2] = "e"; iter_str[3] = "r"; 
                  iter_str[4] = "0"; iter_str[5] = "1"; iter_str[6] = "0"; iter_str[7] = " "; end  // Use space instead of null
-        19: begin iter_str[0] = "i"; iter_str[1] = "t"; iter_str[2] = "e"; iter_str[3] = "r"; 
-                 iter_str[4] = "1"; iter_str[5] = "9"; iter_str[6] = " "; iter_str[7] = " "; end  // Use space instead of null
+        20: begin iter_str[0] = "i"; iter_str[1] = "t"; iter_str[2] = "e"; iter_str[3] = "r"; 
+                 iter_str[4] = "2"; iter_str[5] = "0"; iter_str[6] = " "; iter_str[7] = " "; end  // Use space instead of null
+        29: begin iter_str[0] = "i"; iter_str[1] = "t"; iter_str[2] = "e"; iter_str[3] = "r"; 
+                 iter_str[4] = "2"; iter_str[5] = "9"; iter_str[6] = " "; iter_str[7] = " "; end  // Use space instead of null
         default: begin
             iter_str[0] = "i"; iter_str[1] = "t"; iter_str[2] = "e"; iter_str[3] = "r";
             iter_str[4] = "_"; iter_str[5] = iter_digit2 + "0"; iter_str[6] = iter_digit1 + "0"; 
@@ -2475,14 +2477,17 @@ endtask
 // ===== Floating point comparison function ===== //
 // Compare two fp64 values with tolerance (absolute error)
 // Returns 1 if values match within tolerance, 0 otherwise
+// Uses range comparison: sram_val in [golden_val - tolerance, golden_val + tolerance)
 function integer fp64_compare;
     input real golden_val;
     input real sram_val;
     input real tol;
-    real abs_diff;
 begin
-    abs_diff = (golden_val > sram_val) ? (golden_val - sram_val) : (sram_val - golden_val);
-    fp64_compare = (abs_diff <= tol) ? 1 : 0;
+    if((golden_val - tol <= sram_val) && (sram_val < golden_val + tol)) begin
+        fp64_compare = 1;
+    end else begin
+        fp64_compare = 0;
+    end
 end
 endfunction
 
