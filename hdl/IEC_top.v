@@ -1287,7 +1287,11 @@ always @(posedge clk or negedge rst_n) begin
 end
 
 always @(posedge clk or negedge rst_n) begin
-    if (top_state == WRITE_X1) begin
+    if (!rst_n) begin
+        cnt16_x <= 0;
+        base_addr_x <= 0;
+        trans_addr_x <= 0;
+    end else if (top_state == WRITE_X1) begin
         cnt16_x <= cnt16_x + 1;
         base_addr_x <= (cnt16_x == 4'd15)? base_addr_x + 8: base_addr_x;
         trans_addr_x <= trans_addr_x_n;
@@ -1514,6 +1518,7 @@ always @(*) begin
             end
         end
         PRE_FFT, PRE_FFT_t: begin
+            sram_x_addr_n = 0;
             sram_addr_x0 = sram_x_raddr;
             sram_addr_x1 = sram_x_raddr;
             sram_addr_x2 = sram_x_raddr;
@@ -2024,7 +2029,7 @@ always @(*) begin
             sram_wen_e12 = ~(sram_b_addr_p[1:0] == 2'b11); sram_wen_e13 = ~(sram_b_addr_p[1:0] == 2'b11); sram_wen_e14 = ~(sram_b_addr_p[1:0] == 2'b11); sram_wen_e15 = ~(sram_b_addr_p[1:0] == 2'b11);
         end
         WEIGHT: begin
-            // sram_e_addr_n = (sram_e_addr == 6'd63)? 0: sram_e_addr + 1;
+            sram_e_addr_n = 0;
 
             sram_addr_e0  = delt_sram_addr_t0 ; sram_addr_e1  = delt_sram_addr_t1 ;
             sram_addr_e2  = delt_sram_addr_t2 ; sram_addr_e3  = delt_sram_addr_t3 ;
