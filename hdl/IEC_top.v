@@ -565,6 +565,9 @@ reg [(pFP_WIDTH-1):0] subthe_rdata_u;
 reg [(pFP_WIDTH-1):0] subthe_rdata_x;
 reg sign_pipe[0:5];
 reg [(pFP_WIDTH-1):0] subthe_wdata_sel;
+
+// ----- prez
+reg [(ADDR_WIDTH_X-1):0] sram_x_addr_q; // read sram x
 // ===== top state ===== //
 
 localparam IDLE      = 7'd0;
@@ -595,6 +598,8 @@ localparam iFFT      = 7'd22;
 localparam DelT      = 7'd23;
 localparam SUB_TRH   = 7'd24;
 localparam SUB_TRH_t = 7'd25;
+localparam PRE_Z     = 7'd26;
+localparam PRE_Z_t   = 7'd27;
 localparam DONE      = 7'd30;
 
 always @(*) begin
@@ -769,9 +774,23 @@ always @(*) begin
         end
         SUB_TRH_t: begin
             if (sram_g_addr == 9'd511 && sram_wen_g3 == 1'b0) begin
-                top_state_n = DONE;
+                top_state_n = PRE_Z;
             end else begin
                 top_state_n = SUB_TRH_t;
+            end
+        end
+        PRE_Z: begin
+            if (sram_x_addr_q == 9'd511) begin
+                top_state_n = PRE_Z_t;
+            end else begin
+                top_state_n = PRE_Z;
+            end
+        end
+        PRE_Z_t: begin
+            if (sram_u_addr == 9'd511) begin
+                top_state_n = DONE;
+            end else begin
+                top_state_n = PRE_Z_t;
             end
         end
         DONE: begin
@@ -1149,6 +1168,21 @@ always @(*) begin
             sram_addr_z2 = sram_z_addr;
             sram_addr_z3 = sram_z_addr;
         end 
+        PRE_Z, PRE_Z_t: begin
+            if (mul0_out_valid) begin //read_sram_z
+                sram_z_addr_n = sram_z_addr + 1;
+            end else begin
+                sram_z_addr_n = sram_z_addr;
+            end
+            sram_wen_z0 = 1'b1;
+            sram_wen_z1 = 1'b1;
+            sram_wen_z2 = 1'b1;
+            sram_wen_z3 = 1'b1;
+            sram_addr_z0 = sram_z_addr;
+            sram_addr_z1 = sram_z_addr;
+            sram_addr_z2 = sram_z_addr;
+            sram_addr_z3 = sram_z_addr;
+        end
         default: begin
             sram_z_addr_n = 0;
             sram_wen_z0 = 1'b1;
@@ -1252,6 +1286,29 @@ always @(*) begin
             sram_wdata_u1 = 0;
             sram_wdata_u2 = 0;
             sram_wdata_u3 = 0;
+        end
+        PRE_Z, PRE_Z_t: begin
+            sram_addr_u0 = sram_u_addr;
+            sram_addr_u1 = sram_u_addr;
+            sram_addr_u2 = sram_u_addr;
+            sram_addr_u3 = sram_u_addr;
+            sram_wdata_u0 = add_result[4];
+            sram_wdata_u1 = add_result[5];
+            sram_wdata_u2 = add_result[6];
+            sram_wdata_u3 = add_result[7];
+            if (add_out_valid[4]) begin
+                sram_u_addr_n = sram_u_addr + 1;
+                sram_wen_u0 = 1'b0;
+                sram_wen_u1 = 1'b0;
+                sram_wen_u2 = 1'b0;
+                sram_wen_u3 = 1'b0;
+            end else begin
+                sram_u_addr_n = sram_u_addr;
+                sram_wen_u0 = 1'b1;
+                sram_wen_u1 = 1'b1;
+                sram_wen_u2 = 1'b1;
+                sram_wen_u3 = 1'b1;
+            end
         end
         default: begin
             sram_addr_u0 = 0;
@@ -1426,6 +1483,21 @@ always @(*) begin
                 sram_wen_g3 = 1'b1;
             end
         end
+        PRE_Z, PRE_Z_t: begin
+            sram_g_addr_n = sram_g_addr + 1;
+            sram_addr_g0 = sram_g_addr;
+            sram_addr_g1 = sram_g_addr;
+            sram_addr_g2 = sram_g_addr;
+            sram_addr_g3 = sram_g_addr;
+            sram_wen_g0 = 1'b1;
+            sram_wen_g1 = 1'b1;
+            sram_wen_g2 = 1'b1;
+            sram_wen_g3 = 1'b1;
+            sram_wdata_g0 = 0;
+            sram_wdata_g1 = 0;
+            sram_wdata_g2 = 0;
+            sram_wdata_g3 = 0;
+        end
         default: begin
             sram_addr_g0 = 0;
             sram_addr_g1 = 0;
@@ -1533,6 +1605,15 @@ always @(posedge clk or negedge rst_n) begin
     end
 end
 
+
+always @(posedge clk) begin
+    if (top_state == PRE_Z || top_state == PRE_Z_t) begin
+        sram_x_addr_q <= sram_x_addr_n;
+    end else begin
+        sram_x_addr_q <= 0;
+    end
+end
+
 // SRAM X controll
 always @(*) begin
     case (top_state)
@@ -1627,6 +1708,21 @@ always @(*) begin
         end
         SUB_TRH, SUB_TRH_t: begin
             sram_x_addr_n = (read_sram_x && subthe_cnt4==2'b11)? sram_x_addr + 1: sram_x_addr;
+            sram_addr_x0 = sram_x_addr;
+            sram_addr_x1 = sram_x_addr;
+            sram_addr_x2 = sram_x_addr;
+            sram_addr_x3 = sram_x_addr;
+            sram_wen_x0 = 1'b1; //read only
+            sram_wen_x1 = 1'b1;
+            sram_wen_x2 = 1'b1;
+            sram_wen_x3 = 1'b1;
+            sram_wdata_x0 = 0;
+            sram_wdata_x1 = 0;
+            sram_wdata_x2 = 0;
+            sram_wdata_x3 = 0;
+        end
+        PRE_Z, PRE_Z_t: begin
+            sram_x_addr_n = sram_x_addr_q + 1;
             sram_addr_x0 = sram_x_addr;
             sram_addr_x1 = sram_x_addr;
             sram_addr_x2 = sram_x_addr;
@@ -2757,13 +2853,18 @@ always @(posedge clk or negedge rst_n) begin
     end
 end
 always @(posedge clk) begin
+    if (top_state == SUB_TRH) begin
+         valid_11 <= 1;
+    end else begin
+        valid_11 <= 0;
+    end
+end
+always @(posedge clk) begin
     if (top_state == SUB_TRH || top_state == SUB_TRH_t) begin
-        valid_11 <= 1;
         subthe_cnt4 <= subthe_cnt4 + 1;
         // used to align the sram x, sram u to the compute result of sram w
         subthe_cnt64 <= subthe_cnt64 + 1;
     end else begin
-        valid_11 <= 0;
         subthe_cnt4 <= 0;
         subthe_cnt64 <= 0;
     end
@@ -2888,6 +2989,31 @@ always @(*) begin
         subthe_wdata_sel = 0;
     end else begin // sign-bit = 0: |delT + z/u| > alpha*W/mu
         subthe_wdata_sel = {sign_pipe[5], add_result[1][(pFP_WIDTH-2):0]};
+    end
+end
+
+// ----- prez valid ----- //
+// read sram x and sram g, add them up
+reg valid_13;
+always @(posedge clk) begin
+    if (top_state == PRE_Z) begin
+        valid_13 <= 1;
+    end else begin
+        valid_13 <= 0;
+    end
+end
+// flag of read sram z
+reg read_sram_z[0:19];
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        for (i=0; i<20; i=i+1) begin
+            read_sram_z[i] <= 0;
+        end
+    end else begin
+        read_sram_z[0] <= valid_13;
+        for (i=1; i<20; i=i+1) begin
+            read_sram_z[i] <= read_sram_z[i-1];
+        end 
     end
 end
 
@@ -3017,6 +3143,16 @@ always @(posedge clk) begin
             mul1_in_valid <= mul0_out_valid;
             mul1_mode <= 2'b10;
         end
+        PRE_Z, PRE_Z_t: begin
+            mul0_ina <= {add_result[0], add_result[1]};
+            mul0_inb <= {mu, mu};
+            mul0_in_valid <= add_out_valid[0];
+            mul0_mode <= 2'b10;
+            mul1_ina <= {add_result[2], add_result[3]};
+            mul1_inb <= {mu, mu};
+            mul1_in_valid <= add_out_valid[1];
+            mul1_mode <= 2'b10;
+        end
         default: begin
             mul0_ina <= 0;
             mul0_inb <= 0;
@@ -3121,7 +3257,7 @@ always @(posedge clk) begin
             add_in_valid[6] <= fp_add_out_valid_d1;
             add_in_valid[7] <= fp_add_out_valid_d1;   
         end
-               WEIGHT: begin
+        WEIGHT: begin
 
             // ===== delT uses 4 fp_add : map to add[0..3] =====
             add_ina[0]      <= delt_fp_add_01_in_A;
@@ -3284,6 +3420,39 @@ always @(posedge clk) begin
                 add_inb[i] <= {pFP_WIDTH{1'b0}};
                 add_in_valid[i] <= 1'b0;
             end
+        end
+        PRE_Z, PRE_Z_t: begin
+            add_ina[0] <= sram_rdata_x0;
+            add_inb[0] <= {~sram_rdata_g0[(pFP_WIDTH-1)], sram_rdata_g0[(pFP_WIDTH-2):0]};
+            add_in_valid[0] <= valid_13;
+
+            add_ina[1] <= sram_rdata_x1;
+            add_inb[1] <= {~sram_rdata_g1[(pFP_WIDTH-1)], sram_rdata_g1[(pFP_WIDTH-2):0]};
+            add_in_valid[1] <= valid_13;
+
+            add_ina[2] <= sram_rdata_x2;
+            add_inb[2] <= {~sram_rdata_g2[(pFP_WIDTH-1)], sram_rdata_g2[(pFP_WIDTH-2):0]};
+            add_in_valid[2] <= valid_13;
+
+            add_ina[3] <= sram_rdata_x3;
+            add_inb[3] <= {~sram_rdata_g3[(pFP_WIDTH-1)], sram_rdata_g3[(pFP_WIDTH-2):0]};
+            add_in_valid[3] <= valid_13;
+
+            add_ina[4] <= mul0_out[(2*pFP_WIDTH-1):(pFP_WIDTH)]; //bank0
+            add_inb[4] <= sram_rdata_z0; //sramZ
+            add_in_valid[4] <= mul0_out_valid;
+
+            add_ina[5] <= mul0_out[(pFP_WIDTH-1):0]; //bank1
+            add_inb[5] <= sram_rdata_z1; //sramZ
+            add_in_valid[5] <= mul0_out_valid;
+
+            add_ina[6] <= mul1_out[(2*pFP_WIDTH-1):(pFP_WIDTH)]; //bank2
+            add_inb[6] <= sram_rdata_z2; //sramZ
+            add_in_valid[6] <= mul1_out_valid;
+
+            add_ina[7] <= mul1_out[(pFP_WIDTH-1):0]; //bank1
+            add_inb[7] <= sram_rdata_z3; //sramZ
+            add_in_valid[7] <= mul0_out_valid;
         end
         default: begin
             for (i = 0; i < 8; i = i + 1) begin
