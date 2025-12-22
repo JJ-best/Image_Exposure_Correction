@@ -2807,14 +2807,16 @@ begin
                 for(addr = 0; addr < max_addr; addr = addr + 1) begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u0[addr]);
                     sram_val_fp64 = $bitstoreal(sram_w.bank0[addr]);
-                    if((golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64) > tolerance) begin
-                        bank_errors[0] = bank_errors[0] + 1;
-                        total_errors = total_errors + 1;
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
+                    match_result = fp64_compare(golden_val_fp64, sram_val_fp64, tolerance);
+                    if(match_result == 1) begin
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | OK", 
                             addr, golden_bank_u0[addr], golden_val_fp64, sram_w.bank0[addr], sram_val_fp64);
                     end else begin
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
-                            addr, golden_bank_u0[addr], golden_val_fp64, sram_w.bank0[addr], sram_val_fp64);
+                        bank_errors[0] = bank_errors[0] + 1;
+                        total_errors = total_errors + 1;
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | FAIL (diff: %e)", 
+                            addr, golden_bank_u0[addr], golden_val_fp64, sram_w.bank0[addr], sram_val_fp64,
+                            (golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64));
                     end
                 end
                 $display("\nBank 1 Comparison:");
@@ -2823,14 +2825,16 @@ begin
                 for(addr = 0; addr < max_addr; addr = addr + 1) begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u1[addr]);
                     sram_val_fp64 = $bitstoreal(sram_w.bank1[addr]);
-                    if((golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64) > tolerance) begin
-                        bank_errors[1] = bank_errors[1] + 1;
-                        total_errors = total_errors + 1;
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
+                    match_result = fp64_compare(golden_val_fp64, sram_val_fp64, tolerance);
+                    if(match_result == 1) begin
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | OK", 
                             addr, golden_bank_u1[addr], golden_val_fp64, sram_w.bank1[addr], sram_val_fp64);
                     end else begin
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
-                            addr, golden_bank_u1[addr], golden_val_fp64, sram_w.bank1[addr], sram_val_fp64);
+                        bank_errors[1] = bank_errors[1] + 1;
+                        total_errors = total_errors + 1;
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | FAIL (diff: %e)", 
+                            addr, golden_bank_u1[addr], golden_val_fp64, sram_w.bank1[addr], sram_val_fp64,
+                            (golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64));
                     end
                 end
                 $display("\nBank 2 Comparison:");
@@ -2839,14 +2843,16 @@ begin
                 for(addr = 0; addr < max_addr; addr = addr + 1) begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u2[addr]);
                     sram_val_fp64 = $bitstoreal(sram_w.bank2[addr]);
-                    if((golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64) > tolerance) begin
-                        bank_errors[2] = bank_errors[2] + 1;
-                        total_errors = total_errors + 1;
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
+                    match_result = fp64_compare(golden_val_fp64, sram_val_fp64, tolerance);
+                    if(match_result == 1) begin
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | OK", 
                             addr, golden_bank_u2[addr], golden_val_fp64, sram_w.bank2[addr], sram_val_fp64);
                     end else begin
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
-                            addr, golden_bank_u2[addr], golden_val_fp64, sram_w.bank2[addr], sram_val_fp64);
+                        bank_errors[2] = bank_errors[2] + 1;
+                        total_errors = total_errors + 1;
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | FAIL (diff: %e)", 
+                            addr, golden_bank_u2[addr], golden_val_fp64, sram_w.bank2[addr], sram_val_fp64,
+                            (golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64));
                     end
                 end
                 $display("\nBank 3 Comparison:");
@@ -2855,14 +2861,16 @@ begin
                 for(addr = 0; addr < max_addr; addr = addr + 1) begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u3[addr]);
                     sram_val_fp64 = $bitstoreal(sram_w.bank3[addr]);
-                    if((golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64) > tolerance) begin
-                        bank_errors[3] = bank_errors[3] + 1;
-                        total_errors = total_errors + 1;
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
+                    match_result = fp64_compare(golden_val_fp64, sram_val_fp64, tolerance);
+                    if(match_result == 1) begin
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | OK", 
                             addr, golden_bank_u3[addr], golden_val_fp64, sram_w.bank3[addr], sram_val_fp64);
                     end else begin
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
-                            addr, golden_bank_u3[addr], golden_val_fp64, sram_w.bank3[addr], sram_val_fp64);
+                        bank_errors[3] = bank_errors[3] + 1;
+                        total_errors = total_errors + 1;
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | FAIL (diff: %e)", 
+                            addr, golden_bank_u3[addr], golden_val_fp64, sram_w.bank3[addr], sram_val_fp64,
+                            (golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64));
                     end
                 end
             end else if(layer_value == 5 || layer_value == 11) begin
@@ -2891,14 +2899,16 @@ begin
                 for(addr = 0; addr < max_addr; addr = addr + 1) begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u1[addr]);
                     sram_val_fp64 = $bitstoreal(sram_x.bank1[addr]);
-                    if((golden_val_fp64 - tolerance <= sram_val_fp64) && (sram_val_fp64 <= golden_val_fp64 + tolerance)) begin
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
+                    match_result = fp64_compare(golden_val_fp64, sram_val_fp64, tolerance);
+                    if(match_result == 1) begin
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | OK", 
                             addr, golden_bank_u1[addr], golden_val_fp64, sram_x.bank1[addr], sram_val_fp64);
                     end else begin
                         bank_errors[1] = bank_errors[1] + 1;
                         total_errors = total_errors + 1;
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
-                            addr, golden_bank_u1[addr], golden_val_fp64, sram_x.bank1[addr], sram_val_fp64);
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | FAIL (diff: %e)", 
+                            addr, golden_bank_u1[addr], golden_val_fp64, sram_x.bank1[addr], sram_val_fp64,
+                            (golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64));
                     end
                 end
                 $display("\nBank 2 Comparison:");
@@ -2907,14 +2917,16 @@ begin
                 for(addr = 0; addr < max_addr; addr = addr + 1) begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u2[addr]);
                     sram_val_fp64 = $bitstoreal(sram_x.bank2[addr]);
-                    if((golden_val_fp64 - tolerance <= sram_val_fp64) && (sram_val_fp64 <= golden_val_fp64 + tolerance)) begin
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
+                    match_result = fp64_compare(golden_val_fp64, sram_val_fp64, tolerance);
+                    if(match_result == 1) begin
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | OK", 
                             addr, golden_bank_u2[addr], golden_val_fp64, sram_x.bank2[addr], sram_val_fp64);
                     end else begin
-                        total_errors = total_errors + 1;
                         bank_errors[2] = bank_errors[2] + 1;
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
-                            addr, golden_bank_u2[addr], golden_val_fp64, sram_x.bank2[addr], sram_val_fp64);
+                        total_errors = total_errors + 1;
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | FAIL (diff: %e)", 
+                            addr, golden_bank_u2[addr], golden_val_fp64, sram_x.bank2[addr], sram_val_fp64,
+                            (golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64));
                     end
                 end
                 $display("\nBank 3 Comparison:");
@@ -2923,14 +2935,16 @@ begin
                 for(addr = 0; addr < max_addr; addr = addr + 1) begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u3[addr]);
                     sram_val_fp64 = $bitstoreal(sram_x.bank3[addr]);
-                    if((golden_val_fp64 - tolerance <= sram_val_fp64) && (sram_val_fp64 <= golden_val_fp64 + tolerance)) begin
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
+                    match_result = fp64_compare(golden_val_fp64, sram_val_fp64, tolerance);
+                    if(match_result == 1) begin
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | OK", 
                             addr, golden_bank_u3[addr], golden_val_fp64, sram_x.bank3[addr], sram_val_fp64);
                     end else begin
                         bank_errors[3] = bank_errors[3] + 1;
                         total_errors = total_errors + 1;
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
-                            addr, golden_bank_u3[addr], golden_val_fp64, sram_x.bank3[addr], sram_val_fp64);
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | FAIL (diff: %e)", 
+                            addr, golden_bank_u3[addr], golden_val_fp64, sram_x.bank3[addr], sram_val_fp64,
+                            (golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64));
                     end
                 end
             end else if(layer_value == 12) begin
@@ -2941,14 +2955,16 @@ begin
                 for(addr = 0; addr < max_addr; addr = addr + 1) begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u0[addr]);
                     sram_val_fp64 = $bitstoreal(sram_g.bank0[addr]);
-                    if((golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64) > tolerance) begin
-                        bank_errors[0] = bank_errors[0] + 1;
-                        total_errors = total_errors + 1;
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
+                    match_result = fp64_compare(golden_val_fp64, sram_val_fp64, tolerance);
+                    if(match_result == 1) begin
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | OK", 
                             addr, golden_bank_u0[addr], golden_val_fp64, sram_g.bank0[addr], sram_val_fp64);
                     end else begin
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
-                            addr, golden_bank_u0[addr], golden_val_fp64, sram_g.bank0[addr], sram_val_fp64);
+                        bank_errors[0] = bank_errors[0] + 1;
+                        total_errors = total_errors + 1;
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | FAIL (diff: %e)", 
+                            addr, golden_bank_u0[addr], golden_val_fp64, sram_g.bank0[addr], sram_val_fp64,
+                            (golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64));
                     end
                 end
                 $display("\nBank 1 Comparison:");
@@ -2957,14 +2973,16 @@ begin
                 for(addr = 0; addr < max_addr; addr = addr + 1) begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u1[addr]);
                     sram_val_fp64 = $bitstoreal(sram_g.bank1[addr]);
-                    if((golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64) > tolerance) begin
-                        bank_errors[1] = bank_errors[1] + 1;
-                        total_errors = total_errors + 1;
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
+                    match_result = fp64_compare(golden_val_fp64, sram_val_fp64, tolerance);
+                    if(match_result == 1) begin
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | OK", 
                             addr, golden_bank_u1[addr], golden_val_fp64, sram_g.bank1[addr], sram_val_fp64);
                     end else begin
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
-                            addr, golden_bank_u1[addr], golden_val_fp64, sram_g.bank1[addr], sram_val_fp64);
+                        bank_errors[1] = bank_errors[1] + 1;
+                        total_errors = total_errors + 1;
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | FAIL (diff: %e)", 
+                            addr, golden_bank_u1[addr], golden_val_fp64, sram_g.bank1[addr], sram_val_fp64,
+                            (golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64));
                     end
                 end
                 $display("\nBank 2 Comparison:");
@@ -2973,14 +2991,16 @@ begin
                 for(addr = 0; addr < max_addr; addr = addr + 1) begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u2[addr]);
                     sram_val_fp64 = $bitstoreal(sram_g.bank2[addr]);
-                    if((golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64) > tolerance) begin
-                        bank_errors[2] = bank_errors[2] + 1;
-                        total_errors = total_errors + 1;
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
+                    match_result = fp64_compare(golden_val_fp64, sram_val_fp64, tolerance);
+                    if(match_result == 1) begin
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | OK", 
                             addr, golden_bank_u2[addr], golden_val_fp64, sram_g.bank2[addr], sram_val_fp64);
                     end else begin
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
-                            addr, golden_bank_u2[addr], golden_val_fp64, sram_g.bank2[addr], sram_val_fp64);
+                        bank_errors[2] = bank_errors[2] + 1;
+                        total_errors = total_errors + 1;
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | FAIL (diff: %e)", 
+                            addr, golden_bank_u2[addr], golden_val_fp64, sram_g.bank2[addr], sram_val_fp64,
+                            (golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64));
                     end
                 end
                 $display("\nBank 3 Comparison:");
@@ -2989,14 +3009,16 @@ begin
                 for(addr = 0; addr < max_addr; addr = addr + 1) begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u3[addr]);
                     sram_val_fp64 = $bitstoreal(sram_g.bank3[addr]);
-                    if((golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64) > tolerance) begin
-                        bank_errors[3] = bank_errors[3] + 1;
-                        total_errors = total_errors + 1;
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
+                    match_result = fp64_compare(golden_val_fp64, sram_val_fp64, tolerance);
+                    if(match_result == 1) begin
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | OK", 
                             addr, golden_bank_u3[addr], golden_val_fp64, sram_g.bank3[addr], sram_val_fp64);
                     end else begin
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
-                            addr, golden_bank_u3[addr], golden_val_fp64, sram_g.bank3[addr], sram_val_fp64);
+                        bank_errors[3] = bank_errors[3] + 1;
+                        total_errors = total_errors + 1;
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | FAIL (diff: %e)", 
+                            addr, golden_bank_u3[addr], golden_val_fp64, sram_g.bank3[addr], sram_val_fp64,
+                            (golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64));
                     end
                 end
             end else if(layer_value == 14) begin
@@ -3007,14 +3029,16 @@ begin
                 for(addr = 0; addr < max_addr; addr = addr + 1) begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u0[addr]);
                     sram_val_fp64 = $bitstoreal(sram_z.bank0[addr]);
-                    if((golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64) > tolerance) begin
-                        bank_errors[0] = bank_errors[0] + 1;
-                        total_errors = total_errors + 1;
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
+                    match_result = fp64_compare(golden_val_fp64, sram_val_fp64, tolerance);
+                    if(match_result == 1) begin
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | OK", 
                             addr, golden_bank_u0[addr], golden_val_fp64, sram_z.bank0[addr], sram_val_fp64);
                     end else begin
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
-                            addr, golden_bank_u0[addr], golden_val_fp64, sram_z.bank0[addr], sram_val_fp64);
+                        bank_errors[0] = bank_errors[0] + 1;
+                        total_errors = total_errors + 1;
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | FAIL (diff: %e)", 
+                            addr, golden_bank_u0[addr], golden_val_fp64, sram_z.bank0[addr], sram_val_fp64,
+                            (golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64));
                     end
                 end
                 $display("\nBank 1 Comparison:");
@@ -3023,14 +3047,16 @@ begin
                 for(addr = 0; addr < max_addr; addr = addr + 1) begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u1[addr]);
                     sram_val_fp64 = $bitstoreal(sram_z.bank1[addr]);
-                    if((golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64) > tolerance) begin
-                        bank_errors[1] = bank_errors[1] + 1;
-                        total_errors = total_errors + 1;
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
+                    match_result = fp64_compare(golden_val_fp64, sram_val_fp64, tolerance);
+                    if(match_result == 1) begin
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | OK", 
                             addr, golden_bank_u1[addr], golden_val_fp64, sram_z.bank1[addr], sram_val_fp64);
                     end else begin
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
-                            addr, golden_bank_u1[addr], golden_val_fp64, sram_z.bank1[addr], sram_val_fp64);
+                        bank_errors[1] = bank_errors[1] + 1;
+                        total_errors = total_errors + 1;
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | FAIL (diff: %e)", 
+                            addr, golden_bank_u1[addr], golden_val_fp64, sram_z.bank1[addr], sram_val_fp64,
+                            (golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64));
                     end
                 end
                 $display("\nBank 2 Comparison:");
@@ -3039,14 +3065,16 @@ begin
                 for(addr = 0; addr < max_addr; addr = addr + 1) begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u2[addr]);
                     sram_val_fp64 = $bitstoreal(sram_z.bank2[addr]);
-                    if((golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64) > tolerance) begin
-                        bank_errors[2] = bank_errors[2] + 1;
-                        total_errors = total_errors + 1;
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
+                    match_result = fp64_compare(golden_val_fp64, sram_val_fp64, tolerance);
+                    if(match_result == 1) begin
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | OK", 
                             addr, golden_bank_u2[addr], golden_val_fp64, sram_z.bank2[addr], sram_val_fp64);
                     end else begin
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
-                            addr, golden_bank_u2[addr], golden_val_fp64, sram_z.bank2[addr], sram_val_fp64);
+                        bank_errors[2] = bank_errors[2] + 1;
+                        total_errors = total_errors + 1;
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | FAIL (diff: %e)", 
+                            addr, golden_bank_u2[addr], golden_val_fp64, sram_z.bank2[addr], sram_val_fp64,
+                            (golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64));
                     end
                 end
                 $display("\nBank 3 Comparison:");
@@ -3055,14 +3083,16 @@ begin
                 for(addr = 0; addr < max_addr; addr = addr + 1) begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u3[addr]);
                     sram_val_fp64 = $bitstoreal(sram_z.bank3[addr]);
-                    if((golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64) > tolerance) begin
-                        bank_errors[3] = bank_errors[3] + 1;
-                        total_errors = total_errors + 1;
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
+                    match_result = fp64_compare(golden_val_fp64, sram_val_fp64, tolerance);
+                    if(match_result == 1) begin
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | OK", 
                             addr, golden_bank_u3[addr], golden_val_fp64, sram_z.bank3[addr], sram_val_fp64);
                     end else begin
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
-                            addr, golden_bank_u3[addr], golden_val_fp64, sram_z.bank3[addr], sram_val_fp64);
+                        bank_errors[3] = bank_errors[3] + 1;
+                        total_errors = total_errors + 1;
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | FAIL (diff: %e)", 
+                            addr, golden_bank_u3[addr], golden_val_fp64, sram_z.bank3[addr], sram_val_fp64,
+                            (golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64));
                     end
                 end
             end
@@ -3216,108 +3246,145 @@ begin
                                 sram_val_fp64_imag = $bitstoreal(sram_e.bank15[addr][63:0]);
                             end
                         endcase
-                        if(((golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real)) > tolerance || 
-                           ((golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag)) > tolerance) begin
+                        // Compare real and imag parts separately using fp64_compare
+                        match_result = fp64_compare(golden_val_fp64_real, sram_val_fp64_real, tolerance);
+                        if(match_result == 1) begin
+                            // Real part matches, check imag part
+                            match_result = fp64_compare(golden_val_fp64_imag, sram_val_fp64_imag, tolerance);
+                        end
+                        if(match_result == 0) begin
                             bank_errors[j] = bank_errors[j] + 1;
                             total_errors = total_errors + 1;
                             case(j)
-                                0: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                0: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e0[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_e.bank0[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                1: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_e.bank0[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                1: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e1[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_e.bank1[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                2: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_e.bank1[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                2: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e2[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_e.bank2[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                3: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_e.bank2[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                3: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e3[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_e.bank3[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                4: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_e.bank3[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                4: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e4[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_e.bank4[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                5: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_e.bank4[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                5: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e5[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_e.bank5[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                6: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_e.bank5[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                6: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e6[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_e.bank6[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                7: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_e.bank6[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                7: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e7[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_e.bank7[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                8: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_e.bank7[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                8: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e8[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_e.bank8[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                9: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_e.bank8[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                9: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e9[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_e.bank9[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                10: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_e.bank9[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                10: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e10[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_e.bank10[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                11: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_e.bank10[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                11: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e11[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_e.bank11[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                12: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_e.bank11[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                12: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e12[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_e.bank12[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                13: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_e.bank12[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                13: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e13[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_e.bank13[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                14: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_e.bank13[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                14: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e14[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_e.bank14[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                15: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_e.bank14[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                15: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e15[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_e.bank15[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
+                                    sram_e.bank15[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
                             endcase
                         end else begin
                             case(j)
-                                0: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                0: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e0[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_e.bank0[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                1: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                1: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e1[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_e.bank1[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                2: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                2: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e2[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_e.bank2[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                3: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                3: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e3[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_e.bank3[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                4: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                4: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e4[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_e.bank4[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                5: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                5: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e5[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_e.bank5[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                6: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                6: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e6[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_e.bank6[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                7: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                7: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e7[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_e.bank7[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                8: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                8: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e8[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_e.bank8[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                9: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                9: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e9[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_e.bank9[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                10: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                10: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e10[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_e.bank10[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                11: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                11: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e11[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_e.bank11[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                12: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                12: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e12[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_e.bank12[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                13: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                13: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e13[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_e.bank13[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                14: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                14: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e14[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_e.bank14[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                15: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                15: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e15[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_e.bank15[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
                             endcase
@@ -3431,108 +3498,147 @@ begin
                                 sram_val_fp64_imag = $bitstoreal(sram_t.bank15[addr][63:0]);
                             end
                         endcase
-                        if(((golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real)) > tolerance || 
-                           ((golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag)) > tolerance) begin
+                        // Compare real and imag parts separately using fp64_compare
+                        match_result = fp64_compare(golden_val_fp64_real, sram_val_fp64_real, tolerance);
+                        if(match_result == 1) begin
+                            // Real part matches, check imag part
+                            match_result = fp64_compare(golden_val_fp64_imag, sram_val_fp64_imag, tolerance);
+                        end
+                        if(match_result == 0) begin
                             bank_errors[j] = bank_errors[j] + 1;
                             total_errors = total_errors + 1;
                             case(j)
-                                0: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                0: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e0[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_t.bank0[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                1: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_t.bank0[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                1: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e1[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_t.bank1[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                2: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_t.bank1[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                2: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e2[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_t.bank2[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                3: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_t.bank2[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                3: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e3[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_t.bank3[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                4: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_t.bank3[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                4: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e4[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_t.bank4[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                5: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_t.bank4[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                5: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e5[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_t.bank5[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                6: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_t.bank5[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                6: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e6[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_t.bank6[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                7: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_t.bank6[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                7: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e7[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_t.bank7[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                8: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_t.bank7[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                8: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e8[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_t.bank8[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                9: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_t.bank8[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                9: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e9[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_t.bank9[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                10: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_t.bank9[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                10: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e10[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_t.bank10[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                11: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_t.bank10[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                11: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e11[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_t.bank11[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                12: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_t.bank11[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                12: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e12[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_t.bank12[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                13: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_t.bank12[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                13: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e13[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_t.bank13[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                14: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_t.bank13[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                14: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e14[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_t.bank14[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                15: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_t.bank14[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                15: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e15[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_t.bank15[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
+                                    sram_t.bank15[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
                             endcase
                         end else begin
                             case(j)
-                                0: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                0: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e0[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_t.bank0[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                1: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                    sram_t.bank0[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                1: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e1[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_t.bank1[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                2: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                2: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e2[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_t.bank2[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                3: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                3: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e3[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_t.bank3[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                4: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                4: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e4[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_t.bank4[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                5: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                5: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e5[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_t.bank5[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                6: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                6: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e6[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_t.bank6[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                7: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                7: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e7[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_t.bank7[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                8: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                8: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e8[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_t.bank8[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                9: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                9: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e9[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_t.bank9[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                10: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                10: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e10[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_t.bank10[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                11: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                11: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e11[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_t.bank11[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                12: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                12: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e12[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_t.bank12[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                13: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                13: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e13[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_t.bank13[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                14: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                14: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e14[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_t.bank14[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                15: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                15: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e15[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_t.bank15[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
                             endcase
@@ -3646,108 +3752,147 @@ begin
                                 sram_val_fp64_imag = $bitstoreal(sram_c.bank15[addr][63:0]);
                             end
                         endcase
-                        if(((golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real)) > tolerance || 
-                           ((golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag)) > tolerance) begin
+                        // Compare real and imag parts separately using fp64_compare
+                        match_result = fp64_compare(golden_val_fp64_real, sram_val_fp64_real, tolerance);
+                        if(match_result == 1) begin
+                            // Real part matches, check imag part
+                            match_result = fp64_compare(golden_val_fp64_imag, sram_val_fp64_imag, tolerance);
+                        end
+                        if(match_result == 0) begin
                             bank_errors[j] = bank_errors[j] + 1;
                             total_errors = total_errors + 1;
                             case(j)
-                                0: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                0: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e0[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_c.bank0[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                1: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_c.bank0[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                1: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e1[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_c.bank1[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                2: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_c.bank1[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                2: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e2[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_c.bank2[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                3: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_c.bank2[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                3: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e3[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_c.bank3[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                4: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_c.bank3[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                4: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e4[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_c.bank4[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                5: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_c.bank4[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                5: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e5[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_c.bank5[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                6: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_c.bank5[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                6: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e6[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_c.bank6[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                7: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_c.bank6[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                7: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e7[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_c.bank7[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                8: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_c.bank7[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                8: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e8[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_c.bank8[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                9: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_c.bank8[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                9: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e9[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_c.bank9[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                10: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_c.bank9[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                10: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e10[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_c.bank10[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                11: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_c.bank10[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                11: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e11[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_c.bank11[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                12: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_c.bank11[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                12: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e12[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_c.bank12[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                13: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_c.bank12[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                13: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e13[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_c.bank13[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                14: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_c.bank13[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                14: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e14[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_c.bank14[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                15: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | FAIL", 
+                                    sram_c.bank14[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                15: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | FAIL (real_diff: %e, imag_diff: %e)", 
                                     addr, golden_bank_e15[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_c.bank15[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
+                                    sram_c.bank15[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
                             endcase
                         end else begin
                             case(j)
-                                0: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                0: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e0[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
-                                    sram_c.bank0[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                1: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                    sram_c.bank0[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag,
+                                    (golden_val_fp64_real > sram_val_fp64_real) ? (golden_val_fp64_real - sram_val_fp64_real) : (sram_val_fp64_real - golden_val_fp64_real),
+                                    (golden_val_fp64_imag > sram_val_fp64_imag) ? (golden_val_fp64_imag - sram_val_fp64_imag) : (sram_val_fp64_imag - golden_val_fp64_imag));
+                                1: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e1[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_c.bank1[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                2: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                2: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e2[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_c.bank2[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                3: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                3: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e3[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_c.bank3[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                4: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                4: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e4[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_c.bank4[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                5: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                5: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e5[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_c.bank5[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                6: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                6: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e6[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_c.bank6[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                7: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                7: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e7[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_c.bank7[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                8: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                8: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e8[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_c.bank8[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                9: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                9: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e9[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_c.bank9[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                10: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                10: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e10[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_c.bank10[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                11: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                11: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e11[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_c.bank11[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                12: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                12: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e12[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_c.bank12[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                13: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                13: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e13[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_c.bank13[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                14: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                14: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e14[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_c.bank14[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
-                                15: $display("%4d | %032h | %3.6e | %3.6e | %032h | %3.6e | %3.6e | OK", 
+                                15: $display("%4d | %032h | %3.17e | %3.17e | %032h | %3.17e | %3.17e | OK", 
                                     addr, golden_bank_e15[addr][127:0], golden_val_fp64_real, golden_val_fp64_imag, 
                                     sram_c.bank15[addr][127:0], sram_val_fp64_real, sram_val_fp64_imag);
                             endcase
