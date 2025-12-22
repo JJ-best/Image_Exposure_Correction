@@ -1400,6 +1400,13 @@ always@(posedge clk or negedge rst_n) begin
         round_cnt <= 0;
         cnt_in_prv <= 0;
         col <= 0;
+    end else if (done) begin
+        stage <= 0;
+        cnt_in <= 0;
+        cnt_out <= 0;
+        round_cnt <= 0;
+        cnt_in_prv <= 0;
+        col <= 0;
     end else begin
         stage <= nxt_stage;
         cnt_in <= nxt_cnt_in;
