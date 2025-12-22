@@ -2,6 +2,11 @@
 # PAT: imgs_lime1 -> 1;  imgs_lime1 -> 2
 # PATCH_I, PATCH_J: patch_PATCH_I_PATCH_J_over/under.bmp
 # INIT_EN: Initialize mode -> 1; hardware mode -> 0
+# ITER: iteration number for ALM layers (3-14)
+#       ITER=0 -> iter_000, ITER=1 -> iter_001, ITER=2 -> iter_002
+#       ITER=3 -> iter003, ITER=4 -> 004, ITER=10 -> iter010, ITER=19 -> iter19
+# TOLERANCE: Floating point comparison tolerance for layer 3-14 (default: 4e-3)
+#            Example: +define+TOLERANCE=1e-6 for stricter comparison
 
 
 # Layer1: input_image #
@@ -32,6 +37,7 @@
 #     +define+PAT=1 \
 #     +define+PATCH_I=0 \
 #     +define+PATCH_J=0 \
+#     +define+ITER=0 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
 #     +define+END_CYCLES=10000
@@ -43,6 +49,7 @@
 #     +define+PAT=1 \
 #     +define+PATCH_I=0 \
 #     +define+PATCH_J=0 \
+#     +define+ITER=0 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
 #     +define+END_CYCLES=10000
@@ -54,6 +61,7 @@
 #     +define+PAT=1 \
 #     +define+PATCH_I=20 \
 #     +define+PATCH_J=20 \
+#     +define+ITER=0 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
 #     +define+END_CYCLES=10000
@@ -65,6 +73,7 @@
 #     +define+PAT=1 \
 #     +define+PATCH_I=0 \
 #     +define+PATCH_J=0 \
+#     +define+ITER=0 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
 #     +define+END_CYCLES=10000
@@ -76,6 +85,7 @@
 #     +define+PAT=1 \
 #     +define+PATCH_I=0 \
 #     +define+PATCH_J=0 \
+#     +define+ITER=0 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
 #     +define+END_CYCLES=30000
@@ -87,6 +97,7 @@
 #     +define+PAT=1 \
 #     +define+PATCH_I=0 \
 #     +define+PATCH_J=0 \
+#     +define+ITER=0 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
 #     +define+END_CYCLES=35000
@@ -98,6 +109,7 @@
 #     +define+PAT=1 \
 #     +define+PATCH_I=0 \
 #     +define+PATCH_J=0 \
+#     +define+ITER=0 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
 #     +define+END_CYCLES=30000
@@ -109,43 +121,47 @@
 #     +define+PAT=1 \
 #     +define+PATCH_I=0 \
 #     +define+PATCH_J=0 \
+#     +define+ITER=0 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
 #     +define+END_CYCLES=5000
 
 # # # # # Layer11: ALM_delT #
-vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer11.log \
-    +define+ALM_delT \
-    +define+INIT_EN=0 \
-    +define+PAT=1 \
-    +define+PATCH_I=0 \
-    +define+PATCH_J=0 \
-    +define+FLAG_VERBOSE=1 \
-    +define+FLAG_DUMPWV=1 \
-    +define+END_CYCLES=500000
+# vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer11.log \
+#     +define+ALM_delT \
+#     +define+INIT_EN=0 \
+#     +define+PAT=1 \
+#     +define+PATCH_I=0 \
+#     +define+PATCH_J=0 \
+#     +define+ITER=0 \
+#     +define+FLAG_VERBOSE=1 \
+#     +define+FLAG_DUMPWV=1 \
+#     +define+END_CYCLES=500000
 
 # # # Layer12: ALM_G #
 # vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer12.log \
 #     +define+ALM_G \
-#     +define+INIT_EN=1 \
+#     +define+INIT_EN=0 \
 #     +define+PAT=1 \
-#     +define+PATCH_I=20 \
-#     +define+PATCH_J=20 \
+#     +define+PATCH_I=0 \
+#     +define+PATCH_J=0 \
+#     +define+ITER=0 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
-#     +define+END_CYCLES=5000
+#     +define+END_CYCLES=80000
 
 # # Layer13: ALM_Q #
-# vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer13.log \
-#     +define+ALM_Q \
-#     +define+INIT_EN=1 \
-#     +define+PAT=1 \
-#     +define+PATCH_I=20 \
-#     +define+PATCH_J=20 \
-#     +define+FLAG_VERBOSE=1 \
-#     +define+FLAG_DUMPWV=1 \
-#     +define+END_CYCLES=5000
-
+vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer13.log \
+    +define+ALM_Q \
+    +define+INIT_EN=0 \
+    +define+PAT=1 \
+    +define+PATCH_I=0 \
+    +define+PATCH_J=0 \
+    +define+ITER=1 \
+    +define+FLAG_VERBOSE=1 \
+    +define+FLAG_DUMPWV=1 \
+    +define+END_CYCLES=80000 \
+    +define+TOLERANCE=1e-4
 
 # # Layer14: ALM_Z #
 # vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer14.log \
@@ -154,6 +170,7 @@ vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer11.log \
 #     +define+PAT=1 \
 #     +define+PATCH_I=20 \
 #     +define+PATCH_J=20 \
+#     +define+ITER=0 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
 #     +define+END_CYCLES=5000
