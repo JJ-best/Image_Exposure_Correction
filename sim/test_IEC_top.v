@@ -60,7 +60,17 @@ integer patch_j_value;
 // Control whether to initialize the current layer's SRAM
 // INIT_EN applies to the layer being tested (layer_value)
 // Validation for testbench
-integer init_enable;  
+integer init_enable;
+
+// ===== Iteration selection ===== //
+// ITER can be set via +define+ITER=0,1,2,3,4,10,20,30
+// Format: iter_000, iter_001, iter_002, iter003, 004, iter010, iter20, iter30
+integer iter_value;
+
+// ===== Tolerance selection ===== //
+// TOLERANCE can be set via +define+TOLERANCE=<value>
+// Default tolerance for fp64 comparison (e.g., 4e-3, 1e-6)
+real tolerance_value;  
 
 
 // ===== Settings  ===== //
@@ -74,7 +84,7 @@ initial begin
         layer_value = 2;
     `elsif ALM_U
         layer_value = 3;
-    `elsif ALM_A
+    `elsif W_DENOM
         layer_value = 4;
     `elsif ALM_delG
         layer_value = 5;
@@ -131,9 +141,25 @@ initial begin
         init_enable = 0; 
     `endif
     
+    // ITER: Iteration number for ALM layers (3-14)
+    // 0 -> iter_000, 1 -> iter_001, 2 -> iter_002, 3 -> iter003, 4 -> 004, 10 -> iter010, 20 -> iter20, 30 -> iter30
+    `ifdef ITER
+        iter_value = `ITER;
+    `else
+        iter_value = 0;  // Default to iter_000
+    `endif
+    
+    // TOLERANCE: Floating point comparison tolerance for layer 3-14
+    // Default: 4e-3 (0.004)
+    `ifdef TOLERANCE
+        tolerance_value = `TOLERANCE;
+    `else
+        tolerance_value = 4e-3;  // Default tolerance
+    `endif
+    
     // Print setting info
-    $display("Using PAT = %c (lime%c), PATCH_I = %0d, PATCH_J = %0d, INIT_EN = %0d", 
-             pat_value, pat_value, patch_i_value, patch_j_value, init_enable);
+    $display("Using PAT = %c (lime%c), PATCH_I = %0d, PATCH_J = %0d, INIT_EN = %0d, ITER = %0d, TOLERANCE = %e", 
+             pat_value, pat_value, patch_i_value, patch_j_value, init_enable, iter_value, tolerance_value);
 end
 
 
@@ -1147,8 +1173,6 @@ initial begin
     sram_g.clear_sram(0);
     sram_z.clear_sram(0);
     sram_d.load_param_hex("./tdenom_pat/tdenom_32x32_hex.txt", 1024);
-    // sram_w load used to debug, may be remove
-    // sram_w.load_param_hex("../py/py_overlap_partition/alm/patch_00_00_under/iter_000/sramW_1.dat", 2048);
     
     #(`CYCLE * 5);
     
@@ -1160,7 +1184,7 @@ initial begin
         #(`CYCLE * 5);
         
         // Load golden data for comparison
-        load_golden(pat_value, layer_value, patch_i_value, patch_j_value);
+        load_golden(pat_value, layer_value, patch_i_value, patch_j_value, 0);  // Layer 1 doesn't need iter
         
         #(`CYCLE * 5);
         
@@ -1178,7 +1202,7 @@ initial begin
             #(`CYCLE * 5);
             
             // Load golden data for comparison
-            load_golden(pat_value, layer_value, patch_i_value, patch_j_value);
+            load_golden(pat_value, layer_value, patch_i_value, patch_j_value, 0);  // Layer 2 doesn't need iter
             
             #(`CYCLE * 5);
             
@@ -1197,7 +1221,7 @@ initial begin
             #(`CYCLE * 5);
             
             // Load golden data for comparison
-            load_golden(pat_value, layer_value, patch_i_value, patch_j_value);
+            load_golden(pat_value, layer_value, patch_i_value, patch_j_value, iter_value);
             
             #(`CYCLE * 5);
             
@@ -1216,7 +1240,7 @@ initial begin
             #(`CYCLE * 5);
             
             // Load golden data for comparison
-            load_golden(pat_value, layer_value, patch_i_value, patch_j_value);
+            load_golden(pat_value, layer_value, patch_i_value, patch_j_value, iter_value);
             
             #(`CYCLE * 5);
             
@@ -1235,7 +1259,7 @@ initial begin
             #(`CYCLE * 5);
             
             // Load golden data for comparison
-            load_golden(pat_value, layer_value, patch_i_value, patch_j_value);
+            load_golden(pat_value, layer_value, patch_i_value, patch_j_value, iter_value);
             
             #(`CYCLE * 5);
             
@@ -1254,7 +1278,7 @@ initial begin
             #(`CYCLE * 5);
             
             // Load golden data for comparison
-            load_golden(pat_value, layer_value, patch_i_value, patch_j_value);
+            load_golden(pat_value, layer_value, patch_i_value, patch_j_value, iter_value);
             
             #(`CYCLE * 5);
             
@@ -1273,7 +1297,7 @@ initial begin
             #(`CYCLE * 5);
             
             // Load golden data for comparison
-            load_golden(pat_value, layer_value, patch_i_value, patch_j_value);
+            load_golden(pat_value, layer_value, patch_i_value, patch_j_value, iter_value);
             
             #(`CYCLE * 5);
             
@@ -1292,7 +1316,7 @@ initial begin
             #(`CYCLE * 5);
             
             // Load golden data for comparison
-            load_golden(pat_value, layer_value, patch_i_value, patch_j_value);
+            load_golden(pat_value, layer_value, patch_i_value, patch_j_value, iter_value);
             
             #(`CYCLE * 5);
             
@@ -1311,7 +1335,7 @@ initial begin
             #(`CYCLE * 5);
             
             // Load golden data for comparison
-            load_golden(pat_value, layer_value, patch_i_value, patch_j_value);
+            load_golden(pat_value, layer_value, patch_i_value, patch_j_value, iter_value);
             
             #(`CYCLE * 5);
             
@@ -1330,7 +1354,7 @@ initial begin
             #(`CYCLE * 5);
             
             // Load golden data for comparison
-            load_golden(pat_value, layer_value, patch_i_value, patch_j_value);
+            load_golden(pat_value, layer_value, patch_i_value, patch_j_value, iter_value);
             
             #(`CYCLE * 5);
             
@@ -1349,7 +1373,7 @@ initial begin
             #(`CYCLE * 5);
             
             // Load golden data for comparison
-            load_golden(pat_value, layer_value, patch_i_value, patch_j_value);
+            load_golden(pat_value, layer_value, patch_i_value, patch_j_value, iter_value);
             
             #(`CYCLE * 5);
             
@@ -1368,7 +1392,7 @@ initial begin
             #(`CYCLE * 5);
             
             // Load golden data for comparison
-            load_golden(pat_value, layer_value, patch_i_value, patch_j_value);
+            load_golden(pat_value, layer_value, patch_i_value, patch_j_value, iter_value);
             
             #(`CYCLE * 5);
             
@@ -1387,7 +1411,7 @@ initial begin
             #(`CYCLE * 5);
             
             // Load golden data for comparison
-            load_golden(pat_value, layer_value, patch_i_value, patch_j_value);
+            load_golden(pat_value, layer_value, patch_i_value, patch_j_value, iter_value);
             
             #(`CYCLE * 5);
             
@@ -1406,7 +1430,7 @@ initial begin
             #(`CYCLE * 5);
             
             // Load golden data for comparison
-            load_golden(pat_value, layer_value, patch_i_value, patch_j_value);
+            load_golden(pat_value, layer_value, patch_i_value, patch_j_value, iter_value);
             
             #(`CYCLE * 5);
             
@@ -1436,7 +1460,12 @@ initial begin
         #(`CYCLE * 5);
         
         // Load golden data for comparison
-        load_golden(pat_value, layer_value, patch_i_value, patch_j_value);
+        // For layer 3-14, use iter_value; for layer 1-2, use 0
+        if(layer_value >= 3 && layer_value <= 14) begin
+            load_golden(pat_value, layer_value, patch_i_value, patch_j_value, iter_value);
+        end else begin
+            load_golden(pat_value, layer_value, patch_i_value, patch_j_value, 0);
+        end
         #(`CYCLE * 5);
         
         // Compare 
@@ -1467,9 +1496,10 @@ end
 // ===== Load golden data from BMP file ===== //
 task load_golden;
     input [7:0] PAT;        // "1" for lime1, "2" for lime2
-    input [31:0] LAYER;     // 1~5
+    input [31:0] LAYER;     // 1~17
     input [31:0] PATCH_I;   // patch row index (0-27)
     input [31:0] PATCH_J;   // patch column index (0-27)
+    input [31:0] ITER;      // iteration number (0,1,2,3,4,10,19)
 
     integer row, col, addr, file_in;
     integer i, j;
@@ -1488,12 +1518,42 @@ task load_golden;
     reg [63:0] hex_value_low, hex_value_high;
     integer char_idx;
     integer nibble_val;
+    reg [7:0] iter_str [0:7];  // Formatted iter string (8 bytes)
+    integer iter_digit0, iter_digit1, iter_digit2;
 
 begin
     patch_i_str[0] = ((PATCH_I / 10) % 10) + "0";
     patch_i_str[1] = (PATCH_I % 10) + "0";
     patch_j_str[0] = ((PATCH_J / 10) % 10) + "0";
     patch_j_str[1] = (PATCH_J % 10) + "0";
+    
+    // Format iter string - ensure all elements are non-null
+    iter_digit0 = ITER % 10;
+    iter_digit1 = (ITER / 10) % 10;
+    iter_digit2 = (ITER / 100) % 10;
+    case(ITER)
+        0: begin iter_str[0] = "i"; iter_str[1] = "t"; iter_str[2] = "e"; iter_str[3] = "r"; 
+                iter_str[4] = "_"; iter_str[5] = "0"; iter_str[6] = "0"; iter_str[7] = "0"; end
+        1: begin iter_str[0] = "i"; iter_str[1] = "t"; iter_str[2] = "e"; iter_str[3] = "r"; 
+                iter_str[4] = "_"; iter_str[5] = "0"; iter_str[6] = "0"; iter_str[7] = "1"; end
+        2: begin iter_str[0] = "i"; iter_str[1] = "t"; iter_str[2] = "e"; iter_str[3] = "r"; 
+                iter_str[4] = "_"; iter_str[5] = "0"; iter_str[6] = "0"; iter_str[7] = "2"; end
+        3: begin iter_str[0] = "i"; iter_str[1] = "t"; iter_str[2] = "e"; iter_str[3] = "r"; 
+                iter_str[4] = "0"; iter_str[5] = "0"; iter_str[6] = "3"; iter_str[7] = " "; end  // Use space instead of null
+        4: begin iter_str[0] = "0"; iter_str[1] = "0"; iter_str[2] = "4"; iter_str[3] = " "; 
+                iter_str[4] = " "; iter_str[5] = " "; iter_str[6] = " "; iter_str[7] = " "; end  // Use space instead of null
+        10: begin iter_str[0] = "i"; iter_str[1] = "t"; iter_str[2] = "e"; iter_str[3] = "r"; 
+                 iter_str[4] = "0"; iter_str[5] = "1"; iter_str[6] = "0"; iter_str[7] = " "; end  // Use space instead of null
+        20: begin iter_str[0] = "i"; iter_str[1] = "t"; iter_str[2] = "e"; iter_str[3] = "r"; 
+                 iter_str[4] = "2"; iter_str[5] = "0"; iter_str[6] = " "; iter_str[7] = " "; end  // Use space instead of null
+        29: begin iter_str[0] = "i"; iter_str[1] = "t"; iter_str[2] = "e"; iter_str[3] = "r"; 
+                 iter_str[4] = "2"; iter_str[5] = "9"; iter_str[6] = " "; iter_str[7] = " "; end  // Use space instead of null
+        default: begin
+            iter_str[0] = "i"; iter_str[1] = "t"; iter_str[2] = "e"; iter_str[3] = "r";
+            iter_str[4] = "_"; iter_str[5] = iter_digit2 + "0"; iter_str[6] = iter_digit1 + "0"; 
+            iter_str[7] = iter_digit0 + "0";
+        end
+    endcase
 
    // filepath
     if(PAT == "1") begin // PAT == "1" (imgs_lime1)
@@ -1503,30 +1563,42 @@ begin
             2 : $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime1/initial_illum_map/patch_%c%c_%c%c_under.bmp",
                          patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
 
-            3 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/iter_000/sramU_1.dat",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            4 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/iter_000/sramW_1.dat",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            5 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/iter_000/sramX_1.dat",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            6 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/iter_000/sramE_1.dat",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            7 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/iter_000/sramT_1.dat",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            8 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/iter_000/sramE_2.dat",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            9 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/iter_000/sramC_1.dat",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            10: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/iter_000/sramT_2.dat",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            11: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/iter_000/sramX_2.dat",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            12: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/iter_000/sramG_1.dat",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            13: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/iter_000/sramU_2.dat",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            14: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/iter_000/sramZ_1.dat",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
+            3 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/%c%c%c%c%c%c%c%c/sramU_1.dat",
+                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1], 
+                         iter_str[0], iter_str[1], iter_str[2], iter_str[3], iter_str[4], iter_str[5], iter_str[6], iter_str[7]);
+            4 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/%c%c%c%c%c%c%c%c/sramW_1.dat",
+                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1],
+                         iter_str[0], iter_str[1], iter_str[2], iter_str[3], iter_str[4], iter_str[5], iter_str[6], iter_str[7]);
+            5 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/%c%c%c%c%c%c%c%c/sramX_1.dat",
+                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1],
+                         iter_str[0], iter_str[1], iter_str[2], iter_str[3], iter_str[4], iter_str[5], iter_str[6], iter_str[7]);
+            6 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/%c%c%c%c%c%c%c%c/sramE_1.dat",
+                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1],
+                         iter_str[0], iter_str[1], iter_str[2], iter_str[3], iter_str[4], iter_str[5], iter_str[6], iter_str[7]);
+            7 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/%c%c%c%c%c%c%c%c/sramT_1.dat",
+                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1],
+                         iter_str[0], iter_str[1], iter_str[2], iter_str[3], iter_str[4], iter_str[5], iter_str[6], iter_str[7]);
+            8 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/%c%c%c%c%c%c%c%c/sramE_2.dat",
+                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1],
+                         iter_str[0], iter_str[1], iter_str[2], iter_str[3], iter_str[4], iter_str[5], iter_str[6], iter_str[7]);
+            9 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/%c%c%c%c%c%c%c%c/sramC_1.dat",
+                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1],
+                        iter_str[0], iter_str[1], iter_str[2], iter_str[3], iter_str[4], iter_str[5], iter_str[6], iter_str[7]);
+            10: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/%c%c%c%c%c%c%c%c/sramT_2.dat",
+                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1],
+                        iter_str[0], iter_str[1], iter_str[2], iter_str[3], iter_str[4], iter_str[5], iter_str[6], iter_str[7]);
+            11: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/%c%c%c%c%c%c%c%c/sramX_2.dat",
+                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1],
+                        iter_str[0], iter_str[1], iter_str[2], iter_str[3], iter_str[4], iter_str[5], iter_str[6], iter_str[7]);
+            12: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/%c%c%c%c%c%c%c%c/sramG_1.dat",
+                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1],
+                        iter_str[0], iter_str[1], iter_str[2], iter_str[3], iter_str[4], iter_str[5], iter_str[6], iter_str[7]);
+            13: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/%c%c%c%c%c%c%c%c/sramU_2.dat",
+                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1],
+                        iter_str[0], iter_str[1], iter_str[2], iter_str[3], iter_str[4], iter_str[5], iter_str[6], iter_str[7]);
+            14: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_under/%c%c%c%c%c%c%c%c/sramZ_1.dat",
+                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1],
+                        iter_str[0], iter_str[1], iter_str[2], iter_str[3], iter_str[4], iter_str[5], iter_str[6], iter_str[7]);
             
             15: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime1/refined_illum_map/patch_%c%c_%c%c_under.bmp",
                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
@@ -1544,30 +1616,42 @@ begin
             2 : $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime2/initial_illum_map/patch_%c%c_%c%c_over.bmp",
                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
             
-            3 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/iter_000/sramU_1.dat",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            4 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/iter_000/sramW_1.dat",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            5 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/iter_000/sramX_1.dat",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            6 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/iter_000/sramE_1.dat",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            7 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/iter_000/sramT_1.dat",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            8 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/iter_000/sramE_2.dat",
-                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            9 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/iter_000/sramC_1.dat",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            10: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/iter_000/sramT_2.dat",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            11: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/iter_000/sramX_2.dat",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            12: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/iter_000/sramG_1.dat",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            13: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/iter_000/sramU_2.dat",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
-            14: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/iter_000/sramZ_1.dat",
-                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1]);
+            3 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/%c%c%c%c%c%c%c%c/sramU_1.dat",
+                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1],
+                         iter_str[0], iter_str[1], iter_str[2], iter_str[3], iter_str[4], iter_str[5], iter_str[6], iter_str[7]);
+            4 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/%c%c%c%c%c%c%c%c/sramW_1.dat",
+                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1],
+                         iter_str[0], iter_str[1], iter_str[2], iter_str[3], iter_str[4], iter_str[5], iter_str[6], iter_str[7]);
+            5 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/%c%c%c%c%c%c%c%c/sramX_1.dat",
+                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1],
+                         iter_str[0], iter_str[1], iter_str[2], iter_str[3], iter_str[4], iter_str[5], iter_str[6], iter_str[7]);
+            6 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/%c%c%c%c%c%c%c%c/sramE_1.dat",
+                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1],
+                         iter_str[0], iter_str[1], iter_str[2], iter_str[3], iter_str[4], iter_str[5], iter_str[6], iter_str[7]);
+            7 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/%c%c%c%c%c%c%c%c/sramT_1.dat",
+                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1],
+                         iter_str[0], iter_str[1], iter_str[2], iter_str[3], iter_str[4], iter_str[5], iter_str[6], iter_str[7]);
+            8 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/%c%c%c%c%c%c%c%c/sramE_2.dat",
+                         patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1],
+                         iter_str[0], iter_str[1], iter_str[2], iter_str[3], iter_str[4], iter_str[5], iter_str[6], iter_str[7]);
+            9 : $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/%c%c%c%c%c%c%c%c/sramC_1.dat",
+                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1],
+                        iter_str[0], iter_str[1], iter_str[2], iter_str[3], iter_str[4], iter_str[5], iter_str[6], iter_str[7]);
+            10: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/%c%c%c%c%c%c%c%c/sramT_2.dat",
+                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1],
+                        iter_str[0], iter_str[1], iter_str[2], iter_str[3], iter_str[4], iter_str[5], iter_str[6], iter_str[7]);
+            11: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/%c%c%c%c%c%c%c%c/sramX_2.dat",
+                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1],
+                        iter_str[0], iter_str[1], iter_str[2], iter_str[3], iter_str[4], iter_str[5], iter_str[6], iter_str[7]);
+            12: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/%c%c%c%c%c%c%c%c/sramG_1.dat",
+                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1],
+                        iter_str[0], iter_str[1], iter_str[2], iter_str[3], iter_str[4], iter_str[5], iter_str[6], iter_str[7]);
+            13: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/%c%c%c%c%c%c%c%c/sramU_2.dat",
+                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1],
+                        iter_str[0], iter_str[1], iter_str[2], iter_str[3], iter_str[4], iter_str[5], iter_str[6], iter_str[7]);
+            14: $sformat(bmp_filepath, "../py/py_overlap_partition/alm/patch_%c%c_%c%c_over/%c%c%c%c%c%c%c%c/sramZ_1.dat",
+                        patch_i_str[0], patch_i_str[1], patch_j_str[0], patch_j_str[1],
+                        iter_str[0], iter_str[1], iter_str[2], iter_str[3], iter_str[4], iter_str[5], iter_str[6], iter_str[7]);
 
 
             15: $sformat(bmp_filepath, "../py/py_overlap_partition/imgs_lime2/refined_illum_map/patch_%c%c_%c%c_over.bmp",
@@ -2390,6 +2474,23 @@ begin
 end
 endtask
 
+// ===== Floating point comparison function ===== //
+// Compare two fp64 values with tolerance (absolute error)
+// Returns 1 if values match within tolerance, 0 otherwise
+// Uses range comparison: sram_val in [golden_val - tolerance, golden_val + tolerance)
+function integer fp64_compare;
+    input real golden_val;
+    input real sram_val;
+    input real tol;
+begin
+    if((golden_val - tol <= sram_val) && (sram_val < golden_val + tol)) begin
+        fp64_compare = 1;
+    end else begin
+        fp64_compare = 0;
+    end
+end
+endfunction
+
 // ===== Compare SRAM data with golden data ===== //
 task compare_load;
     integer addr;
@@ -2404,6 +2505,7 @@ task compare_load;
     real tolerance;  // Tolerance for fp64 comparison
     integer golden_val_uint8, sram_val_uint8;  // For uint8 comparison (layer 2)
     integer del;
+    integer match_result;  // Result of fp64 comparison
 begin
     total_errors = 0;
     bank_errors[0] = 0; bank_errors[1] = 0; bank_errors[2] = 0; bank_errors[3] = 0;
@@ -2613,7 +2715,7 @@ begin
         $display("========================================================================");
     end else if(layer_value >= 3 && layer_value <= 14) begin
         // Layer 3-14: Compare .dat files (binary fp64 data)
-        tolerance = 4e-3;  // Tolerance for fp64 comparison
+        tolerance = tolerance_value;  // Use configurable tolerance
         
         // Determine address range and SRAM based on layer
         if(layer_value == 3 || layer_value == 4 || layer_value == 5 || 
@@ -2630,13 +2732,15 @@ begin
                 for(addr = 0; addr < max_addr; addr = addr + 1) begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u0[addr]);
                     sram_val_fp64 = $bitstoreal(sram_u.bank0[addr]);
-                    if((golden_val_fp64 - tolerance <= sram_val_fp64) && (sram_val_fp64 < golden_val_fp64 + tolerance)) begin
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
-                            addr, golden_bank_u0[addr], golden_val_fp64, sram_u.bank0[addr], sram_val_fp64);
-                    end else begin
+                    match_result = fp64_compare(golden_val_fp64, sram_val_fp64, tolerance);
+                    if(match_result == 0) begin
                         bank_errors[0] = bank_errors[0] + 1;
                         total_errors = total_errors + 1;
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | FAIL (diff: %e)", 
+                            addr, golden_bank_u0[addr], golden_val_fp64, sram_u.bank0[addr], sram_val_fp64,
+                            (golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64));
+                    end else begin
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | OK", 
                             addr, golden_bank_u0[addr], golden_val_fp64, sram_u.bank0[addr], sram_val_fp64);
                     end
                 end
@@ -2647,13 +2751,15 @@ begin
                 for(addr = 0; addr < max_addr; addr = addr + 1) begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u1[addr]);
                     sram_val_fp64 = $bitstoreal(sram_u.bank1[addr]);
-                    if((golden_val_fp64 - tolerance <= sram_val_fp64) && (sram_val_fp64 < golden_val_fp64 + tolerance)) begin
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
-                            addr, golden_bank_u1[addr], golden_val_fp64, sram_u.bank1[addr], sram_val_fp64);
-                    end else begin
+                    match_result = fp64_compare(golden_val_fp64, sram_val_fp64, tolerance);
+                    if(match_result == 0) begin
                         bank_errors[1] = bank_errors[1] + 1;
                         total_errors = total_errors + 1;
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | FAIL (diff: %e)", 
+                            addr, golden_bank_u1[addr], golden_val_fp64, sram_u.bank1[addr], sram_val_fp64,
+                            (golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64));
+                    end else begin
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | OK", 
                             addr, golden_bank_u1[addr], golden_val_fp64, sram_u.bank1[addr], sram_val_fp64);
                     end
                 end
@@ -2663,13 +2769,15 @@ begin
                 for(addr = 0; addr < max_addr; addr = addr + 1) begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u2[addr]);
                     sram_val_fp64 = $bitstoreal(sram_u.bank2[addr]);
-                    if((golden_val_fp64 - tolerance <= sram_val_fp64) && (sram_val_fp64 < golden_val_fp64 + tolerance)) begin
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
-                            addr, golden_bank_u2[addr], golden_val_fp64, sram_u.bank2[addr], sram_val_fp64);
-                    end else begin
+                    match_result = fp64_compare(golden_val_fp64, sram_val_fp64, tolerance);
+                    if(match_result == 0) begin
                         bank_errors[2] = bank_errors[2] + 1;
                         total_errors = total_errors + 1;
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | FAIL (diff: %e)", 
+                            addr, golden_bank_u2[addr], golden_val_fp64, sram_u.bank2[addr], sram_val_fp64,
+                            (golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64));
+                    end else begin
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | OK", 
                             addr, golden_bank_u2[addr], golden_val_fp64, sram_u.bank2[addr], sram_val_fp64);
                     end
                 end
@@ -2679,13 +2787,15 @@ begin
                 for(addr = 0; addr < max_addr; addr = addr + 1) begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u3[addr]);
                     sram_val_fp64 = $bitstoreal(sram_u.bank3[addr]);
-                    if((golden_val_fp64 - tolerance <= sram_val_fp64) && (sram_val_fp64 < golden_val_fp64 + tolerance)) begin
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
-                            addr, golden_bank_u3[addr], golden_val_fp64, sram_u.bank3[addr], sram_val_fp64);
-                    end else begin
+                    match_result = fp64_compare(golden_val_fp64, sram_val_fp64, tolerance);
+                    if(match_result == 0) begin
                         bank_errors[3] = bank_errors[3] + 1;
                         total_errors = total_errors + 1;
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | FAIL (diff: %e)", 
+                            addr, golden_bank_u3[addr], golden_val_fp64, sram_u.bank3[addr], sram_val_fp64,
+                            (golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64));
+                    end else begin
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | OK", 
                             addr, golden_bank_u3[addr], golden_val_fp64, sram_u.bank3[addr], sram_val_fp64);
                     end
                 end
@@ -2763,14 +2873,16 @@ begin
                 for(addr = 0; addr < max_addr; addr = addr + 1) begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u0[addr]);
                     sram_val_fp64 = $bitstoreal(sram_x.bank0[addr]);
-                    if((golden_val_fp64 - tolerance <= sram_val_fp64) && (sram_val_fp64 <= golden_val_fp64 + tolerance)) begin
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
+                    match_result = fp64_compare(golden_val_fp64, sram_val_fp64, tolerance);
+                    if(match_result == 1) begin
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | OK", 
                             addr, golden_bank_u0[addr], golden_val_fp64, sram_x.bank0[addr], sram_val_fp64);
                     end else begin
                         bank_errors[0] = bank_errors[0] + 1;
                         total_errors = total_errors + 1;
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
-                            addr, golden_bank_u0[addr], golden_val_fp64, sram_x.bank0[addr], sram_val_fp64);
+                        $display("%4d | %016h | %3.17e | %016h | %3.17e | FAIL (diff: %e)", 
+                            addr, golden_bank_u0[addr], golden_val_fp64, sram_x.bank0[addr], sram_val_fp64,
+                            (golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64));
                     end
                 end
                 $display("\nBank 1 Comparison:");
@@ -2895,13 +3007,13 @@ begin
                 for(addr = 0; addr < max_addr; addr = addr + 1) begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u0[addr]);
                     sram_val_fp64 = $bitstoreal(sram_z.bank0[addr]);
-                    if((golden_val_fp64 - tolerance <= sram_val_fp64) && (sram_val_fp64 < golden_val_fp64 + tolerance)) begin
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
-                            addr, golden_bank_u0[addr], golden_val_fp64, sram_z.bank0[addr], sram_val_fp64);
-                    end else begin
+                    if((golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64) > tolerance) begin
                         bank_errors[0] = bank_errors[0] + 1;
                         total_errors = total_errors + 1;
                         $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
+                            addr, golden_bank_u0[addr], golden_val_fp64, sram_z.bank0[addr], sram_val_fp64);
+                    end else begin
+                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
                             addr, golden_bank_u0[addr], golden_val_fp64, sram_z.bank0[addr], sram_val_fp64);
                     end
                 end
@@ -2911,13 +3023,13 @@ begin
                 for(addr = 0; addr < max_addr; addr = addr + 1) begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u1[addr]);
                     sram_val_fp64 = $bitstoreal(sram_z.bank1[addr]);
-                    if((golden_val_fp64 - tolerance <= sram_val_fp64) && (sram_val_fp64 < golden_val_fp64 + tolerance)) begin
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
-                            addr, golden_bank_u1[addr], golden_val_fp64, sram_z.bank1[addr], sram_val_fp64);
-                    end else begin
+                    if((golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64) > tolerance) begin
                         bank_errors[1] = bank_errors[1] + 1;
                         total_errors = total_errors + 1;
                         $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
+                            addr, golden_bank_u1[addr], golden_val_fp64, sram_z.bank1[addr], sram_val_fp64);
+                    end else begin
+                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
                             addr, golden_bank_u1[addr], golden_val_fp64, sram_z.bank1[addr], sram_val_fp64);
                     end
                 end
@@ -2927,13 +3039,13 @@ begin
                 for(addr = 0; addr < max_addr; addr = addr + 1) begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u2[addr]);
                     sram_val_fp64 = $bitstoreal(sram_z.bank2[addr]);
-                    if((golden_val_fp64 - tolerance <= sram_val_fp64) && (sram_val_fp64 < golden_val_fp64 + tolerance)) begin
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
-                            addr, golden_bank_u2[addr], golden_val_fp64, sram_z.bank2[addr], sram_val_fp64);
-                    end else begin
+                    if((golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64) > tolerance) begin
                         bank_errors[2] = bank_errors[2] + 1;
                         total_errors = total_errors + 1;
                         $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
+                            addr, golden_bank_u2[addr], golden_val_fp64, sram_z.bank2[addr], sram_val_fp64);
+                    end else begin
+                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
                             addr, golden_bank_u2[addr], golden_val_fp64, sram_z.bank2[addr], sram_val_fp64);
                     end
                 end
@@ -2943,13 +3055,13 @@ begin
                 for(addr = 0; addr < max_addr; addr = addr + 1) begin
                     golden_val_fp64 = $bitstoreal(golden_bank_u3[addr]);
                     sram_val_fp64 = $bitstoreal(sram_z.bank3[addr]);
-                    if((golden_val_fp64 - tolerance <= sram_val_fp64) && (sram_val_fp64 < golden_val_fp64 + tolerance)) begin
-                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
-                            addr, golden_bank_u3[addr], golden_val_fp64, sram_z.bank3[addr], sram_val_fp64);
-                    end else begin
+                    if((golden_val_fp64 > sram_val_fp64) ? (golden_val_fp64 - sram_val_fp64) : (sram_val_fp64 - golden_val_fp64) > tolerance) begin
                         bank_errors[3] = bank_errors[3] + 1;
                         total_errors = total_errors + 1;
                         $display("%4d | %016h | %3.6e | %016h | %3.6e | FAIL", 
+                            addr, golden_bank_u3[addr], golden_val_fp64, sram_z.bank3[addr], sram_val_fp64);
+                    end else begin
+                        $display("%4d | %016h | %3.6e | %016h | %3.6e | OK", 
                             addr, golden_bank_u3[addr], golden_val_fp64, sram_z.bank3[addr], sram_val_fp64);
                     end
                 end
@@ -3697,7 +3809,5 @@ begin
     end
 end
 endtask
-
-
 
 endmodule
