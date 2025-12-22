@@ -27,7 +27,8 @@ module IEC_top #(
     parameter pINT_WIDTH    = 8,
     parameter mu0           = 64'h3f847ae147ae147b, // 0.01
     parameter mu0_recip     = 64'h4059000000000000, // 1 / 0.01
-    parameter TWIDDLE_ADDR_WIDTH = 6
+    parameter TWIDDLE_ADDR_WIDTH = 6,
+    parameter EPSILON = 64'h3F1A36E2EB1C432D        // 1e-4
 )(
     input clk,
     input rst_n,
@@ -288,9 +289,13 @@ reg [(ADDR_WIDTH_A-1):0] sram_i_addr_n;
 // ----- write sram b ----- //
 reg [(ADDR_WIDTH_A-1):0] sram_b_addr;
 reg [(ADDR_WIDTH_A-1):0] sram_b_addr_n;
+reg [(ADDR_WIDTH_A-1):0] sram_b_addr_p;
 // ----- read sram z ----- //
 reg [(ADDR_WIDTH_Z-1):0] sram_z_addr;
 reg [(ADDR_WIDTH_Z-1):0] sram_z_addr_n;
+// ----- write sram w ----- //
+reg [(ADDR_WIDTH_W-1):0] sram_w_addr;
+reg [(ADDR_WIDTH_W-1):0] sram_w_addr_n;
 // ----- write sram u ----- //
 reg [(pFP_WIDTH-1):0] mu;
 reg [(pFP_WIDTH-1):0] mu_recip;
@@ -610,11 +615,40 @@ always @(*) begin
         end
         NORMAL_t: begin
             if (sram_b_addr == 8'd255) begin
-                top_state_n = Z_DIV_U; // TODO: you may switch to MOV_INIT
+                top_state_n = MOV_INIT; // TODO: you may switch to MOV_INIT
             end else begin
                 top_state_n = NORMAL_t;
             end
         end
+        // TODO: MOV_INIT -> MOV_INTI_t -> WETGHT -> WEIGHT_t -> Z_DIV_U
+        MOV_INIT: begin
+            if (sram_b_addr == 8'd255) begin
+                top_state_n = MOV_INIT_t; 
+            end else begin
+                top_state_n = MOV_INIT;
+            end
+        end
+        MOV_INIT_t: begin
+            if (sram_b_addr_p == 8'd255) begin
+                top_state_n = WEIGHT; 
+            end else begin
+                top_state_n = MOV_INIT_t;
+            end
+        end
+        WEIGHT: begin
+            if (delt_done) begin
+                top_state_n = Z_DIV_U; 
+            end else begin
+                top_state_n = WEIGHT;
+            end
+        end
+        // WEIGHT_t: begin
+        //     if (sram_w_addr == 8'd255) begin
+        //         top_state_n = DONE; 
+        //     end else begin
+        //         top_state_n = WEIGHT_t;
+        //     end
+        // end
         // TODO: MOV_INIT -> MOV_INTI_t -> WETGHT -> WEIGHT_t -> Z_DIV_U
         Z_DIV_U: begin
             if (sram_z_addr == 9'd511) begin
@@ -748,7 +782,7 @@ always @(posedge clk) begin
     end
 end
 assign done = (done_cnt == 10'd10)? 1:0;
-
+// assign done = (top_state == DONE);
 // ===== stage 1 ===== //
 // SRAM A(32x32x3x8) store the original bmp file
 // each memory entry have 3-byte(RGB) with 4-bank memory access
@@ -965,8 +999,10 @@ end
 always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
         sram_b_addr <= 0;
+        sram_b_addr_p <= 0;
     end else begin
         sram_b_addr <= sram_b_addr_n;
+        sram_b_addr_p <= sram_b_addr;
     end
 end
 always @(*) begin
@@ -1007,6 +1043,26 @@ always @(*) begin
                 sram_wen_b3 = 1'b1;
             end else begin
                 sram_b_addr_n = sram_b_addr;
+                sram_wen_b0 = 1'b1;
+                sram_wen_b1 = 1'b1;
+                sram_wen_b2 = 1'b1;
+                sram_wen_b3 = 1'b1;
+            end
+            sram_addr_b0 = sram_b_addr;
+            sram_addr_b1 = sram_b_addr;
+            sram_addr_b2 = sram_b_addr;
+            sram_addr_b3 = sram_b_addr;
+        end
+        // TODO: add your control for sram b at MOV_INIT, MOV_INIT_t
+        MOV_INIT, MOV_INIT_t: begin
+            if (sram_b_addr == 8'd255) begin
+                sram_b_addr_n = 0;
+                sram_wen_b0 = 1'b1;
+                sram_wen_b1 = 1'b1;
+                sram_wen_b2 = 1'b1;
+                sram_wen_b3 = 1'b1;
+            end else begin
+                sram_b_addr_n = sram_b_addr + 1;
                 sram_wen_b0 = 1'b1;
                 sram_wen_b1 = 1'b1;
                 sram_wen_b2 = 1'b1;
@@ -1942,6 +1998,57 @@ always @(*) begin
             sram_wen_e12 = 1'b1; sram_wen_e13 = 1'b1; sram_wen_e14 = 1'b1; sram_wen_e15 = 1'b1;
         end
         // TODO: add your control from sram e (MOV_INTT, MOV_INIT_t, WEIGHT, WEIGHT_t)
+        MOV_INIT, MOV_INIT_t: begin
+            sram_e_addr_n = (sram_b_addr_p == 8'd255) ? 0 : (sram_b_addr_p[1:0] == 2'b11)? sram_e_addr + 1: sram_e_addr;
+
+            sram_addr_e0  = sram_e_addr; sram_addr_e1  = sram_e_addr;
+            sram_addr_e2  = sram_e_addr; sram_addr_e3  = sram_e_addr;
+
+            sram_addr_e4  = sram_e_addr; sram_addr_e5  = sram_e_addr;
+            sram_addr_e6  = sram_e_addr; sram_addr_e7  = sram_e_addr;
+
+            sram_addr_e8  = sram_e_addr; sram_addr_e9  = sram_e_addr;
+            sram_addr_e10 = sram_e_addr; sram_addr_e11 = sram_e_addr;
+
+            sram_addr_e12 = sram_e_addr; sram_addr_e13 = sram_e_addr;
+            sram_addr_e14 = sram_e_addr; sram_addr_e15 = sram_e_addr;
+
+            sram_wdata_e0  = {sram_rdata_b0, 64'b0}; sram_wdata_e1  = {sram_rdata_b1, 64'b0}; sram_wdata_e2  = {sram_rdata_b2, 64'b0}; sram_wdata_e3  = {sram_rdata_b3, 64'b0};
+            sram_wdata_e4  = {sram_rdata_b0, 64'b0}; sram_wdata_e5  = {sram_rdata_b1, 64'b0}; sram_wdata_e6  = {sram_rdata_b2, 64'b0}; sram_wdata_e7  = {sram_rdata_b3, 64'b0};
+            sram_wdata_e8  = {sram_rdata_b0, 64'b0}; sram_wdata_e9  = {sram_rdata_b1, 64'b0}; sram_wdata_e10 = {sram_rdata_b2, 64'b0}; sram_wdata_e11 = {sram_rdata_b3, 64'b0};
+            sram_wdata_e12 = {sram_rdata_b0, 64'b0}; sram_wdata_e13 = {sram_rdata_b1, 64'b0}; sram_wdata_e14 = {sram_rdata_b2, 64'b0}; sram_wdata_e15 = {sram_rdata_b3, 64'b0};
+
+            sram_wen_e0  = ~(sram_b_addr_p[1:0] == 2'b00); sram_wen_e1  = ~(sram_b_addr_p[1:0] == 2'b00); sram_wen_e2  = ~(sram_b_addr_p[1:0] == 2'b00); sram_wen_e3  = ~(sram_b_addr_p[1:0] == 2'b00);
+            sram_wen_e4  = ~(sram_b_addr_p[1:0] == 2'b01); sram_wen_e5  = ~(sram_b_addr_p[1:0] == 2'b01); sram_wen_e6  = ~(sram_b_addr_p[1:0] == 2'b01); sram_wen_e7  = ~(sram_b_addr_p[1:0] == 2'b01);
+            sram_wen_e8  = ~(sram_b_addr_p[1:0] == 2'b10); sram_wen_e9  = ~(sram_b_addr_p[1:0] == 2'b10); sram_wen_e10 = ~(sram_b_addr_p[1:0] == 2'b10); sram_wen_e11 = ~(sram_b_addr_p[1:0] == 2'b10);
+            sram_wen_e12 = ~(sram_b_addr_p[1:0] == 2'b11); sram_wen_e13 = ~(sram_b_addr_p[1:0] == 2'b11); sram_wen_e14 = ~(sram_b_addr_p[1:0] == 2'b11); sram_wen_e15 = ~(sram_b_addr_p[1:0] == 2'b11);
+        end
+        WEIGHT: begin
+            // sram_e_addr_n = (sram_e_addr == 6'd63)? 0: sram_e_addr + 1;
+
+            sram_addr_e0  = delt_sram_addr_t0 ; sram_addr_e1  = delt_sram_addr_t1 ;
+            sram_addr_e2  = delt_sram_addr_t2 ; sram_addr_e3  = delt_sram_addr_t3 ;
+
+            sram_addr_e4  = delt_sram_addr_t4 ; sram_addr_e5  = delt_sram_addr_t5 ;
+            sram_addr_e6  = delt_sram_addr_t6 ; sram_addr_e7  = delt_sram_addr_t7 ;
+
+            sram_addr_e8  = delt_sram_addr_t8 ; sram_addr_e9  = delt_sram_addr_t9 ;
+            sram_addr_e10 = delt_sram_addr_t10; sram_addr_e11 = delt_sram_addr_t11;
+
+            sram_addr_e12 = delt_sram_addr_t12; sram_addr_e13 = delt_sram_addr_t13;
+            sram_addr_e14 = delt_sram_addr_t14; sram_addr_e15 = delt_sram_addr_t15;
+
+            sram_wdata_e0  = delt_sram_wdata_t0 ; sram_wdata_e1  = delt_sram_wdata_t0 ; sram_wdata_e2  = delt_sram_wdata_t0 ; sram_wdata_e3  = delt_sram_wdata_t0 ;
+            sram_wdata_e4  = delt_sram_wdata_t4 ; sram_wdata_e5  = delt_sram_wdata_t4 ; sram_wdata_e6  = delt_sram_wdata_t4 ; sram_wdata_e7  = delt_sram_wdata_t4 ;
+            sram_wdata_e8  = delt_sram_wdata_t8 ; sram_wdata_e9  = delt_sram_wdata_t8 ; sram_wdata_e10 = delt_sram_wdata_t8 ; sram_wdata_e11 = delt_sram_wdata_t8 ;
+            sram_wdata_e12 = delt_sram_wdata_t12; sram_wdata_e13 = delt_sram_wdata_t12; sram_wdata_e14 = delt_sram_wdata_t12; sram_wdata_e15 = delt_sram_wdata_t12;
+
+            sram_wen_e0  = delt_sram_wen_t0 ; sram_wen_e1  = delt_sram_wen_t0 ; sram_wen_e2  = delt_sram_wen_t0 ; sram_wen_e3  = delt_sram_wen_t0 ;
+            sram_wen_e4  = delt_sram_wen_t4 ; sram_wen_e5  = delt_sram_wen_t4 ; sram_wen_e6  = delt_sram_wen_t4 ; sram_wen_e7  = delt_sram_wen_t4 ;
+            sram_wen_e8  = delt_sram_wen_t8 ; sram_wen_e9  = delt_sram_wen_t8 ; sram_wen_e10 = delt_sram_wen_t8 ; sram_wen_e11 = delt_sram_wen_t8 ;
+            sram_wen_e12 = delt_sram_wen_t12; sram_wen_e13 = delt_sram_wen_t12; sram_wen_e14 = delt_sram_wen_t12; sram_wen_e15 = delt_sram_wen_t12;
+        end
+        // TODO: add your control from sram e (MOV_INTT, MOV_INIT_t, WEIGHT, WEIGHT_t)
         default: begin
             sram_e_addr_n = 0;
 
@@ -1966,6 +2073,56 @@ end
 // ----- sram W ----- //
 // TODO: you may add sram W control at here
 // please use always @(*) begin case() end to control, since other state may need this sram
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        sram_w_addr <= 0;
+    end else begin
+        sram_w_addr <= sram_w_addr_n;
+    end
+end
+
+always @(*) begin
+    case(top_state)
+        WEIGHT: begin
+            // sram_w_addr_n = (add_out_valid[0]) ? sram_w_addr + 1 : sram_w_addr;
+
+            sram_addr_w0 = delt_sram_addr_x0;
+            sram_addr_w1 = delt_sram_addr_x1;
+            sram_addr_w2 = delt_sram_addr_x2;
+            sram_addr_w3 = delt_sram_addr_x3;
+            
+            sram_wen_w0 = delt_sram_wen_x0;
+            sram_wen_w1 = delt_sram_wen_x1;
+            sram_wen_w2 = delt_sram_wen_x2;
+            sram_wen_w3 = delt_sram_wen_x3;
+
+            sram_wdata_w0 = delt_sram_wdata_x0;
+            sram_wdata_w1 = delt_sram_wdata_x1;
+            sram_wdata_w2 = delt_sram_wdata_x2;
+            sram_wdata_w3 = delt_sram_wdata_x3;
+        end
+        default: begin
+            // sram_w_addr_n = 0;
+
+            sram_addr_w0 = 0;
+            sram_addr_w1 = 0;
+            sram_addr_w2 = 0;
+            sram_addr_w3 = 0;
+            
+            sram_wen_w0 = 1'b1;
+            sram_wen_w1 = 1'b1;
+            sram_wen_w2 = 1'b1;
+            sram_wen_w3 = 1'b1;
+
+            sram_wdata_w0 = 0;
+            sram_wdata_w1 = 0;
+            sram_wdata_w2 = 0;
+            sram_wdata_w3 = 0;
+        end
+    endcase
+end
+// TODO: you may add sram W control at here
+
 
 
 // ----- fft stage ----- //
@@ -2529,7 +2686,7 @@ always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
         delt_start_flag <= 0;
         delt_start_flag_d1 <= 0;
-    end else if (top_state == DelT) begin
+    end else if (top_state == DelT || top_state == MOV_INIT_t) begin
         delt_start_flag <= 1;
         delt_start_flag_d1 <= delt_start_flag;
     end else begin
@@ -2882,6 +3039,42 @@ always @(posedge clk) begin
             add_in_valid[7] <= 1'b0;
         end
         // TODO: add your control for the WEIGHT and WEIGHT_t
+        WEIGHT: begin
+            // ===== delT uses 4 fp_add : map to add[0..3] =====
+            add_ina[0]      <= delt_fp_add_01_in_A;
+            add_inb[0]      <= delt_fp_add_01_in_B;
+            add_in_valid[0] <= delt_fp_add_01_in_valid;
+
+            add_ina[1]      <= delt_fp_add_02_in_A;
+            add_inb[1]      <= delt_fp_add_02_in_B;
+            add_in_valid[1] <= delt_fp_add_02_in_valid;
+
+            add_ina[2]      <= delt_fp_add_11_in_A;
+            add_inb[2]      <= delt_fp_add_11_in_B;
+            add_in_valid[2] <= delt_fp_add_11_in_valid;
+
+            add_ina[3]      <= delt_fp_add_12_in_A;
+            add_inb[3]      <= delt_fp_add_12_in_B;
+            add_in_valid[3] <= delt_fp_add_12_in_valid;
+
+            // ===== +epsilon uses 4 fp_add : map to add[4..7] =====
+            add_ina[4]      <= {1'b0, add_result[0][pFP_WIDTH-2:0]};
+            add_inb[4]      <= EPSILON;
+            add_in_valid[4] <= add_out_valid[0];
+
+            add_ina[5]      <= {1'b0, add_result[1][pFP_WIDTH-2:0]};
+            add_inb[5]      <= EPSILON;
+            add_in_valid[5] <= add_out_valid[1];
+
+            add_ina[6]      <= {1'b0, add_result[2][pFP_WIDTH-2:0]};
+            add_inb[6]      <= EPSILON;
+            add_in_valid[6] <= add_out_valid[2];
+
+            add_ina[7]      <= {1'b0, add_result[3][pFP_WIDTH-2:0]};
+            add_inb[7]      <= EPSILON;
+            add_in_valid[7] <= add_out_valid[3];
+        end
+        // TODO: add your control for the WEIGHT and WEIGHT_t
         default: begin
             for (i = 0; i < 8; i = i + 1) begin
                 add_ina[i] <= {pFP_WIDTH{1'b0}};
@@ -2965,6 +3158,42 @@ fp64_reciprocal fp_recip_U0(
 // ===== delT input mux (NO FF, pure combinational) =====
 always @(*) begin
     case (top_state)
+        WEIGHT: begin
+            // ===== SRAM E (input to DelT)===== 
+            delt_sram_rdata_t0  = sram_rdata_e0;
+            delt_sram_rdata_t1  = sram_rdata_e1;
+            delt_sram_rdata_t2  = sram_rdata_e2;
+            delt_sram_rdata_t3  = sram_rdata_e3;
+            delt_sram_rdata_t4  = sram_rdata_e4;
+            delt_sram_rdata_t5  = sram_rdata_e5;
+            delt_sram_rdata_t6  = sram_rdata_e6;
+            delt_sram_rdata_t7  = sram_rdata_e7;
+            delt_sram_rdata_t8  = sram_rdata_e8;
+            delt_sram_rdata_t9  = sram_rdata_e9;
+            delt_sram_rdata_t10 = sram_rdata_e10;
+            delt_sram_rdata_t11 = sram_rdata_e11;
+            delt_sram_rdata_t12 = sram_rdata_e12;
+            delt_sram_rdata_t13 = sram_rdata_e13;
+            delt_sram_rdata_t14 = sram_rdata_e14;
+            delt_sram_rdata_t15 = sram_rdata_e15;
+
+            // ===== SRAM X (output from DelT)=====
+            delt_sram_rdata_x0 = sram_rdata_w0;
+            delt_sram_rdata_x1 = sram_rdata_w1;
+            delt_sram_rdata_x2 = sram_rdata_w2;
+            delt_sram_rdata_x3 = sram_rdata_w3;
+
+            // ===== FP ADD return =====
+            delt_fp_add_01_result    = add_result[4];
+            delt_fp_add_02_result    = add_result[5];
+            delt_fp_add_11_result    = add_result[6];
+            delt_fp_add_12_result    = add_result[7];
+
+            delt_fp_add_01_out_valid = add_out_valid[4];
+            delt_fp_add_02_out_valid = add_out_valid[5];
+            delt_fp_add_11_out_valid = add_out_valid[6];
+            delt_fp_add_12_out_valid = add_out_valid[7];
+        end
         DelT: begin
             // ===== SRAM T =====
             delt_sram_rdata_t0  = sram_rdata_t0;

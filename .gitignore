@@ -10,6 +10,8 @@ py/**/__pycache__/
 # Sim pat
 sim/pat/imgs_lime1/
 sim/pat/imgs_lime2/
+sim/tdenom_pat
+sim/fft_pat
 
 *.fsdb
 *.ucli.key

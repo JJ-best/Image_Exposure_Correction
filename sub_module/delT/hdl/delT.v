@@ -392,7 +392,8 @@ always@* begin
             nxt_state = (row_cnt_out == 31 && cnt_out == 7) ? TV : TN;
             nxt_row_cnt_in = (row_cnt_out == 31 && cnt_out == 7) ? 0: (row_cnt_in == 31 && cnt_in == 8) ? row_cnt_in : (cnt_in == 8) ? row_cnt_in + 1 : row_cnt_in;
             nxt_row_cnt_out = (row_cnt_out == 31 && cnt_out == 7) ? 0 : (cnt_out == 7) ? row_cnt_out + 1: row_cnt_out;
-            nxt_cnt_in = (row_cnt_out == 31 && cnt_out == 7) ? 0:  (row_cnt_in == 31 && cnt_in == 8) ? 9 : (cnt_in == 8) ? 0 : cnt_in + 1;
+            // nxt_cnt_in = (row_cnt_out == 31 && cnt_out == 7) ? 0:  (row_cnt_in == 31 && cnt_in == 8) ? 9 : (cnt_in == 8) ? 0 : cnt_in + 1;
+            nxt_cnt_in = (row_cnt_out == 31 && cnt_out == 7) ? 0:  (cnt_in == 9) ? cnt_in : (row_cnt_in == 31 && cnt_in == 8) ? 9 : (cnt_in == 8) ? 0 : cnt_in + 1;
             nxt_cnt_out = (cnt_out == 7) ? 0 : (fp_add_01_out_valid) ? cnt_out + 1 : cnt_out;
 
             // edge data prestore
@@ -469,7 +470,8 @@ always@* begin
             nxt_state = (row_cnt_out == 30 && cnt_out == 7) ? TV_LAST :TV;
             nxt_row_cnt_in = (row_cnt_out == 30 && cnt_out == 7) ? 0: (row_cnt_in == 30 && cnt_in == 9) ? row_cnt_in: (cnt_in == 9) ? row_cnt_in + 1 : row_cnt_in;
             nxt_row_cnt_out = (row_cnt_out == 30 && cnt_out == 7) ? 0: (cnt_out == 7) ? row_cnt_out + 1: row_cnt_out;
-            nxt_cnt_in = (row_cnt_out == 30 && cnt_out == 7) ? 0: (row_cnt_in == 30 && cnt_in == 9) ? 10 : (cnt_in == 9) ? 0 : cnt_in + 1;
+            // nxt_cnt_in = (row_cnt_out == 30 && cnt_out == 7) ? 0: (row_cnt_in == 30 && cnt_in == 9) ? 10 : (cnt_in == 9) ? 0 : cnt_in + 1;
+            nxt_cnt_in = (row_cnt_out == 30 && cnt_out == 7) ? 0:  (cnt_in == 10) ? cnt_in : (row_cnt_in == 30 && cnt_in == 9) ? 10 : (cnt_in == 9) ? 0 : cnt_in + 1;
             nxt_cnt_out = (cnt_out == 7) ? 0 : (fp_add_01_out_valid) ? cnt_out + 1 : cnt_out;
 
             // edge data prestore
@@ -627,6 +629,16 @@ end
 
 always@(posedge clk or negedge rst_n) begin
     if(!rst_n) begin
+        state <= IDLE;
+        cnt_in <= 0;
+        row_cnt_in <= 0;
+        cnt_out <= 0;
+        cyclic_data_0 <= 0;
+        cyclic_data_1 <= 0;
+        cyclic_data_2 <= 0;
+        cyclic_data_3 <= 0;
+        row_cnt_out <= 0;
+    end else if(done) begin
         state <= IDLE;
         cnt_in <= 0;
         row_cnt_in <= 0;

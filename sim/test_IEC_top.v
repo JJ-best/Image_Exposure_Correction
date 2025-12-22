@@ -74,7 +74,7 @@ initial begin
         layer_value = 2;
     `elsif ALM_U
         layer_value = 3;
-    `elsif ALM_A
+    `elsif W_DENOM
         layer_value = 4;
     `elsif ALM_delG
         layer_value = 5;

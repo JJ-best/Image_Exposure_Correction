@@ -36,9 +36,9 @@
 #     +define+FLAG_DUMPWV=1 \
 #     +define+END_CYCLES=10000
 
-# # # # Layer4: ALM_A #
+# # Layer4: W_DENOM #
 # vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer4.log \
-#     +define+ALM_A \
+#     +define+W_DENOM \
 #     +define+INIT_EN=0 \
 #     +define+PAT=1 \
 #     +define+PATCH_I=0 \
@@ -92,15 +92,15 @@
 #     +define+END_CYCLES=35000
 
 # # # Layer9: ALM_Tnd #
-vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer9.log \
-    +define+ALM_Tnd \
-    +define+INIT_EN=0 \
-    +define+PAT=1 \
-    +define+PATCH_I=0 \
-    +define+PATCH_J=0 \
-    +define+FLAG_VERBOSE=1 \
-    +define+FLAG_DUMPWV=1 \
-    +define+END_CYCLES=30000
+# vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer9.log \
+#     +define+ALM_Tnd \
+#     +define+INIT_EN=0 \
+#     +define+PAT=1 \
+#     +define+PATCH_I=0 \
+#     +define+PATCH_J=0 \
+#     +define+FLAG_VERBOSE=1 \
+#     +define+FLAG_DUMPWV=1 \
+#     +define+END_CYCLES=30000
 
 # # # Layer10: ALM_Tout #
 # vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer10.log \
@@ -113,16 +113,16 @@ vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer9.log \
 #     +define+FLAG_DUMPWV=1 \
 #     +define+END_CYCLES=5000
 
-# # # Layer11: ALM_delT #
-# vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer11.log \
-#     +define+ALM_delT \
-#     +define+INIT_EN=0 \
-#     +define+PAT=1 \
-#     +define+PATCH_I=0 \
-#     +define+PATCH_J=0 \
-#     +define+FLAG_VERBOSE=1 \
-#     +define+FLAG_DUMPWV=1 \
-#     +define+END_CYCLES=5000
+# # # # # Layer11: ALM_delT #
+vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer11.log \
+    +define+ALM_delT \
+    +define+INIT_EN=0 \
+    +define+PAT=1 \
+    +define+PATCH_I=0 \
+    +define+PATCH_J=0 \
+    +define+FLAG_VERBOSE=1 \
+    +define+FLAG_DUMPWV=1 \
+    +define+END_CYCLES=500000
 
 # # # Layer12: ALM_G #
 # vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer12.log \
