@@ -230,6 +230,9 @@ always@* begin
     nxt_cnt_out = 0;
     nxt_round_cnt = round_cnt;
 
+    sramA_csb = 1; 
+    sramB_csb = 1;      
+    
     sramA_wsb_0  = 1;
     sramA_wsb_1  = 1;
     sramA_wsb_2  = 1;

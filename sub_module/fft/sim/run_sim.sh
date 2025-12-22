@@ -61,3 +61,4 @@ else
     echo "Error: fft_sim.vcd not found - simulation may have failed"
     exit 1
 fi
+

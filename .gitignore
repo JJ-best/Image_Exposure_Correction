@@ -31,3 +31,7 @@ csrc/
 sub_module/delT/syn/delT
 sub_module/delT/syn/netlist
 ucli.key
+
+# Syn
+syn/IEC_top
+*.svf

@@ -36,7 +36,7 @@
 #     +define+FLAG_DUMPWV=1 \
 #     +define+END_CYCLES=10000
 
-# # Layer4: W_DENOM #
+# Layer4: W_DENOM #
 # vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer4.log \
 #     +define+W_DENOM \
 #     +define+INIT_EN=0 \
