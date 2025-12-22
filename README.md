@@ -1,7 +1,7 @@
 # Image_Exposure_Correction
 A hardware implementation of illumination-map-based image enhancement, featuring LIME estimation, dual illumination correction (forward + inverted images), and multi-exposure fusion for robust under/over-exposure correction.
 
-![figure](image/dataflow.png)
+<img width="14224" height="7189" alt="dataflow(2)" src="https://github.com/user-attachments/assets/e2e9c0ac-03c5-402d-8f07-b112e4712567" />
 
 ## Test Pattern
 run main.py
