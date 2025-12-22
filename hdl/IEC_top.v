@@ -568,6 +568,8 @@ reg [(pFP_WIDTH-1):0] subthe_wdata_sel;
 
 // ----- prez
 reg [(ADDR_WIDTH_X-1):0] sram_x_addr_q; // read sram x
+// ----- write sram z
+reg valid_14;
 // ===== top state ===== //
 
 localparam IDLE      = 7'd0;
@@ -600,6 +602,7 @@ localparam SUB_TRH   = 7'd24;
 localparam SUB_TRH_t = 7'd25;
 localparam PRE_Z     = 7'd26;
 localparam PRE_Z_t   = 7'd27;
+localparam WRITE_Z   = 7'd28;
 localparam DONE      = 7'd30;
 
 always @(*) begin
@@ -788,9 +791,16 @@ always @(*) begin
         end
         PRE_Z_t: begin
             if (sram_u_addr == 9'd511) begin
-                top_state_n = DONE;
+                top_state_n = WRITE_Z;
             end else begin
                 top_state_n = PRE_Z_t;
+            end
+        end
+        WRITE_Z: begin
+            if (sram_z_addr == 9'd511) begin
+                top_state_n = DONE;
+            end else begin
+                top_state_n = WRITE_Z;
             end
         end
         DONE: begin
@@ -1167,6 +1177,10 @@ always @(*) begin
             sram_addr_z1 = sram_z_addr;
             sram_addr_z2 = sram_z_addr;
             sram_addr_z3 = sram_z_addr;
+            sram_wdata_z0 = 0;
+            sram_wdata_z1 = 0;
+            sram_wdata_z2 = 0;
+            sram_wdata_u3 = 0;
         end 
         PRE_Z, PRE_Z_t: begin
             if (mul0_out_valid) begin //read_sram_z
@@ -1182,6 +1196,33 @@ always @(*) begin
             sram_addr_z1 = sram_z_addr;
             sram_addr_z2 = sram_z_addr;
             sram_addr_z3 = sram_z_addr;
+            sram_wdata_z0 = 0;
+            sram_wdata_z1 = 0;
+            sram_wdata_z2 = 0;
+            sram_wdata_u3 = 0;
+        end
+        WRITE_Z: begin
+            if (valid_14) begin
+                sram_z_addr_n = sram_z_addr + 1;
+                sram_wen_z0 = 1'b0;
+                sram_wen_z1 = 1'b0;
+                sram_wen_z2 = 1'b0;
+                sram_wen_z3 = 1'b0;
+            end else begin
+                sram_z_addr_n = 0;
+                sram_wen_z0 = 1'b1;
+                sram_wen_z1 = 1'b1;
+                sram_wen_z2 = 1'b1;
+                sram_wen_z3 = 1'b1;
+            end
+            sram_addr_z0 = sram_z_addr;
+            sram_addr_z1 = sram_z_addr;
+            sram_addr_z2 = sram_z_addr;
+            sram_addr_z3 = sram_z_addr;
+            sram_wdata_z0 = sram_rdata_u0;
+            sram_wdata_z1 = sram_rdata_u1;
+            sram_wdata_z2 = sram_rdata_u2;
+            sram_wdata_z3 = sram_rdata_u3;
         end
         default: begin
             sram_z_addr_n = 0;
@@ -1193,6 +1234,10 @@ always @(*) begin
             sram_addr_z1 = 0;
             sram_addr_z2 = 0;
             sram_addr_z3 = 0;
+            sram_wdata_z0 = 0;
+            sram_wdata_z1 = 0;
+            sram_wdata_z2 = 0;
+            sram_wdata_u3 = 0;
         end
     endcase
 end
@@ -1309,6 +1354,21 @@ always @(*) begin
                 sram_wen_u2 = 1'b1;
                 sram_wen_u3 = 1'b1;
             end
+        end
+        WRITE_Z: begin
+            sram_u_addr_n = sram_u_addr + 1;
+            sram_addr_u0 = sram_u_addr;
+            sram_addr_u1 = sram_u_addr;
+            sram_addr_u2 = sram_u_addr;
+            sram_addr_u3 = sram_u_addr;
+            sram_wen_u0 = 1'b1;
+            sram_wen_u1 = 1'b1;
+            sram_wen_u2 = 1'b1;
+            sram_wen_u3 = 1'b1;
+            sram_wdata_u0 = 0;
+            sram_wdata_u1 = 0;
+            sram_wdata_u2 = 0;
+            sram_wdata_u3 = 0;
         end
         default: begin
             sram_addr_u0 = 0;
@@ -3017,6 +3077,14 @@ always @(posedge clk or negedge rst_n) begin
     end
 end
 
+
+always @(posedge clk) begin
+    if (top_state == WRITE_Z) begin
+        valid_14 <= 1;
+    end else begin
+        valid_14 <= 0;
+    end
+end
 
 // ========================================================== //
 // ===               computation resource                 === //
