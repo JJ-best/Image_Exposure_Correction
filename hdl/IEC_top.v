@@ -28,6 +28,8 @@ module IEC_top #(
     parameter mu0           = 64'h3f847ae147ae147b, // 0.01
     parameter mu0_recip     = 64'h4059000000000000, // 1 / 0.01
     parameter alpha         = 64'h3FB47AE147AE147B, // 0.08
+    parameter rho           = 64'h3FF3333333333333, // 1.2
+    parameter k0            = 1,                    // numbere of iteration
     parameter TWIDDLE_ADDR_WIDTH = 6,
     parameter EPSILON = 64'h3F1A36E2EB1C432D        // 1e-4
 )(
@@ -570,6 +572,9 @@ reg [(pFP_WIDTH-1):0] subthe_wdata_sel;
 reg [(ADDR_WIDTH_X-1):0] sram_x_addr_q; // read sram x
 // ----- write sram z
 reg valid_14;
+// ----- update mu
+reg iter_done;
+reg [6:0] iter_num;
 // ===== top state ===== //
 
 localparam IDLE      = 7'd0;
@@ -603,6 +608,7 @@ localparam SUB_TRH_t = 7'd25;
 localparam PRE_Z     = 7'd26;
 localparam PRE_Z_t   = 7'd27;
 localparam WRITE_Z   = 7'd28;
+localparam UPDATE_MU = 7'd29;
 localparam DONE      = 7'd30;
 
 always @(*) begin
@@ -798,9 +804,18 @@ always @(*) begin
         end
         WRITE_Z: begin
             if (sram_z_addr == 9'd511) begin
-                top_state_n = DONE;
+                top_state_n = UPDATE_MU;
             end else begin
                 top_state_n = WRITE_Z;
+            end
+        end
+        UPDATE_MU: begin
+            if (iter_done && iter_num == k0-1) begin
+                top_state_n = DONE;
+            end else if (iter_done) begin
+                top_state_n = Z_DIV_U; 
+            end else begin
+                top_state_n = UPDATE_MU;
             end
         end
         DONE: begin
@@ -1143,19 +1158,6 @@ end
 // ===== stage 4 ===== //
 // read SRAM Z(64x32x1x64) and then devided by mu
 // write into SRAM U(64x32x1x64)
-
-
-
-always @(posedge clk or negedge rst_n) begin
-    if (!rst_n) begin
-        mu <= mu0;
-        mu_recip <= mu0_recip;
-    end else begin // may be update at last stage
-        mu <= mu0;
-        mu_recip <= mu0_recip; 
-    end
-end
-
 
 always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
@@ -3086,6 +3088,45 @@ always @(posedge clk) begin
     end
 end
 
+// ----- update mu ----- //
+reg valid_15;
+always @(posedge clk) begin
+    if (top_state == UPDATE_MU) begin
+        valid_15 <= 1;
+    end else begin
+        valid_15 <= 0;
+    end
+end
+
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        iter_done <= 0;
+    end else if (top_state == UPDATE_MU && fp_recip_out_valid) begin
+        iter_done <= 1;
+    end else begin
+        iter_done <= 0;
+    end
+end
+
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        iter_num <= 0;
+    end else if (iter_done && top_state == UPDATE_MU) begin
+        iter_num <= iter_num + 1; 
+    end else begin
+        iter_num <= iter_num;
+    end
+end
+
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        mu <= mu0;
+        mu_recip <= mu0_recip;
+    end else if (top_state == UPDATE_MU) begin 
+        mu <= (mul0_out_valid)? mul0_out[(pFP_WIDTH):0]: mu;
+        mu_recip <= (fp_recip_out_valid)? fp_recip_out_dat: mu_recip; 
+    end
+end
 // ========================================================== //
 // ===               computation resource                 === //
 // ========================================================== //
@@ -3220,6 +3261,16 @@ always @(posedge clk) begin
             mul1_inb <= {mu, mu};
             mul1_in_valid <= add_out_valid[1];
             mul1_mode <= 2'b10;
+        end
+        UPDATE_MU: begin
+            mul0_ina <= {64'b0, mu};
+            mul0_inb <= {64'b0, rho};
+            mul0_mode <= 2'b10;
+            mul0_in_valid <= valid_15;
+            mul1_ina <= 0;
+            mul1_inb <= 0;
+            mul1_mode <= 2'b10;
+            mul1_in_valid <= 0;
         end
         default: begin
             mul0_ina <= 0;
@@ -3586,6 +3637,10 @@ always @(posedge clk) begin
         SUB_TRH, SUB_TRH_t: begin
             fp_recip_in_valid <= valid_11;
             fp_recip_in_dat <= subthe_rdata_sel;
+        end
+        UPDATE_MU: begin
+            fp_recip_in_valid <= mul0_out_valid;
+            fp_recip_in_dat <= mul0_out[(pFP_WIDTH-1):0];
         end
         // TODO: dont use this module, i will put after sram W
         default: begin
