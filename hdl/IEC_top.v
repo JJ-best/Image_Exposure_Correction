@@ -29,7 +29,7 @@ module IEC_top #(
     parameter mu0_recip     = 64'h4059000000000000, // 1 / 0.01
     parameter alpha         = 64'h3FB47AE147AE147B, // 0.08
     parameter rho           = 64'h3FF3333333333333, // 1.2
-    parameter k0            = 1,                    // numbere of iteration
+    parameter k0            = 2,                    // numbere of iteration
     parameter TWIDDLE_ADDR_WIDTH = 6,
     parameter EPSILON = 64'h3F1A36E2EB1C432D        // 1e-4
 )(
@@ -768,7 +768,9 @@ always @(*) begin
             end
         end
         DelT: begin
-            if (delt_done) begin
+            if (delt_done && iter_done) begin
+                top_state_n = DONE; // for debug, delete later
+            end else if (delt_done) begin
                 top_state_n = SUB_TRH;
             end else begin
                 top_state_n = DelT;
