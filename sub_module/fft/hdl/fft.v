@@ -231,7 +231,7 @@ always@* begin
     nxt_round_cnt = round_cnt;
 
     sramA_csb = 1; 
-    sramB_csb = 1;      
+    sramB_csb = 1;  
     
     sramA_wsb_0  = 1;
     sramA_wsb_1  = 1;
@@ -373,7 +373,7 @@ always@* begin
             nxt_round_cnt = (start) ? 0 : round_cnt;
         end
         REV : begin
-            nxt_stage = (cnt_out == 3) ? (mode == 1) ? MS : S1 : REV;
+            nxt_stage = (cnt_out == 3) ? MS : REV;
             
             nxt_cnt_in = (cnt_out == 3) ? 0: cnt_in + 1;
             nxt_cnt_out = (cnt_out == 3) ? 0 : (cnt_in);
