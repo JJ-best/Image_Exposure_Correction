@@ -49,10 +49,10 @@
 #     +define+PAT=1 \
 #     +define+PATCH_I=0 \
 #     +define+PATCH_J=0 \
-#     +define+ITER=0 \
+#     +define+ITER=1 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
-#     +define+END_CYCLES=10000
+#     +define+END_CYCLES=100000
 
 # # # # Layer5: ALM_delG #
 # vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer5.log \
@@ -61,10 +61,10 @@
 #     +define+PAT=1 \
 #     +define+PATCH_I=20 \
 #     +define+PATCH_J=20 \
-#     +define+ITER=0 \
+#     +define+ITER=1 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
-#     +define+END_CYCLES=10000
+#     +define+END_CYCLES=100000
 
 # # Layer6: ALM_Tnum # check SRAME_1.dat
 # vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer6.log \
@@ -85,10 +85,11 @@
 #     +define+PAT=1 \
 #     +define+PATCH_I=0 \
 #     +define+PATCH_J=0 \
-#     +define+ITER=1 \
+#     +define+ITER=0 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
-#     +define+END_CYCLES=70000
+#     +define+END_CYCLES=50000 \
+#     +define+TOLERANCE=10
 
 # # # Layer8: ALM_Td #
 # vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer8.log \
@@ -100,7 +101,8 @@
 #     +define+ITER=0 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
-#     +define+END_CYCLES=35000
+#     +define+END_CYCLES=50000 \
+#     +define+TOLERANCE=10
 
 # # # Layer9: ALM_Tnd #
 # vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer9.log \
@@ -112,7 +114,8 @@
 #     +define+ITER=0 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
-#     +define+END_CYCLES=30000
+#     +define+END_CYCLES=50000 \
+#     +define+TOLERANCE=10
 
 # # # Layer10: ALM_Tout # check SRAMT_2.dat
 # vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer10.log \
@@ -121,22 +124,38 @@
 #     +define+PAT=1 \
 #     +define+PATCH_I=0 \
 #     +define+PATCH_J=0 \
+#     +define+ITER=3 \
+#     +define+FLAG_VERBOSE=1 \
+#     +define+FLAG_DUMPWV=1 \
+#     +define+FSDB
+#     +define+END_CYCLES=200000 \
+#     +define+TOLERANCE=10 \
+
+# # # Layer10: ALM_Tout # check SRAMT_2.dat Fast Simulation
+    vcs -R +v2k -full64 -f sim.f -l vcs_layer10.log \
+    +define+ALM_Tout \
+    +define+INIT_EN=0 \
+    +define+PAT=1 \
+    +define+PATCH_I=18 \
+    +define+PATCH_J=19 \
+    +define+ITER=20 \
+    +define+FLAG_VERBOSE=1 \
+    +define+FLAG_DUMPWV=1 \
+    +define+END_CYCLES=1500000 \
+    +define+TOLERANCE=10 \
+
+# # # # Layer11: ALM_delT #
+# vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer11.log \
+#     +define+ALM_delT \
+#     +define+INIT_EN=0 \
+#     +define+PAT=1 \
+#     +define+PATCH_I=0 \
+#     +define+PATCH_J=0 \
 #     +define+ITER=0 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
-#     +define+END_CYCLES=100000
-
-# # # # # Layer11: ALM_delT #
-vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer11.log \
-    +define+ALM_delT \
-    +define+INIT_EN=0 \
-    +define+PAT=1 \
-    +define+PATCH_I=0 \
-    +define+PATCH_J=0 \
-    +define+ITER=1 \
-    +define+FLAG_VERBOSE=1 \
-    +define+FLAG_DUMPWV=1 \
-    +define+END_CYCLES=100000
+#     +define+END_CYCLES=50000 \
+#     +define+TOLERANCE=10
 
 # # # Layer12: ALM_G # SRAMG_1.dat
 # vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer12.log \
@@ -157,11 +176,11 @@ vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer11.log \
 #     +define+PAT=1 \
 #     +define+PATCH_I=0 \
 #     +define+PATCH_J=0 \
-#     +define+ITER=1 \
+#     +define+ITER=0 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
-#     +define+END_CYCLES=100000 \
-#     #+define+TOLERANCE=1e-4
+#     +define+END_CYCLES=50000 \
+#     +define+TOLERANCE=10
 
 # # Layer14: ALM_Z #
 # vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer14.log \
@@ -170,7 +189,9 @@ vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer11.log \
 #     +define+PAT=1 \
 #     +define+PATCH_I=0 \
 #     +define+PATCH_J=0 \
-#     +define+ITER=1 \
+#     +define+ITER=0 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
-#     +define+END_CYCLES=100000
+#     +define+TOLERANCE=10 \
+#     +define+END_CYCLES=50000
+    

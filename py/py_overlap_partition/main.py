@@ -8,7 +8,7 @@ import numpy as np
 if __name__ == "__main__":
     # get absolute path of this file's directory (py_hardware)
     root = Path(__file__).resolve().parent
-    img = root / "imgs" / "building.bmp"
+    img = root / "imgs" / "land_small.bmp"
     
     # output file path
     out_dir_lime1 = root / "imgs_lime1"
@@ -20,19 +20,27 @@ if __name__ == "__main__":
 
     # normalize to [0,1] in main, pass arr to run_lime
     arr = np.asarray(Image.open(img).convert("RGB"), dtype=np.float64) / 255.0
-    figure_size = 680
+    figure_size = 344
     # static figure size
     arr = arr[0:figure_size, 0:figure_size, 0:3]
     # print(arr.shape)
     ori_img = out_dir_lime1/"original_image.bmp"
     Image.fromarray((arr * 255).astype(np.uint8), mode="RGB").save(ori_img)
     ''' 
+    Big Picture
     Original Image Size: 680x680x3 
     Output Image Size : 672x672x3 
     Patch Size: 32x32x3 Valid 
     Patch Size: 24x24x3(discard the boundary) 
     4 * 2(Discard Boundary) + 24 * Patch Number = 680 
     Patch Number = 28 
+    Small Picture
+    Original Image Size: 344x344x3
+    Outout Image Size: 336x336x3
+    Patch Size: 32x32x3 Valid 
+    Patch Size: 24x24x3(discard the boundary) 
+    4 * 2(Discard Boundary) + 24 * Patch Number = 344
+    Patch Number = 14
     '''
     # 32x32x3 patch size (0–255)
     patch_size = 32
@@ -59,7 +67,7 @@ if __name__ == "__main__":
             enhanced1_patch = run_lime(
                 out_dir=out_dir_lime1,
                 img_in=patch_img,
-                k0=20,
+                k0=30,
                 gamma=0.7,
                 save_label=f"{patch_label}_under",
                 dump_alm=True, # if true, dump golden dat of alm
@@ -73,7 +81,7 @@ if __name__ == "__main__":
             enhanced2_patch = run_lime(
                 out_dir=out_dir_lime2,
                 img_in=arr_inv,
-                k0=20,
+                k0=30,
                 gamma=0.7,
                 save_label=f"{patch_label}_over",
                 dump_alm=True,

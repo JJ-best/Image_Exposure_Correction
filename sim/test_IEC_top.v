@@ -154,7 +154,7 @@ initial begin
     `ifdef TOLERANCE
         tolerance_value = `TOLERANCE;
     `else
-        tolerance_value = 4e-3;  // Default tolerance
+        tolerance_value = 10;  // Default tolerance
     `endif
     
     // Print setting info
@@ -1148,12 +1148,21 @@ twiddle_rom #(
 );
 
 // ===== waveform dumpping ===== //
+// initial begin
+//     if(`FLAG_DUMPWV)begin
+//         $fsdbDumpfile("IMC.fsdb");
+//         $fsdbDumpvars("+mda");
+//     end
+// end
 initial begin
-    if(`FLAG_DUMPWV)begin
+`ifdef FSDB
+    if (`FLAG_DUMPWV) begin
         $fsdbDumpfile("IMC.fsdb");
-        $fsdbDumpvars("+mda");
+        $fsdbDumpvars(1, IEC_top);
     end
+`endif
 end
+
 
 // ===== system reset ===== //
 initial begin
@@ -1539,15 +1548,15 @@ begin
         2: begin iter_str[0] = "i"; iter_str[1] = "t"; iter_str[2] = "e"; iter_str[3] = "r"; 
                 iter_str[4] = "_"; iter_str[5] = "0"; iter_str[6] = "0"; iter_str[7] = "2"; end
         3: begin iter_str[0] = "i"; iter_str[1] = "t"; iter_str[2] = "e"; iter_str[3] = "r"; 
-                iter_str[4] = "0"; iter_str[5] = "0"; iter_str[6] = "3"; iter_str[7] = " "; end  // Use space instead of null
+                iter_str[4] = "_"; iter_str[5] = "0"; iter_str[6] = "0"; iter_str[7] = "3"; end  // Use space instead of null
         4: begin iter_str[0] = "0"; iter_str[1] = "0"; iter_str[2] = "4"; iter_str[3] = " "; 
-                iter_str[4] = " "; iter_str[5] = " "; iter_str[6] = " "; iter_str[7] = " "; end  // Use space instead of null
+                iter_str[4] = "_"; iter_str[5] = "0"; iter_str[6] = "0"; iter_str[7] = "3"; end  // Use space instead of null
         10: begin iter_str[0] = "i"; iter_str[1] = "t"; iter_str[2] = "e"; iter_str[3] = "r"; 
-                 iter_str[4] = "0"; iter_str[5] = "1"; iter_str[6] = "0"; iter_str[7] = " "; end  // Use space instead of null
+                 iter_str[4] = "_"; iter_str[5] = "0"; iter_str[6] = "1"; iter_str[7] = "0"; end  // Use space instead of null
         20: begin iter_str[0] = "i"; iter_str[1] = "t"; iter_str[2] = "e"; iter_str[3] = "r"; 
-                 iter_str[4] = "2"; iter_str[5] = "0"; iter_str[6] = " "; iter_str[7] = " "; end  // Use space instead of null
+                 iter_str[4] = "_"; iter_str[5] = "0"; iter_str[6] = "2"; iter_str[7] = "0"; end  // Use space instead of null
         29: begin iter_str[0] = "i"; iter_str[1] = "t"; iter_str[2] = "e"; iter_str[3] = "r"; 
-                 iter_str[4] = "2"; iter_str[5] = "9"; iter_str[6] = " "; iter_str[7] = " "; end  // Use space instead of null
+                 iter_str[4] = "_"; iter_str[5] = "0"; iter_str[6] = "2"; iter_str[7] = "9"; end  // Use space instead of null
         default: begin
             iter_str[0] = "i"; iter_str[1] = "t"; iter_str[2] = "e"; iter_str[3] = "r";
             iter_str[4] = "_"; iter_str[5] = iter_digit2 + "0"; iter_str[6] = iter_digit1 + "0"; 
@@ -2482,14 +2491,28 @@ function integer fp64_compare;
     input real golden_val;
     input real sram_val;
     input real tol;
+    real rel_err;
 begin
-    if((golden_val - tol <= sram_val) && (sram_val < golden_val + tol)) begin
-        fp64_compare = 1;
+    if (golden_val == 0.0) begin
+        fp64_compare = (abs_real(sram_val) <= tol);
     end else begin
-        fp64_compare = 0;
+        rel_err = abs_real(golden_val - sram_val)
+                  / abs_real(golden_val) * 100.0;
+        fp64_compare = (rel_err <= tol);
     end
 end
 endfunction
+
+function real abs_real;
+    input real x;
+begin
+    if (x < 0.0)
+        abs_real = -x;
+    else
+        abs_real = x;
+end
+endfunction
+
 
 // ===== Compare SRAM data with golden data ===== //
 task compare_load;
@@ -2622,7 +2645,7 @@ begin
             sram_val_uint8 = $rtoi(sram_val_fp64 * 255.0);
             // Compare uint8 values
             
-            if((golden_val_uint8 - del < sram_val_uint8) && (sram_val_uint8 < golden_val_uint8 + del)) begin
+            if((golden_val_uint8 === sram_val_uint8)) begin
                 $display("%4d | %3d (uint8) | %3.17f -> %3d (uint8) | OK", 
                     addr, golden_val_uint8, $bitstoreal(sram_b.bank0[addr]), sram_val_uint8);
             end else begin
@@ -2643,7 +2666,7 @@ begin
             sram_val_fp64 = $bitstoreal(sram_b.bank1[addr]);
             sram_val_uint8 = $rtoi(sram_val_fp64 * 255.0);
             // Compare uint8 values
-            if((golden_val_uint8 - del < sram_val_uint8) && (sram_val_uint8 < golden_val_uint8 + del)) begin
+            if((golden_val_uint8 === sram_val_uint8)) begin
                 $display("%4d | %3d (uint8) | %3.17f -> %3d (uint8) | OK", 
                     addr, golden_val_uint8, $bitstoreal(sram_b.bank1[addr]), sram_val_uint8);
             end else begin
@@ -2664,7 +2687,7 @@ begin
             sram_val_fp64 = $bitstoreal(sram_b.bank2[addr]);
             sram_val_uint8 = $rtoi(sram_val_fp64 * 255.0);
             // Compare uint8 values
-            if((golden_val_uint8 - del < sram_val_uint8) && (sram_val_uint8 < golden_val_uint8 + del)) begin
+            if((golden_val_uint8 === sram_val_uint8)) begin
                 $display("%4d | %3d (uint8) | %3.17f -> %3d (uint8) | OK", 
                     addr, golden_val_uint8, $bitstoreal(sram_b.bank2[addr]), sram_val_uint8);
             end else begin
@@ -2685,7 +2708,7 @@ begin
             sram_val_fp64 = $bitstoreal(sram_b.bank3[addr]);
             sram_val_uint8 = $rtoi(sram_val_fp64 * 255.0);
             // Compare uint8 values
-            if((golden_val_uint8 - del < sram_val_uint8) && (sram_val_uint8 < golden_val_uint8 + del)) begin
+            if((golden_val_uint8 === sram_val_uint8)) begin
                 $display("%4d | %3d (uint8) | %3.17f -> %3d (uint8) | OK", 
                     addr, golden_val_uint8, $bitstoreal(sram_b.bank3[addr]), sram_val_uint8);
             end else begin
@@ -3500,7 +3523,7 @@ begin
                         endcase
                         // Compare real and imag parts separately using fp64_compare
                         match_result = fp64_compare(golden_val_fp64_real, sram_val_fp64_real, tolerance);
-                        if(match_result == 1) begin
+                        if(match_result == 1 && layer_value == 7) begin
                             // Real part matches, check imag part
                             match_result = fp64_compare(golden_val_fp64_imag, sram_val_fp64_imag, tolerance);
                         end

@@ -29,7 +29,8 @@ module IEC_top #(
     parameter mu0_recip     = 64'h4059000000000000, // 1 / 0.01
     parameter alpha         = 64'h3FB47AE147AE147B, // 0.08
     parameter rho           = 64'h3FF3333333333333, // 1.2
-    parameter k0            = 2,                    // numbere of iteration
+    parameter k0            = 21,                    // numbere of iteration
+    parameter recip_255 = 64'h3f70101010101010,
     parameter TWIDDLE_ADDR_WIDTH = 6,
     parameter EPSILON = 64'h3F1A36E2EB1C432D        // 1e-4
 )(
@@ -643,7 +644,7 @@ always @(*) begin
         end
         NORMAL_t: begin
             if (sram_b_addr == 8'd255) begin
-                top_state_n = MOV_INIT; // TODO: you may switch to MOV_INIT
+                top_state_n = MOV_INIT; //debug
             end else begin
                 top_state_n = NORMAL_t;
             end
@@ -768,9 +769,7 @@ always @(*) begin
             end
         end
         DelT: begin
-            if (delt_done && iter_done) begin
-                top_state_n = DONE; // for debug, delete later
-            end else if (delt_done) begin
+            if (delt_done) begin
                 top_state_n = SUB_TRH;
             end else begin
                 top_state_n = DelT;
@@ -1045,7 +1044,7 @@ end
 // note that the address controll is in the previos
 // code
 // then we write the result into SRAM-B.
-localparam recip_255 = 64'h3f70101010101010;
+
 
 // SRAM I read out date valid
 reg valid_2;
@@ -1184,7 +1183,7 @@ always @(*) begin
             sram_wdata_z0 = 0;
             sram_wdata_z1 = 0;
             sram_wdata_z2 = 0;
-            sram_wdata_u3 = 0;
+            sram_wdata_z3 = 0;
         end 
         PRE_Z, PRE_Z_t: begin
             if (mul0_out_valid) begin //read_sram_z
@@ -1203,7 +1202,7 @@ always @(*) begin
             sram_wdata_z0 = 0;
             sram_wdata_z1 = 0;
             sram_wdata_z2 = 0;
-            sram_wdata_u3 = 0;
+            sram_wdata_z3 = 0;
         end
         WRITE_Z: begin
             if (valid_14) begin
@@ -1241,7 +1240,7 @@ always @(*) begin
             sram_wdata_z0 = 0;
             sram_wdata_z1 = 0;
             sram_wdata_z2 = 0;
-            sram_wdata_u3 = 0;
+            sram_wdata_z3 = 0;
         end
     endcase
 end
