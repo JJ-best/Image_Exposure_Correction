@@ -136,13 +136,14 @@
     +define+ALM_Tout \
     +define+INIT_EN=0 \
     +define+PAT=1 \
-    +define+PATCH_I=18 \
-    +define+PATCH_J=19 \
     +define+ITER=20 \
     +define+FLAG_VERBOSE=1 \
     +define+FLAG_DUMPWV=1 \
-    +define+END_CYCLES=1500000 \
+    +define+END_CYCLES=2000000000000 \
     +define+TOLERANCE=10 \
+    +define+ALL_PATCH=1 \
+    # +define+PATCH_I=0 \
+    # +define+PATCH_J=2 \
 
 # # # # Layer11: ALM_delT #
 # vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer11.log \

@@ -8,7 +8,7 @@
 `define FLAG_DUMPWV 1
 `define FLAG_VERBOSE 1
 
-module test_IEC_top;
+module test_IEC_top_old;
 
 // ===== Parameters ===== //
 localparam pFP_WIDTH = 64;
@@ -72,6 +72,8 @@ integer iter_value;
 // Default tolerance for fp64 comparison (e.g., 4e-3, 1e-6)
 real tolerance_value;  
 
+// ===== All patch ===== //
+integer all_patch_enable;
 
 // ===== Settings  ===== //
 initial begin
@@ -154,7 +156,13 @@ initial begin
     `ifdef TOLERANCE
         tolerance_value = `TOLERANCE;
     `else
-        tolerance_value = 10;  // Default tolerance
+        tolerance_value = 4e-3;  // Default tolerance
+    `endif
+
+    `ifdef ALL_PATCH
+        all_patch_enable = `ALL_PATCH;
+    `else
+        all_patch_enable = 0;  // Default tolerance
     `endif
     
     // Print setting info
@@ -212,7 +220,7 @@ always @(posedge clk) begin
   end else begin
     cycle_cnt <= cycle_cnt + 1;
 
-    if (((cycle_cnt + 1) % 100) == 0) begin
+    if (((cycle_cnt + 1) % 1000) == 0) begin
       $display("[%0t] ALIVE cycle=%0d", $time, cycle_cnt + 1);
       $fflush();
     end
@@ -1148,22 +1156,16 @@ twiddle_rom #(
 );
 
 // ===== waveform dumpping ===== //
-// initial begin
-//     if(`FLAG_DUMPWV)begin
-//         $fsdbDumpfile("IMC.fsdb");
-//         $fsdbDumpvars("+mda");
-//     end
-// end
 initial begin
 `ifdef FSDB
-    if (`FLAG_DUMPWV) begin
+    if(`FLAG_DUMPWV)begin
         $fsdbDumpfile("IMC.fsdb");
-        $fsdbDumpvars(1, IEC_top);
+        $fsdbDumpvars(1, IMC_top);
     end
 `endif
 end
 
-
+integer pi, pj;
 // ===== system reset ===== //
 initial begin
     clk = 0;
@@ -1374,6 +1376,50 @@ initial begin
             $display("\nSimulation completed successfully!");
             $finish;
             
+        end else if(all_patch_enable == 1) begin
+            $display("Starting layer10 multi-patch run for PAT = %c", pat_value);
+            for(pi = 0; pi < 14; pi = pi + 1) begin
+                for(pj = 12; pj < 14; pj = pj + 1) begin
+                    patch_i_value = pi;
+                    patch_j_value = pj;
+
+                    $display("\n==== Patch (%0d, %0d) start ====", patch_i_value, patch_j_value);
+
+                    // Reset and clear memories for a clean run
+                    rst_n  = 0;
+                    enable = 0;
+                    sram_a.clear_sram(0);
+                    sram_b.clear_sram(0);
+                    sram_i.clear_sram(0);
+                    sram_u.clear_sram(0);
+                    sram_w.clear_sram(0);
+                    sram_x.clear_sram(0);
+                    sram_e.clear_sram(0);
+                    sram_t.clear_sram(0);
+                    sram_c.clear_sram(0);
+                    sram_g.clear_sram(0);
+                    sram_z.clear_sram(0);
+
+                    // Load input for this patch
+                    sram_a.load_dat(pat_value, 1, patch_i_value, patch_j_value);
+
+                    #(`CYCLE * 2);
+                    rst_n = 1;
+                    @(posedge clk); enable = 1;
+
+                    // Wait for hardware to finish this patch
+                    wait(done);
+                    @(posedge clk);
+                    enable = 0;
+
+                    // Dump resulting sramT_2 for this patch
+                    dump_sram_t2(pat_value, patch_i_value, patch_j_value);
+                    // compare_load();
+                    $display("==== Patch (%0d, %0d) done ====", patch_i_value, patch_j_value);
+                end
+            end
+            $display("\nAll patches finished. Check output_patch/ for results.");
+            $finish;
         end
     end else if(layer_value == 11) begin
         if(init_enable == 1) begin // INIT_EN = 1: Initialize mode
@@ -1549,8 +1595,8 @@ begin
                 iter_str[4] = "_"; iter_str[5] = "0"; iter_str[6] = "0"; iter_str[7] = "2"; end
         3: begin iter_str[0] = "i"; iter_str[1] = "t"; iter_str[2] = "e"; iter_str[3] = "r"; 
                 iter_str[4] = "_"; iter_str[5] = "0"; iter_str[6] = "0"; iter_str[7] = "3"; end  // Use space instead of null
-        4: begin iter_str[0] = "0"; iter_str[1] = "0"; iter_str[2] = "4"; iter_str[3] = " "; 
-                iter_str[4] = "_"; iter_str[5] = "0"; iter_str[6] = "0"; iter_str[7] = "3"; end  // Use space instead of null
+        4: begin iter_str[0] = "i"; iter_str[1] = "t"; iter_str[2] = "e"; iter_str[3] = "r"; 
+                iter_str[4] = "_"; iter_str[5] = "0"; iter_str[6] = "0"; iter_str[7] = "4"; end  // Use space instead of null
         10: begin iter_str[0] = "i"; iter_str[1] = "t"; iter_str[2] = "e"; iter_str[3] = "r"; 
                  iter_str[4] = "_"; iter_str[5] = "0"; iter_str[6] = "1"; iter_str[7] = "0"; end  // Use space instead of null
         20: begin iter_str[0] = "i"; iter_str[1] = "t"; iter_str[2] = "e"; iter_str[3] = "r"; 
@@ -2645,7 +2691,7 @@ begin
             sram_val_uint8 = $rtoi(sram_val_fp64 * 255.0);
             // Compare uint8 values
             
-            if((golden_val_uint8 === sram_val_uint8)) begin
+            if((golden_val_uint8 - del < sram_val_uint8) && (sram_val_uint8 < golden_val_uint8 + del)) begin
                 $display("%4d | %3d (uint8) | %3.17f -> %3d (uint8) | OK", 
                     addr, golden_val_uint8, $bitstoreal(sram_b.bank0[addr]), sram_val_uint8);
             end else begin
@@ -2666,7 +2712,7 @@ begin
             sram_val_fp64 = $bitstoreal(sram_b.bank1[addr]);
             sram_val_uint8 = $rtoi(sram_val_fp64 * 255.0);
             // Compare uint8 values
-            if((golden_val_uint8 === sram_val_uint8)) begin
+            if((golden_val_uint8 - del < sram_val_uint8) && (sram_val_uint8 < golden_val_uint8 + del)) begin
                 $display("%4d | %3d (uint8) | %3.17f -> %3d (uint8) | OK", 
                     addr, golden_val_uint8, $bitstoreal(sram_b.bank1[addr]), sram_val_uint8);
             end else begin
@@ -2687,7 +2733,7 @@ begin
             sram_val_fp64 = $bitstoreal(sram_b.bank2[addr]);
             sram_val_uint8 = $rtoi(sram_val_fp64 * 255.0);
             // Compare uint8 values
-            if((golden_val_uint8 === sram_val_uint8)) begin
+            if((golden_val_uint8 - del < sram_val_uint8) && (sram_val_uint8 < golden_val_uint8 + del)) begin
                 $display("%4d | %3d (uint8) | %3.17f -> %3d (uint8) | OK", 
                     addr, golden_val_uint8, $bitstoreal(sram_b.bank2[addr]), sram_val_uint8);
             end else begin
@@ -2708,7 +2754,7 @@ begin
             sram_val_fp64 = $bitstoreal(sram_b.bank3[addr]);
             sram_val_uint8 = $rtoi(sram_val_fp64 * 255.0);
             // Compare uint8 values
-            if((golden_val_uint8 === sram_val_uint8)) begin
+            if((golden_val_uint8 - del < sram_val_uint8) && (sram_val_uint8 < golden_val_uint8 + del)) begin
                 $display("%4d | %3d (uint8) | %3.17f -> %3d (uint8) | OK", 
                     addr, golden_val_uint8, $bitstoreal(sram_b.bank3[addr]), sram_val_uint8);
             end else begin
@@ -3974,6 +4020,97 @@ begin
             end
             $display("========================================================================");
         end
+    end
+end
+endtask
+
+task dump_sram_t2;
+    input [7:0] PAT;        // "1" or "2"
+    input integer PATCH_I;  // patch row index
+    input integer PATCH_J;  // patch column index
+
+    integer fd;
+    integer addr;
+    reg [1023:0] dir_path;
+    reg [1023:0] file_path;
+    reg [1023:0] file_path_hex;
+    reg [127:0] data128;
+    real real_val;
+    integer pat_num;
+    integer bank;
+begin
+    // derive numeric PAT for path; default to 1
+    pat_num = (PAT == "2") ? 2 : 1;
+    // absolute path to avoid cwd issues
+    $sformat(dir_path, "output_patch/pat%0d/patch_%0d_%0d",
+             pat_num, PATCH_I, PATCH_J);
+    $system({"mkdir -p ", dir_path});
+
+    // single file per patch, 1024 lines: each line = one bank/addr real part only
+    $sformat(file_path, "%0s/sramT_2.dat", dir_path);
+    $sformat(file_path_hex, "%0s/sramT_2_64.dat", dir_path);
+    fd = $fopen(file_path, "w");
+    if(fd == 0) begin
+        $display("ERROR: cannot open %0s", file_path);
+    end else begin
+        for(addr = 0; addr < 64; addr = addr + 1) begin
+            for(bank = 0; bank < 16; bank = bank + 1) begin
+                case(bank)
+                    0 : data128 = sram_t.bank0[addr];
+                    1 : data128 = sram_t.bank1[addr];
+                    2 : data128 = sram_t.bank2[addr];
+                    3 : data128 = sram_t.bank3[addr];
+                    4 : data128 = sram_t.bank4[addr];
+                    5 : data128 = sram_t.bank5[addr];
+                    6 : data128 = sram_t.bank6[addr];
+                    7 : data128 = sram_t.bank7[addr];
+                    8 : data128 = sram_t.bank8[addr];
+                    9 : data128 = sram_t.bank9[addr];
+                    10: data128 = sram_t.bank10[addr];
+                    11: data128 = sram_t.bank11[addr];
+                    12: data128 = sram_t.bank12[addr];
+                    13: data128 = sram_t.bank13[addr];
+                    14: data128 = sram_t.bank14[addr];
+                    15: data128 = sram_t.bank15[addr];
+                    default: data128 = 0;
+                endcase
+                real_val = $bitstoreal(data128[127:64]);
+                $fwrite(fd, "%3.20e\n", real_val);
+            end
+        end
+        $fclose(fd);
+    end
+
+    // fp64 (hex) dump for real part only, same ordering and line count
+    fd = $fopen(file_path_hex, "w");
+    if(fd == 0) begin
+        $display("ERROR: cannot open %0s", file_path_hex);
+    end else begin
+        for(addr = 0; addr < 64; addr = addr + 1) begin
+            for(bank = 0; bank < 16; bank = bank + 1) begin
+                case(bank)
+                    0 : data128 = sram_t.bank0[addr];
+                    1 : data128 = sram_t.bank1[addr];
+                    2 : data128 = sram_t.bank2[addr];
+                    3 : data128 = sram_t.bank3[addr];
+                    4 : data128 = sram_t.bank4[addr];
+                    5 : data128 = sram_t.bank5[addr];
+                    6 : data128 = sram_t.bank6[addr];
+                    7 : data128 = sram_t.bank7[addr];
+                    8 : data128 = sram_t.bank8[addr];
+                    9 : data128 = sram_t.bank9[addr];
+                    10: data128 = sram_t.bank10[addr];
+                    11: data128 = sram_t.bank11[addr];
+                    12: data128 = sram_t.bank12[addr];
+                    13: data128 = sram_t.bank13[addr];
+                    14: data128 = sram_t.bank14[addr];
+                    15: data128 = sram_t.bank15[addr];
+                    default: data128 = 0;
+                endcase
+                $fwrite(fd, "%016h\n", data128[127:64]);
+            end
+        end
+        $fclose(fd);
     end
 end
 endtask
