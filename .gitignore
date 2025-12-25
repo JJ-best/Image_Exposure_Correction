@@ -12,6 +12,7 @@ sim/pat/imgs_lime1/
 sim/pat/imgs_lime2/
 sim/tdenom_pat
 sim/fft_pat
+sim/output_patch
 
 *.fsdb
 *.ucli.key
