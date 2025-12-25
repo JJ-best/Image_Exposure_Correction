@@ -334,7 +334,7 @@ assign array_in_A2       = (mode[1] == INT_MUL )? array_in_ntt2 : {{(pFP_WIDTH -
 assign array_in_B0       = (mode[1] == C_MUL )? {{(pFP_WIDTH - pMANTISSA_WIDTH -1 ){1'b0}} , hidden_ar_sub_ai , ar_sub_ai [(pMANTISSA_WIDTH-1):0]} 
                                                 : { {(pFP_WIDTH - pMANTISSA_WIDTH -1 ){1'b0}} , hidden_inA_lo , in_A[(pMANTISSA_WIDTH-1):0]};                
 assign array_in_B1       = (mode[1] == C_MUL )? {{(pFP_WIDTH - pMANTISSA_WIDTH -1 ){1'b0}} , hidden_b_im      , b_im_r    [(pMANTISSA_WIDTH-1):0]}
-                                                : { {(pFP_WIDTH - pMANTISSA_WIDTH -1 ){1'b0}} , hidden_inB_lo , in_B[(pMANTISSA_WIDTH-1):0]}; ;                   
+                                                : { {(pFP_WIDTH - pMANTISSA_WIDTH -1 ){1'b0}} , hidden_inB_lo , in_B[(pMANTISSA_WIDTH-1):0]};                
 assign array_in_C0       = (mode[1] == C_MUL )? {{(pFP_WIDTH - pMANTISSA_WIDTH -1 ){1'b0}} , hidden_br_sub_bi , br_sub_bi [(pMANTISSA_WIDTH-1):0]} 
                                                 : { {(pFP_WIDTH - pMANTISSA_WIDTH -1 ){1'b0}} , hidden_inA_hi , in_A[(pDATA_WIDTH-pFP_WIDTH+pMANTISSA_WIDTH-1):(pDATA_WIDTH-pFP_WIDTH)]};
 assign array_in_C1       = (mode[1] == C_MUL )? {{(pFP_WIDTH - pMANTISSA_WIDTH -1 ){1'b0}} , hidden_a_re      , a_re_r    [(pMANTISSA_WIDTH-1):0]} 
