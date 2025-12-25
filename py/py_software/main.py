@@ -6,7 +6,7 @@ import numpy as np
 if __name__ == "__main__":
     # get absolute path of this file
     root = Path(__file__).resolve().parent
-    img = root / "imgs" / "building.bmp"
+    img = root / "imgs" / "land.bmp"
     out_dir = root / "imgs_lime1"
     out_dir.mkdir(parents=True, exist_ok=True)
 

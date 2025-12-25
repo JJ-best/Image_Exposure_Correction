@@ -8,7 +8,7 @@ import numpy as np
 if __name__ == "__main__":
     # get absolute path of this file's directory (py_hardware)
     root = Path(__file__).resolve().parent
-    img = root / "imgs" / "building.bmp"
+    img = root / "imgs" / "land_small.bmp"
     
     # output file path
     out_dir_lime1 = root / "imgs_lime1"
@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
     # normalize to [0,1] in main, pass arr to run_lime
     arr = np.asarray(Image.open(img).convert("RGB"), dtype=np.float64) / 255.0
-    figure_size = 680
+    figure_size = 344
     # static figure size
     arr = arr[0:figure_size, 0:figure_size, 0:3]
     # print(arr.shape)

@@ -29,7 +29,7 @@ module IEC_top #(
     parameter mu0_recip     = 64'h4059000000000000, // 1 / 0.01
     parameter alpha         = 64'h3FB47AE147AE147B, // 0.08
     parameter rho           = 64'h3FF3333333333333, // 1.2
-    parameter k0            = 2,                    // numbere of iteration
+    parameter k0            = 21,                    // numbere of iteration
     parameter recip_255 = 64'h3f70101010101010,
     parameter TWIDDLE_ADDR_WIDTH = 6,
     parameter EPSILON = 64'h3F1A36E2EB1C432D        // 1e-4
@@ -2586,25 +2586,6 @@ always @(*) begin
             sram_wdata_t4  = 0;  sram_wdata_t5  = 0;  sram_wdata_t6  = 0;  sram_wdata_t7  = 0;
             sram_wdata_t8  = 0;  sram_wdata_t9  = 0;  sram_wdata_t10 = 0;  sram_wdata_t11 = 0;
             sram_wdata_t12 = 0;  sram_wdata_t13 = 0;  sram_wdata_t14 = 0;  sram_wdata_t15 = 0;
-        end
-        iFFT: begin
-            // write enable (low active)
-            sram_wen_t0  = sramB_wsb_0_dut;   sram_wen_t1  = sramB_wsb_1_dut;   sram_wen_t2  = sramB_wsb_2_dut;   sram_wen_t3  = sramB_wsb_3_dut;
-            sram_wen_t4  = sramB_wsb_4_dut;   sram_wen_t5  = sramB_wsb_5_dut;   sram_wen_t6  = sramB_wsb_6_dut;   sram_wen_t7  = sramB_wsb_7_dut;
-            sram_wen_t8  = sramB_wsb_8_dut;   sram_wen_t9  = sramB_wsb_9_dut;   sram_wen_t10 = sramB_wsb_10_dut;  sram_wen_t11 = sramB_wsb_11_dut;
-            sram_wen_t12 = sramB_wsb_12_dut;  sram_wen_t13 = sramB_wsb_13_dut;  sram_wen_t14 = sramB_wsb_14_dut;  sram_wen_t15 = sramB_wsb_15_dut;
-
-            // address
-            sram_addr_t0  = sramB_addr_0_dut;   sram_addr_t1  = sramB_addr_1_dut;   sram_addr_t2  = sramB_addr_2_dut;   sram_addr_t3  = sramB_addr_3_dut;
-            sram_addr_t4  = sramB_addr_4_dut;   sram_addr_t5  = sramB_addr_5_dut;   sram_addr_t6  = sramB_addr_6_dut;   sram_addr_t7  = sramB_addr_7_dut;
-            sram_addr_t8  = sramB_addr_8_dut;   sram_addr_t9  = sramB_addr_9_dut;   sram_addr_t10 = sramB_addr_10_dut;  sram_addr_t11 = sramB_addr_11_dut;
-            sram_addr_t12 = sramB_addr_12_dut;  sram_addr_t13 = sramB_addr_13_dut;  sram_addr_t14 = sramB_addr_14_dut;  sram_addr_t15 = sramB_addr_15_dut;
-
-            // write data
-            sram_wdata_t0  = sramB_wdata_0_dut;   sram_wdata_t1  = sramB_wdata_1_dut;   sram_wdata_t2  = sramB_wdata_2_dut;   sram_wdata_t3  = sramB_wdata_3_dut;
-            sram_wdata_t4  = sramB_wdata_4_dut;   sram_wdata_t5  = sramB_wdata_5_dut;   sram_wdata_t6  = sramB_wdata_6_dut;   sram_wdata_t7  = sramB_wdata_7_dut;
-            sram_wdata_t8  = sramB_wdata_8_dut;   sram_wdata_t9  = sramB_wdata_9_dut;   sram_wdata_t10 = sramB_wdata_10_dut;  sram_wdata_t11 = sramB_wdata_11_dut;
-            sram_wdata_t12 = sramB_wdata_12_dut;  sram_wdata_t13 = sramB_wdata_13_dut;  sram_wdata_t14 = sramB_wdata_14_dut;  sram_wdata_t15 = sramB_wdata_15_dut;
         end
         DelT: begin
             // write enable (low active)
