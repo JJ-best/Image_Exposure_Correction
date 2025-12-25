@@ -29,7 +29,7 @@ module IEC_top #(
     parameter mu0_recip     = 64'h4059000000000000, // 1 / 0.01
     parameter alpha         = 64'h3FB47AE147AE147B, // 0.08
     parameter rho           = 64'h3FF3333333333333, // 1.2
-    parameter k0            = 21,                    // numbere of iteration
+    parameter k0            = 2,                    // numbere of iteration
     parameter recip_255 = 64'h3f70101010101010,
     parameter TWIDDLE_ADDR_WIDTH = 6,
     parameter EPSILON = 64'h3F1A36E2EB1C432D        // 1e-4
@@ -2952,7 +2952,7 @@ end
 always @(*) begin
     case (top_state)
             WEIGHT: begin
-
+            sram_w_addr_n = 0;
             // sram_w_addr_n = (add_out_valid[0]) ? sram_w_addr + 1 : sram_w_addr;
             sram_addr_w0 = delt_sram_addr_x0;
             sram_addr_w1 = delt_sram_addr_x1;
@@ -3031,7 +3031,7 @@ always @(*) begin
 end
 
 // pipe the sign-bit of (delT + z/u, add_result[0])
-always @(posedge clk or negedge rst_n) begin
+always @(posedge clk) begin
     if ((top_state == SUB_TRH || top_state == SUB_TRH_t) && add_out_valid[0]) begin
         sign_pipe[0] <= add_result[0][pFP_WIDTH-1];
         sign_pipe[1] <= sign_pipe[0];
