@@ -29,11 +29,11 @@ module IEC_top #(
     parameter mu0_recip     = 64'h4059000000000000, // 1 / 0.01
     parameter alpha         = 64'h3FB47AE147AE147B, // 0.08
     parameter rho           = 64'h3FF3333333333333, // 1.2
-    parameter k0            = 21,                    // numbere of iteration
     parameter recip_255 = 64'h3f70101010101010,
     parameter TWIDDLE_ADDR_WIDTH = 6,
     parameter EPSILON = 64'h3F1A36E2EB1C432D        // 1e-4
 )(
+    input [11:0]k0, // number of iteration
     input clk,
     input rst_n,
     input enable, // sram initialization done, you can start from sramA fetch data
@@ -70,10 +70,10 @@ module IEC_top #(
     output reg [ADDR_WIDTH_B-1:0] sram_addr_b1,
     output reg [ADDR_WIDTH_B-1:0] sram_addr_b2,
     output reg [ADDR_WIDTH_B-1:0] sram_addr_b3,
-    output reg [BW_PER_ADDR_B-1:0] sram_wdata_b0,
-    output reg [BW_PER_ADDR_B-1:0] sram_wdata_b1,
-    output reg [BW_PER_ADDR_B-1:0] sram_wdata_b2,
-    output reg [BW_PER_ADDR_B-1:0] sram_wdata_b3,
+    output wire [BW_PER_ADDR_B-1:0] sram_wdata_b0,
+    output wire [BW_PER_ADDR_B-1:0] sram_wdata_b1,
+    output wire [BW_PER_ADDR_B-1:0] sram_wdata_b2,
+    output wire [BW_PER_ADDR_B-1:0] sram_wdata_b3,
 
     // SRAM I(32x32x1x64)
     output reg sram_wen_i0, // low enable
@@ -88,10 +88,10 @@ module IEC_top #(
     output reg [ADDR_WIDTH_I-1:0] sram_addr_i1,
     output reg [ADDR_WIDTH_I-1:0] sram_addr_i2,
     output reg [ADDR_WIDTH_I-1:0] sram_addr_i3,
-    output reg [BW_PER_ADDR_I-1:0] sram_wdata_i0,
-    output reg [BW_PER_ADDR_I-1:0] sram_wdata_i1,
-    output reg [BW_PER_ADDR_I-1:0] sram_wdata_i2,
-    output reg [BW_PER_ADDR_I-1:0] sram_wdata_i3,
+    output wire [BW_PER_ADDR_I-1:0] sram_wdata_i0,
+    output wire [BW_PER_ADDR_I-1:0] sram_wdata_i1,
+    output wire [BW_PER_ADDR_I-1:0] sram_wdata_i2,
+    output wire [BW_PER_ADDR_I-1:0] sram_wdata_i3,
 
     // SRAM U (64x32x1x64)
     output reg sram_wen_u0,
@@ -277,6 +277,7 @@ module IEC_top #(
 // ----- top state ----- //
 reg [6:0] top_state;
 reg [6:0] top_state_n;
+reg [11:0] k0_reg;
 // ----- read sram a ----- //
 reg [(ADDR_WIDTH_A-1):0] sram_a_addr;
 reg [(ADDR_WIDTH_A-1):0] sram_a_addr_n;
@@ -811,7 +812,7 @@ always @(*) begin
             end
         end
         UPDATE_MU: begin
-            if (iter_done && iter_num == k0-1) begin
+            if (iter_done && iter_num == k0_reg-1) begin
                 top_state_n = DONE;
             end else if (iter_done) begin
                 top_state_n = Z_DIV_U; 
@@ -846,6 +847,18 @@ always @(posedge clk) begin
     end
 end
 assign done = (done_cnt == 10'd10)? 1:0;
+
+
+// ----- k0 register ------ //
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+      k0_reg <= 0;
+    end else if (enable) begin
+      k0_reg <= k0;
+    end else begin
+      k0_reg <= k0_reg;
+    end
+end
 
 // ===== stage 1 ===== //
 // SRAM A(32x32x3x8) store the original bmp file
@@ -1000,11 +1013,13 @@ always @(*) begin
     
 end
 
+assign sram_wdata_i0 = int2fp_out_fp[0];
+assign sram_wdata_i1 = int2fp_out_fp[1];
+assign sram_wdata_i2 = int2fp_out_fp[2];
+assign sram_wdata_i3 = int2fp_out_fp[3];
+
 always @(*) begin
-    sram_wdata_i0 = int2fp_out_fp[0];
-    sram_wdata_i1 = int2fp_out_fp[1];
-    sram_wdata_i2 = int2fp_out_fp[2];
-    sram_wdata_i3 = int2fp_out_fp[3];
+
     case (top_state)
         RGB_MAX, RGB_MAX_t: begin
             if (int2fp_out_valid[0] && (top_state == RGB_MAX || top_state == RGB_MAX_t)) begin
@@ -1069,11 +1084,14 @@ always @(posedge clk or negedge rst_n) begin
         sram_b_addr_p <= sram_b_addr;
     end
 end
+
+assign sram_wdata_b0 = mul0_out[(2*pFP_WIDTH-1):(pFP_WIDTH)];
+assign sram_wdata_b1 = mul0_out[(pFP_WIDTH-1):0];
+assign sram_wdata_b2 = mul1_out[(2*pFP_WIDTH-1):(pFP_WIDTH)];
+assign sram_wdata_b3 = mul1_out[(pFP_WIDTH-1):0];
+
 always @(*) begin
-    sram_wdata_b0 = mul0_out[(2*pFP_WIDTH-1):(pFP_WIDTH)];
-    sram_wdata_b1 = mul0_out[(pFP_WIDTH-1):0];
-    sram_wdata_b2 = mul1_out[(2*pFP_WIDTH-1):(pFP_WIDTH)];
-    sram_wdata_b3 = mul1_out[(pFP_WIDTH-1):0];
+
     case (top_state)
         NORMAL, NORMAL_t: begin
             if (mul0_out_valid && mul1_out_valid) begin
@@ -2066,8 +2084,10 @@ end
 // since sram e has 16 bank, but we only produce 4 data
 // in the pre-fft stage, so we need cnt4 to control 
 // wen and address
-always @(posedge clk) begin
-    if (top_state == PRE_FFT || top_state == PRE_FFT_t) begin
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        cnt4 <= 0;
+    end else if (top_state == PRE_FFT || top_state == PRE_FFT_t) begin
         cnt4 <= (add_out_valid[4] && valid_7)? cnt4 + 1: cnt4;
     end else if (top_state == FFT_D || top_state == FFT_D_t) begin
         cnt4 <= (add_out_valid[0])? cnt4 + 1: cnt4;
@@ -2089,8 +2109,10 @@ end
 // so we only fetch one data from the sram e
 // sram_e_addr will up count every 16 cycle
 
-always @(posedge clk) begin
-    if (top_state == PRE_iFFT || top_state == PRE_iFFT) begin
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        cnt16_recip <= 0;
+    end else if (top_state == PRE_iFFT || top_state == PRE_iFFT) begin
         cnt16_recip <= cnt16_recip + 1;
     end else begin
         cnt16_recip <= 0;
@@ -2684,8 +2706,10 @@ always @(posedge clk) begin
    end
 end
 
-always @(posedge clk) begin
-    if (fp_recip_cnt16 ==4'd4) begin
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        read_sram_t <= 0;
+    end else if (fp_recip_cnt16 ==4'd4) begin
         read_sram_t <= 1;
     end  else if (top_state == PRE_iFFT || top_state == PRE_iFFT_t) begin
         read_sram_t <= read_sram_t;
@@ -2694,8 +2718,10 @@ always @(posedge clk) begin
     end
 end
 
-always @(posedge clk) begin
-    if ((top_state == PRE_iFFT || top_state == PRE_iFFT_t) && read_sram_t) begin
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        cnt16_recip_t <= 0;
+    end else if ((top_state == PRE_iFFT || top_state == PRE_iFFT_t) && read_sram_t) begin
         cnt16_recip_t <= cnt16_recip_t + 1;
     end else begin
         cnt16_recip_t <= 0;
@@ -2703,7 +2729,7 @@ always @(posedge clk) begin
 end
 
 
-always @(posedge clk) begin
+always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
         sram_t_addr <= 0;
         cnt16_recip_t_d <= 0;
@@ -2851,8 +2877,10 @@ end
 
 // ifft cnt4
 
-always @(posedge clk) begin
-    if (top_state == PRE_iFFT || top_state == PRE_iFFT_t) begin
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        ifft_cnt16 <= 0;
+    end else if (top_state == PRE_iFFT || top_state == PRE_iFFT_t) begin
         ifft_cnt16 <= (mul0_out_valid)? ifft_cnt16 + 1: ifft_cnt16;
     end else begin
         ifft_cnt16 <= 0;
@@ -2896,15 +2924,20 @@ always @(posedge clk or negedge rst_n) begin
         sram_w_addr <= sram_w_addr_n;
     end
 end
-always @(posedge clk) begin
-    if (top_state == SUB_TRH) begin
-         valid_11 <= 1;
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+      valid_11 <= 0;
+    end else if (top_state == SUB_TRH) begin
+      valid_11 <= 1;
     end else begin
-        valid_11 <= 0;
+      valid_11 <= 0;
     end
 end
-always @(posedge clk) begin
-    if (top_state == SUB_TRH || top_state == SUB_TRH_t) begin
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        subthe_cnt4 <= 0;
+        subthe_cnt64 <= 0;
+    end else if (top_state == SUB_TRH || top_state == SUB_TRH_t) begin
         subthe_cnt4 <= subthe_cnt4 + 1;
         // used to align the sram x, sram u to the compute result of sram w
         subthe_cnt64 <= subthe_cnt64 + 1;
@@ -2914,7 +2947,7 @@ always @(posedge clk) begin
     end
 end
 // read_sram_x used to start read sram x and sram u;
-always @(posedge clk) begin
+always @(posedge clk or negedge rst_n) begin
     if (!rst_n) begin
         for (i=0; i<6; i=i+1) begin
             mul0_out_valid_d[i] <= 0;
@@ -3012,8 +3045,12 @@ always @(*) begin
 end
 
 // pipe the sign-bit of (delT + z/u, add_result[0])
-always @(posedge clk) begin
-    if ((top_state == SUB_TRH || top_state == SUB_TRH_t) && add_out_valid[0]) begin
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        for (i=0; i<6; i=i+1) begin
+            sign_pipe[i] <= 0;
+        end
+    end else if ((top_state == SUB_TRH || top_state == SUB_TRH_t) && add_out_valid[0]) begin
         sign_pipe[0] <= add_result[0][pFP_WIDTH-1];
         sign_pipe[1] <= sign_pipe[0];
         sign_pipe[2] <= sign_pipe[1];
@@ -3039,8 +3076,10 @@ end
 // ----- prez valid ----- //
 // read sram x and sram g, add them up
 reg valid_13;
-always @(posedge clk) begin
-    if (top_state == PRE_Z) begin
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        valid_13 <= 0;
+    end else if (top_state == PRE_Z) begin
         valid_13 <= 1;
     end else begin
         valid_13 <= 0;
@@ -3062,8 +3101,10 @@ always @(posedge clk or negedge rst_n) begin
 end
 
 
-always @(posedge clk) begin
-    if (top_state == WRITE_Z) begin
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        valid_14 <= 0;
+    end else if (top_state == WRITE_Z) begin
         valid_14 <= 1;
     end else begin
         valid_14 <= 0;
@@ -3072,8 +3113,10 @@ end
 
 // ----- update mu ----- //
 reg valid_15;
-always @(posedge clk) begin
-    if (top_state == UPDATE_MU) begin
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        valid_15 <= 0;
+    end else if (top_state == UPDATE_MU) begin
         valid_15 <= 1;
     end else begin
         valid_15 <= 0;
@@ -3581,8 +3624,10 @@ generate
     end
 endgenerate
 
-always @(posedge clk) begin
-    if (top_state == PRE_iFFT || top_state == PRE_iFFT_t) begin
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        fp_recip_cnt16 <= 0;
+    end else if (top_state == PRE_iFFT || top_state == PRE_iFFT_t) begin
         fp_recip_cnt16 <= cnt16_recip;
     end else begin
         fp_recip_cnt16 <= 0;
@@ -3610,26 +3655,39 @@ always @(*) begin
     endcase
 end
 
-always @(posedge clk) begin
+reg fp_recip_in_valid_n;
+reg [(pFP_WIDTH-1):0]fp_recip_in_dat_n;
+
+always @(*) begin
     case (top_state)
         PRE_iFFT, PRE_iFFT_t: begin
-            fp_recip_in_valid <= valid_9;
-            fp_recip_in_dat <= fp_recip_in_dat_sel;
-        end 
+            fp_recip_in_valid_n = valid_9;
+            fp_recip_in_dat_n = fp_recip_in_dat_sel;
+        end
         SUB_TRH, SUB_TRH_t: begin
-            fp_recip_in_valid <= valid_11;
-            fp_recip_in_dat <= subthe_rdata_sel;
+            fp_recip_in_valid_n =valid_11;
+            fp_recip_in_dat_n = subthe_rdata_sel; 
         end
         UPDATE_MU: begin
-            fp_recip_in_valid <= mul0_out_valid;
-            fp_recip_in_dat <= mul0_out[(pFP_WIDTH-1):0];
+          fp_recip_in_valid_n = mul0_out_valid;
+          fp_recip_in_dat_n = mul0_out[(pFP_WIDTH-1):0];
         end
-        // TODO: dont use this module, i will put after sram W
         default: begin
-            fp_recip_in_valid <= 0;
-            fp_recip_in_dat <= 0;
+            fp_recip_in_valid_n = 0;
+            fp_recip_in_dat_n = 0;
         end
+            
     endcase
+end
+
+always @(posedge clk) begin
+    if (!rst_n) begin
+      fp_recip_in_valid <= 0;
+      fp_recip_in_dat <= 0;
+    end else begin
+        fp_recip_in_valid <= fp_recip_in_valid_n;
+        fp_recip_in_dat <= fp_recip_in_dat_n;
+    end
 end
 
 

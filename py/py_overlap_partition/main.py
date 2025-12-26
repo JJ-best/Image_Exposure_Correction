@@ -8,7 +8,7 @@ import numpy as np
 if __name__ == "__main__":
     # get absolute path of this file's directory (py_hardware)
     root = Path(__file__).resolve().parent
-    img = root / "imgs" / "land_small.bmp"
+    img = root / "imgs" / "gril2_small.bmp"
     
     # output file path
     out_dir_lime1 = root / "imgs_lime1"
@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
     # normalize to [0,1] in main, pass arr to run_lime
     arr = np.asarray(Image.open(img).convert("RGB"), dtype=np.float64) / 255.0
-    figure_size = 344
+    figure_size = 176
     # static figure size
     arr = arr[0:figure_size, 0:figure_size, 0:3]
     # print(arr.shape)
@@ -34,6 +34,7 @@ if __name__ == "__main__":
     Patch Size: 24x24x3(discard the boundary) 
     4 * 2(Discard Boundary) + 24 * Patch Number = 680 
     Patch Number = 28 
+    
     Small Picture
     Original Image Size: 344x344x3
     Outout Image Size: 336x336x3
@@ -41,6 +42,14 @@ if __name__ == "__main__":
     Patch Size: 24x24x3(discard the boundary) 
     4 * 2(Discard Boundary) + 24 * Patch Number = 344
     Patch Number = 14
+    
+    Miny Picture
+    Original Image Size: 176x176x3
+    Outout Image Size: 168x168x3
+    Patch Size: 32x32x3 Valid 
+    Patch Size: 24x24x3(discard the boundary) 
+    4 * 2(Discard Boundary) + 24 * Patch Number = 344
+    Patch Number = 7
     '''
     # 32x32x3 patch size (0–255)
     patch_size = 32
@@ -68,7 +77,6 @@ if __name__ == "__main__":
                 out_dir=out_dir_lime1,
                 img_in=patch_img,
                 k0=30,
-                gamma=0.7,
                 save_label=f"{patch_label}_under",
                 dump_alm=True, # if true, dump golden dat of alm
             )
@@ -82,7 +90,6 @@ if __name__ == "__main__":
                 out_dir=out_dir_lime2,
                 img_in=arr_inv,
                 k0=30,
-                gamma=0.7,
                 save_label=f"{patch_label}_over",
                 dump_alm=True,
             )

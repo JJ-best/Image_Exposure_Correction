@@ -3,8 +3,8 @@
 `define PAT_U 1
 `define NUM_PAT (`PAT_U-`PAT_L+1)
 
-`define CYCLE 10
-`define END_CYCLES 20
+`define CYCLE 20
+// `define END_CYCLES 2000000000
 `define FLAG_DUMPWV 1
 `define FLAG_VERBOSE 1
 
@@ -66,7 +66,7 @@ integer init_enable;
 // ITER can be set via +define+ITER=0,1,2,3,4,10,20,30
 // Format: iter_000, iter_001, iter_002, iter003, 004, iter010, iter20, iter30
 integer iter_value;
-
+reg [11:0]k0;
 // ===== Tolerance selection ===== //
 // TOLERANCE can be set via +define+TOLERANCE=<value>
 // Default tolerance for fp64 comparison (e.g., 4e-3, 1e-6)
@@ -214,7 +214,7 @@ wire done;
 
 integer cycle_cnt = 0;
 
-always @(posedge clk) begin
+always @(negedge clk) begin
   if (!rst_n) begin
     cycle_cnt <= 0;
   end else begin
@@ -478,6 +478,7 @@ IEC_top #(
     .ADDR_WIDTH_G(SRAM_ADDR_WIDTH_G),
     .ADDR_WIDTH_Z(SRAM_ADDR_WIDTH_Z)
 )U_IEC(
+    .k0(k0),
     .clk(clk),
     .rst_n(rst_n),
     .enable(enable), 
@@ -1158,10 +1159,16 @@ twiddle_rom #(
 // ===== waveform dumpping ===== //
 initial begin
 `ifdef FSDB
-    if(`FLAG_DUMPWV)begin
-        $fsdbDumpfile("IMC.fsdb");
-        $fsdbDumpvars(1, IMC_top);
+    if (`FLAG_DUMPWV) begin
+        $fsdbDumpfile("IEC.fsdb");
+        $fsdbDumpvars(1, U_IEC);
     end
+`elsif GATESIM
+    if (`FLAG_DUMPWV) begin
+        $fsdbDumpfile("IEC_gatesim.fsdb");
+        $fsdbDumpvars(1, U_IEC);
+    end
+    $sdf_annotate("../syn/netlist/IEC_top_syn.sdf",U_IEC);
 `endif
 end
 
@@ -1171,7 +1178,7 @@ initial begin
     clk = 0;
     rst_n = 0;
     enable = 0;
-    
+    k0 = `ITER + 1;
     sram_a.clear_sram(0);
     sram_b.clear_sram(0);
     sram_i.clear_sram(0);
@@ -1405,11 +1412,11 @@ initial begin
 
                     #(`CYCLE * 2);
                     rst_n = 1;
-                    @(posedge clk); enable = 1;
+                    @(negedge clk); enable = 1;
 
                     // Wait for hardware to finish this patch
                     wait(done);
-                    @(posedge clk);
+                    @(negedge clk);
                     enable = 0;
 
                     // Dump resulting sramT_2 for this patch
@@ -1506,8 +1513,8 @@ initial begin
         // Initialize sramA 
         sram_a.load_dat(pat_value, 1, patch_i_value, patch_j_value);
         
-        @(posedge clk); rst_n = 1;
-        @(posedge clk); enable = 1;
+        @(negedge clk); rst_n = 1;
+        @(negedge clk); enable = 1;
         $display("Starting IEC processing");
         
         // Wait for done 

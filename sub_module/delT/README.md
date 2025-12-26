@@ -221,13 +221,13 @@ endmodule
 * Implement sramT_2 -> sramX_2
 * Two parts to calculate: $\nabla T_n (D_x)$ and $\nabla T_v (D_y)$.
 * When receiving `enable`, calculate start, when storing back all sramX, set `done = 1`. Both signal are 1-cycle.
-### 1.  $\nabla T_n (D_x)$ ###
-- Interior columns (`0 ≤ j < 31`): $\[(D_x T)(i, j) = T(i, j+1) - T(i, j)\]$
-- Last column (wrap-around) (`j = 31`): $\[(D_x T)(i, 31) = T(i, 0) - T(i, 31)\]$
+### 1.  $\nabla T_h (D_x)$ ###
+- Interior columns (`0 ≤ j < 31`): $\(D_x T)(i, j) = T(i, j+1) - T(i, j)\$
+- Last column (wrap-around) (`j = 31`): $\(D_x T)(i, 31) = T(i, 0) - T(i, 31)\$
 
 ### 2.  $\nabla T_v (D_y)$ ###
-- Interior rows (`0 ≤ i < 31`): $\[(D_y T)(i, j) = T(i+1, j) - T(i, j)\]$
-- Last row (wrap-around) (`i = 31`): $\[(D_y T)(31, j) = T(0, j+1) - T(31, j)\]$
+- Interior rows (`0 ≤ i < 31`): $\(D_y T)(i, j) = T(i+1, j) - T(i, j)\$
+- Last row (wrap-around) (`i = 31`): $\(D_y T)(31, j) = T(0, j+1) - T(31, j)\$
 
 ### 3. Concate $\nabla T_n (D_x)$ and $\nabla T_v (D_y)$
 * For left half of sramX, store $\nabla T_n (D_x)$; for the right half of sramX, store $\nabla T_v (D_y)$

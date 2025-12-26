@@ -35,4 +35,9 @@ ucli.key
 
 # Syn
 syn/IEC_top
-*.svf
+# ignore everything under netlist
+netlist/*
+
+# but keep Verilog files
+!netlist/*.v
+

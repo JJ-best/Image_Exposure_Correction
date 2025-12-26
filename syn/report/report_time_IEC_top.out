@@ -1,0 +1,95 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : IEC_top
+Version: R-2020.09-SP5
+Date   : Fri Dec 26 19:36:24 2025
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: PVT_1P08V_125C   Library: slow_vdd1v2
+Wire Load Model Mode: enclosed
+
+  Startpoint: mul_U0/fp_add_05/pip4_frac_reg_52_
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: mul_U0/fp_add_05/pip5_frac_reg_47_
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  IEC_top            Large                 slow_vdd1v2
+  fp_add_mydesign_5  Small                 slow_vdd1v2
+  LOD_64_mydesign_8  Small                 slow_vdd1v2
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                 0.0000     0.0000
+  clock network delay (ideal)                           0.0000     0.0000
+  mul_U0/fp_add_05/pip4_frac_reg_52_/CK (DFFRHQX1)      0.0000 #   0.0000 r
+  mul_U0/fp_add_05/pip4_frac_reg_52_/Q (DFFRHQX1)       0.1200     0.1200 f
+  mul_U0/fp_add_05/LOD_02/A_63_ (LOD_64_mydesign_8)     0.0000     0.1200 f
+  mul_U0/fp_add_05/LOD_02/U31/Y (NOR4X1)                0.0960     0.2160 r
+  mul_U0/fp_add_05/LOD_02/U36/Y (NAND4XL)               0.1797     0.3957 f
+  mul_U0/fp_add_05/LOD_02/U22/Y (NOR2X1)                0.1702     0.5659 r
+  mul_U0/fp_add_05/LOD_02/U21/Y (AOI21X1)               0.1648     0.7307 f
+  mul_U0/fp_add_05/LOD_02/U51/Y (AOI22XL)               0.1033     0.8340 r
+  mul_U0/fp_add_05/LOD_02/U4/Y (OAI211XL)               0.1095     0.9435 f
+  mul_U0/fp_add_05/LOD_02/U35/Y (AOI211XL)              0.0918     1.0353 r
+  mul_U0/fp_add_05/LOD_02/U15/Y (OAI211X1)              0.1245     1.1598 f
+  mul_U0/fp_add_05/LOD_02/U14/Y (NOR4X1)                0.1916     1.3513 r
+  mul_U0/fp_add_05/LOD_02/U38/Y (AOI21XL)               0.1577     1.5091 f
+  mul_U0/fp_add_05/LOD_02/U5/Y (OAI211XL)               0.0680     1.5771 r
+  mul_U0/fp_add_05/LOD_02/U74/Y (NOR4BX1)               0.0609     1.6380 f
+  mul_U0/fp_add_05/LOD_02/U44/Y (INVXL)                 0.0413     1.6794 r
+  mul_U0/fp_add_05/LOD_02/U20/Y (OAI211XL)              0.0946     1.7740 f
+  mul_U0/fp_add_05/LOD_02/U43/Y (AOI21XL)               0.1029     1.8769 r
+  mul_U0/fp_add_05/LOD_02/position_0_ (LOD_64_mydesign_8)
+                                                        0.0000     1.8769 r
+  mul_U0/fp_add_05/U69/Y (OAI211XL)                     0.1109     1.9878 f
+  mul_U0/fp_add_05/U122/Y (OAI2BB1X1)                   0.0708     2.0586 r
+  mul_U0/fp_add_05/U743/Y (OAI222XL)                    0.1516     2.2103 f
+  mul_U0/fp_add_05/U656/Y (OAI222XL)                    0.1265     2.3368 r
+  mul_U0/fp_add_05/U632/Y (OR2XL)                       0.0885     2.4253 r
+  mul_U0/fp_add_05/U121/Y (AOI221X1)                    0.0788     2.5041 f
+  mul_U0/fp_add_05/U631/Y (AOI21XL)                     0.0745     2.5786 r
+  mul_U0/fp_add_05/U876/Y (OAI2BB1XL)                   0.0798     2.6583 r
+  mul_U0/fp_add_05/U171/Y (OAI211X1)                    0.0849     2.7432 f
+  mul_U0/fp_add_05/U683/Y (NOR4X1)                      0.1363     2.8795 r
+  mul_U0/fp_add_05/U92/Y (INVXL)                        0.1184     2.9979 f
+  mul_U0/fp_add_05/U629/Y (OAI22XL)                     0.1111     3.1090 r
+  mul_U0/fp_add_05/U117/Y (INVXL)                       0.1004     3.2094 f
+  mul_U0/fp_add_05/U1968/Y (NOR2X1)                     0.1109     3.3203 r
+  mul_U0/fp_add_05/U694/Y (INVXL)                       0.1288     3.4491 f
+  mul_U0/fp_add_05/U1969/Y (INVX1)                      0.1008     3.5499 r
+  mul_U0/fp_add_05/U2017/Y (AOI22XL)                    0.0724     3.6222 f
+  mul_U0/fp_add_05/U633/Y (NAND2XL)                     0.0598     3.6820 r
+  mul_U0/fp_add_05/U2054/Y (INVXL)                      0.0377     3.7197 f
+  mul_U0/fp_add_05/U678/Y (AOI22XL)                     0.0686     3.7884 r
+  mul_U0/fp_add_05/U707/Y (OAI222XL)                    0.1640     3.9524 f
+  mul_U0/fp_add_05/U635/Y (OAI22XL)                     0.0970     4.0493 r
+  mul_U0/fp_add_05/U2290/Y (OAI22XL)                    0.0908     4.1401 f
+  mul_U0/fp_add_05/U2291/Y (OR4X1)                      0.1430     4.2832 f
+  mul_U0/fp_add_05/U2293/Y (OAI22XL)                    0.0539     4.3370 r
+  mul_U0/fp_add_05/U52/Y (NOR2BX1)                      0.0765     4.4135 r
+  mul_U0/fp_add_05/pip5_frac_reg_47_/D (DFFRHQX1)       0.0158     4.4293 r
+  data arrival time                                                4.4293
+
+  clock clk (rise edge)                                 4.5000     4.5000
+  clock network delay (ideal)                           0.0000     4.5000
+  mul_U0/fp_add_05/pip5_frac_reg_47_/CK (DFFRHQX1)      0.0000     4.5000 r
+  library setup time                                   -0.0699     4.4301
+  data required time                                               4.4301
+  --------------------------------------------------------------------------
+  data required time                                               4.4301
+  data arrival time                                               -4.4293
+  --------------------------------------------------------------------------
+  slack (MET)                                                      0.0008
+
+
+1
