@@ -127,11 +127,11 @@
 #     +define+ITER=3 \
 #     +define+FLAG_VERBOSE=1 \
 #     +define+FLAG_DUMPWV=1 \
-#     +define+FSDB
+#     +define+FSDB \
 #     +define+END_CYCLES=200000 \
 #     +define+TOLERANCE=10 \
 
-# # # Layer10: ALM_Tout # check SRAMT_2.dat Fast Simulation
+# # # # Layer10: ALM_Tout # check SRAMT_2.dat Fast Simulation
     vcs -R +v2k -full64 -f sim.f -l vcs_layer10.log \
     +define+ALM_Tout \
     +define+INIT_EN=0 \
@@ -144,6 +144,8 @@
     +define+ALL_PATCH=1 \
     # +define+PATCH_I=0 \
     # +define+PATCH_J=2 \
+
+
 
 # # # # Layer11: ALM_delT #
 # vcs -R +v2k -full64 -f sim.f -debug_acc+all -l vcs_layer11.log \

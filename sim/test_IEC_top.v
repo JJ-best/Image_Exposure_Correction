@@ -1158,10 +1158,16 @@ twiddle_rom #(
 // ===== waveform dumpping ===== //
 initial begin
 `ifdef FSDB
-    if(`FLAG_DUMPWV)begin
+    if (`FLAG_DUMPWV) begin
         $fsdbDumpfile("IMC.fsdb");
-        $fsdbDumpvars(1, IMC_top);
+        $fsdbDumpvars(1, IEC_top);
     end
+`elsif GATESIM
+    if (`FLAG_DUMPWV) begin
+        $fsdbDumpfile("IMC_gatesim.fsdb");
+        $fsdbDumpvars(1, IEC_top);
+    end
+    $sdf_annotate("../syn/netlist/IEC_top_syn.sdf",IEC_top);
 `endif
 end
 
