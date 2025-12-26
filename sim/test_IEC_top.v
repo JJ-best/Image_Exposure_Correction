@@ -1160,6 +1160,7 @@ twiddle_rom #(
 initial begin
 `ifdef FSDB
     if (`FLAG_DUMPWV) begin
+<<<<<<< HEAD
         $fsdbDumpfile("IEC.fsdb");
         $fsdbDumpvars(1, U_IEC);
     end
@@ -1169,6 +1170,17 @@ initial begin
         $fsdbDumpvars(1, U_IEC);
     end
     $sdf_annotate("../syn/netlist/IEC_top_syn.sdf",U_IEC);
+=======
+        $fsdbDumpfile("IMC.fsdb");
+        $fsdbDumpvars(1, IEC_top);
+    end
+`elsif GATESIM
+    if (`FLAG_DUMPWV) begin
+        $fsdbDumpfile("IMC_gatesim.fsdb");
+        $fsdbDumpvars(1, IEC_top);
+    end
+    $sdf_annotate("../syn/netlist/IEC_top_syn.sdf",IEC_top);
+>>>>>>> f3b15bdd89983af6fbc602fcb9f42d5ec100961b
 `endif
 end
 
