@@ -36,7 +36,33 @@ to preserve illumination continuity at patch boundaries.
 - Valid region: 24 × 24
 - Halo width: 4 pixels
 
-![figure](image/overlap_partition.png)
+<p align="center">
+  <img src="image/overlap_partition.png" width="70%">
+</p>
+
+<div align="center">
+
+<table>
+  <tr>
+    <th>Original</th>
+    <th>Direct Partition</th>
+    <th>Overlap Partition</th>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="image/experiment_result/building.png" width="200"/>
+    </td>
+    <td align="center">
+      <img src="image/experiment_result/direct_partition.png" width="200"/>
+    </td>
+    <td align="center">
+      <img src="image/experiment_result/overlap.png" width="200"/>
+    </td>
+  </tr>
+</table>
+
+</div>
+
 
 ## Hardware Architecture
 
@@ -61,6 +87,7 @@ Consequently, pixels corresponding to near-zero illumination values are amplifie
 
 Thus, we implement the software and hardware in fp64 precision.
 
+<div align="center">
 <table>
   <tr>
     <th>Original</th>
@@ -83,6 +110,25 @@ Thus, we implement the software and hardware in fp64 precision.
     </td>
   </tr>
 </table>
+<div>
+
+## Performance
+
+### 1. Timing
+
+|Synthesis & Gate-Sim|APR & Post-Sim|
+|:--:|:--:|
+|3.5ns|6.3ns|
+### 2. Area
+
+|Synthesis| APR: Standard Cell Area| APR: Allocate Area| Core Utilization|
+|:-:|:-:|:-:|:-:|
+|     876129μm^2    |           907396 μm^2            |         1682037 μm^2         | 53.9%|
+
+### 3. Power
+
+The PrimeTime power analysis script is provided.  
+Due to long runtime, full power simulation was not executed.
 
 ## Filelist
 
@@ -124,6 +170,7 @@ py_overlap_partition
 ./spyglass # spyglass check for hdl
 ./syn # synthesis scirpt
 ./submodule # submodule test env
+./primetime # power analysis
 ```
 
 <!-- 
