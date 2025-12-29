@@ -110,7 +110,7 @@ Thus, we implement the software and hardware in fp64 precision.
     </td>
   </tr>
 </table>
-<div>
+</div>
 
 ## Performance
 
