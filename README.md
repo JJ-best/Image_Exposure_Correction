@@ -123,7 +123,7 @@ Thus, we implement the software and hardware in fp64 precision.
 
 |Synthesis| APR: Standard Cell Area| APR: Allocate Area| Core Utilization|
 |:-:|:-:|:-:|:-:|
-|     876129μm^2    |           907396 μm^2            |         1682037 μm^2         | 53.9%|
+|     876129 μm^2    |           907396 μm^2            |         1682037 μm^2         | 53.9%|
 
 ### 3. Power
 
@@ -318,3 +318,48 @@ Compare R,G,B in one pixel, choose the largest value and multiply with 255^-1. T
 ### Step2: ALM
 
 Solve the ALM with iteration(fsm will have feedback state). -->
+
+## Contribution
+
+### JJ-best: 
+- Implement the python of the exposure correction algorithm.
+- Develop overlap partition method.
+- Generate golden data for hardware verification.
+- Design the whole datapath and top module of hardware.
+- APR
+
+### nina1032024: 
+- Write the whole verification enviroment(testbench & script) of hardware.
+- Implement 2D FFT/iFFT and DelT module.
+- Help top-level integration.
+- APR
+
+### yujungteng
+- Implement floating point reciprocal module.
+- APR
+
+## References
+
+[1] E. H. Land,  
+**"The Retinex Theory of Color Vision,"**  
+Scientific American, vol. 237, no. 6, pp. 108–128, 1977.
+
+[2] X. Guo, Y. Li, and H. Ling,  
+**"LIME: Low-Light Image Enhancement via Illumination Map Estimation,"**  
+IEEE Transactions on Image Processing, vol. 26, no. 2, pp. 982–993, 2017.
+
+[3] T. Mertens, J. Kautz, and F. Van Reeth,  
+**"Exposure Fusion: A Simple and Practical Alternative to High Dynamic Range,"**  
+Computer Graphics Forum, vol. 28, no. 1, pp. 161–171, 2009.
+
+[4] X. Fu, D. Zeng, Y. Huang, X. Ding, and J. Paisley,  
+**"A Weighted Variational Model for Simultaneous Reflectance and Illumination Estimation,"**  
+CVPR, 2016.
+
+[5] J.-M. Morel, A. B. Petro, and C. Sbert,  
+**"Fourier Implementation of Poisson Image Editing,"**  
+Pattern Recognition Letters, vol. 33, no. 3, pp. 342–348, 2012.
+
+[6] X. Li and M. T. Orchard,  
+**"New Edge-Directed Interpolation,"**  
+IEEE Transactions on Image Processing, vol. 10, no. 10, pp. 1521–1534, 2001.
