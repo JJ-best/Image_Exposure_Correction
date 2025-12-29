@@ -1,8 +1,132 @@
 # Image_Exposure_Correction
-A hardware implementation of illumination-map-based image enhancement, featuring LIME estimation, dual illumination correction (forward + inverted images), and multi-exposure fusion for robust under/over-exposure correction.
+A hardware-oriented implementation of illumination-map-based image exposure correction.
+This project reformulates LIME into a patch-wise, memory-efficient pipeline suitable for hardware acceleration.
 
-![figure](image/dataflow.png)
 
+## Motivation
+
+Illumination-based exposure correction methods derived from Retinex theory
+provide interpretable and training-free enhancement.
+However, existing algorithms assume full-frame processing and rely on
+global intermediate buffers, which makes them inefficient for hardware acceleration.
+
+This project bridges illumination-based enhancement and hardware-oriented design
+by reorganizing the computation into a patch-wise dataflow
+with carefully designed memory layouts and reusable floating-point units.
+
+## Algorithm Overview
+
+Under the Retinex model, an image is decomposed into reflectance and illumination.
+Instead of directly estimating reflectance, we estimate an illumination map
+and recover the enhanced image by division.
+
+The algorithm consists of:
+1. Max-RGB initialization
+2. LIME-based illumination refinement (ALM solver)
+3. Gamma-adjusted image recovery
+4. Over-exposure handling by intensity inversion
+
+## Image Partition Strategy
+
+Direct full-frame processing is not hardware-friendly due to large memory requirements.
+We adopt a patch-based processing strategy with overlap regions
+to preserve illumination continuity at patch boundaries.
+
+- Patch size: 32 × 32
+- Valid region: 24 × 24
+- Halo width: 4 pixels
+
+![figure](image/overlap_partition.png)
+
+## Hardware Architecture
+
+The design adopts a time-multiplexed pipeline with a small number of FP64 units:
+
+- 2 × FP64 multipliers (dual-lane float/ complex mode)
+- 8 × FP64 adders (vector operations)
+- 1 × FP64 reciprocal unit (Goldschmidt division)
+- 1 × DelT (1-st order difference address controller)
+- 1 × FFT (fft address controller)
+
+
+![figure](image/dataflow(3).png)
+
+## Experiment Result
+
+From the experiments, we evaluate two numerical precisions in Python (FP16 and FP64).
+We observe that FP16 precision leads to residual white pixels in the enhanced images.
+This phenomenon arises because the lower numerical precision introduces quantization errors in the estimated illumination map, where small values may be rounded to zero.
+During the image recovery stage, the enhanced image is computed as the original image divided by the estimated illumination map.
+Consequently, pixels corresponding to near-zero illumination values are amplified excessively, resulting in saturation artifacts(white pixel) in the recovered image.
+
+Thus, we implement the software and hardware in fp64 precision.
+
+<table>
+  <tr>
+    <th>Original</th>
+    <th>Software FP16</th>
+    <th>Software FP64</th>
+    <th>Hardware</th>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="image/experiment_result/original_image.png" width="200"/>
+    </td>
+    <td align="center">
+      <img src="image/experiment_result/sw_fp16_result.png" width="200"/>
+    </td>
+    <td align="center">
+      <img src="image/experiment_result/sw_fp64_result.png" width="200"/>
+    </td>
+    <td align="center">
+      <img src="image/experiment_result/hw_fp64_result.png" width="200"/>
+    </td>
+  </tr>
+</table>
+
+## Filelist
+
+### 1. Software
+
+Our final version `py/py_overlap_partition`.
+
+run `tdenom.py` generate parameter matrix for software and hardware.
+
+run `fft_pat.py` generate fft twiddle factor for hardware.
+
+run `main.py` will generate software result and golden data for hardware.
+
+```shell
+py_overlap_partition
+..\alm  # golden data for hw
+..\dat  # paramter matrix for hw
+..\imgs # original image
+..\imgs_lime1 # underexposure enhaced image
+..\imgs_lime2 # overexposure enhanced image
+..\imgs_fusion # image fusion
+
+..\main.py # main function
+..\lime.py # LIME
+..\alm.py  # Augamented Lagrange Multiplier
+..\fft.py  # self-defined fft
+..\fft_pat.py # generate fft param for hw
+..\tdenom.py  # generate param matrix for hw
+..\init_ap.py # initial illumination map
+..\gamma_corr.py # gamma correction
+..\helper.py # dump the hw golden data
+```
+
+### 2. Hardware
+```shell
+./hdl # top module
+./apr # auto placement and route
+./sim # pre-sim and gate-sim
+./spyglass # spyglass check for hdl
+./syn # synthesis scirpt
+./submodule # submodule test env
+```
+
+<!-- 
 ## Test Pattern
 run main.py
 
@@ -118,7 +242,7 @@ addr-255:
     bank2: (31,30)
     bank3: (31,31)
 ```
-
+ -->
 
 ## Run simulation
 ```shell
@@ -135,7 +259,7 @@ addr-255:
 10. > sh run_sim.sh
 ```
 
-
+<!-- 
 ## Dataflow
 
 ### Step1: Initial Illumination Map
@@ -146,4 +270,4 @@ Compare R,G,B in one pixel, choose the largest value and multiply with 255^-1. T
 
 ### Step2: ALM
 
-Solve the ALM with iteration(fsm will have feedback state).
+Solve the ALM with iteration(fsm will have feedback state). -->
