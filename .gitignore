@@ -41,9 +41,5 @@ syn/netlist/**
 !syn/netlist/**/*.v
 
 # APR 
-apr/**
-!apr/**/
-!apr/pre_layout/mmmc.view
-!apr/pre_layout/ccopt.cmd
-!apr/pre_layout/IEC_top.save.io
+
 

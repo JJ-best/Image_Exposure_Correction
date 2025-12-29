@@ -8,7 +8,7 @@
 `define FLAG_DUMPWV 1
 `define FLAG_VERBOSE 1
 
-module test_IEC_top_old;
+module test_IEC_top;
 
 // ===== Parameters ===== //
 localparam pFP_WIDTH = 64;
@@ -1160,7 +1160,6 @@ twiddle_rom #(
 initial begin
 `ifdef FSDB
     if (`FLAG_DUMPWV) begin
-<<<<<<< HEAD
         $fsdbDumpfile("IEC.fsdb");
         $fsdbDumpvars(1, U_IEC);
     end
@@ -1170,17 +1169,12 @@ initial begin
         $fsdbDumpvars(1, U_IEC);
     end
     $sdf_annotate("../syn/netlist/IEC_top_syn.sdf",U_IEC);
-=======
-        $fsdbDumpfile("IMC.fsdb");
-        $fsdbDumpvars(1, IEC_top);
-    end
-`elsif GATESIM
+`elsif POSTSIM
     if (`FLAG_DUMPWV) begin
-        $fsdbDumpfile("IMC_gatesim.fsdb");
-        $fsdbDumpvars(1, IEC_top);
+        $fsdbDumpfile("IEC_postsim.fsdb");
+        $fsdbDumpvars(1, U_IEC);
     end
-    $sdf_annotate("../syn/netlist/IEC_top_syn.sdf",IEC_top);
->>>>>>> f3b15bdd89983af6fbc602fcb9f42d5ec100961b
+    $sdf_annotate("../apr/post_layout/CHIP.sdf",U_IEC);
 `endif
 end
 
