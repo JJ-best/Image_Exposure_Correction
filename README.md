@@ -130,6 +130,46 @@ Thus, we implement the software and hardware in fp64 precision.
 The PrimeTime power analysis script is provided.  
 Due to long runtime, full power simulation was not executed.
 
+
+### 4. Execution Time
+
+Since the proposed hardware accelerator targets the Augmented Lagrangian
+Multiplier (ALM) solver in the low-light image enhancement algorithm,
+we compare the execution time of a single image patch between the
+software and hardware implementations.
+
+For the software baseline, the execution time is measured by directly running
+the Python implementation on a general-purpose CPU. Since the measurement is
+obtained by manually executing the Python script, the reported software execution
+time may include system-level overheads such as process scheduling, memory
+allocation, and interpreter startup latency. Therefore, the software execution
+time serves as a coarse upper bound rather than a strictly isolated algorithmic
+latency.
+
+For the hardware implementation, each patch is processed with 20 ALM iterations.
+According to the synthesis results, the hardware requires approximately
+50,000 clock cycles to complete one patch. Based on the post-layout timing
+analysis, the synthesized design achieves a minimum clock period of 3.5 ns,
+while the post-layout design operates at a clock period of 6.3 ns.
+Accordingly, the estimated execution time per patch is 0.000175 seconds
+for synthesis timing and 0.000315 seconds for post-layout timing.
+
+| Software Average Patch Execution Time | Synthesis HW Patch Execution Time | Post-Sim HW Patch Execution Time |
+|:-----------------------------------:|:--------------------------------:|:--------------------------------:|
+| 2.9742 sec                          | 0.000175 sec                     | 0.000315 sec                     |
+
+### 5. Post-Layout Result
+
+Following figure shows the post-layout result of the proposed hardware accelerator
+after place-and-route. The design is implemented using standard cells
+and achieves a core utilization of 53.9%.
+The layout demonstrates that the proposed architecture can be efficiently
+mapped onto silicon while meeting timing constraints.
+
+<p align="center">
+  <img src="image/PostRoute_Layout.png" width="70%">
+</p>
+
 ## Filelist
 
 ### 1. Software
@@ -304,7 +344,11 @@ addr-255:
 8. > :set ff=unix
 9. > :wq
 10. > sh run_sim.sh
+11. > sh gatesim.sh
+12. > sh postsim.sh
 ```
+
+Note: To run post-sim, remember to commment `current_design IEC_top` in `CHIP_layout.sdc`.
 
 <!-- 
 ## Dataflow
@@ -352,9 +396,9 @@ IEEE Transactions on Image Processing, vol. 26, no. 2, pp. 982–993, 2017.
 **"Exposure Fusion: A Simple and Practical Alternative to High Dynamic Range,"**  
 Computer Graphics Forum, vol. 28, no. 1, pp. 161–171, 2009.
 
-[4] X. Fu, D. Zeng, Y. Huang, X. Ding, and J. Paisley,  
-**"A Weighted Variational Model for Simultaneous Reflectance and Illumination Estimation,"**  
-CVPR, 2016.
+[4] Q. Zhang, Y. Nie, and W.-S. Zheng,  
+**"Dual Illumination Estimation for Robust Exposure Correction,"**  
+Computer Graphics Forum, vol. 38, no. 7, pp. 243–252, 2019.
 
 [5] J.-M. Morel, A. B. Petro, and C. Sbert,  
 **"Fourier Implementation of Poisson Image Editing,"**  

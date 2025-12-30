@@ -3,12 +3,12 @@ from PIL import Image
 from lime import run_lime
 from fusion import run_fusion 
 import numpy as np
-
+import time
 
 if __name__ == "__main__":
     # get absolute path of this file's directory (py_hardware)
     root = Path(__file__).resolve().parent
-    img = root / "imgs" / "gril2_small.bmp"
+    img = root / "imgs" / "land_small.bmp"
     
     # output file path
     out_dir_lime1 = root / "imgs_lime1"
@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
     # normalize to [0,1] in main, pass arr to run_lime
     arr = np.asarray(Image.open(img).convert("RGB"), dtype=np.float64) / 255.0
-    figure_size = 176
+    figure_size = 344
     # static figure size
     arr = arr[0:figure_size, 0:figure_size, 0:3]
     # print(arr.shape)
@@ -65,6 +65,8 @@ if __name__ == "__main__":
     fused_full_img = np.zeros((out_size, out_size, 3), dtype=np.float64)
     iteration_cnt = 0
     
+    lime_times = [] # store execution time of each patch
+    
     print(f"Start processing... Patch Num: {patch_num}x{patch_num}")
     
     for i in range(patch_num):
@@ -72,14 +74,19 @@ if __name__ == "__main__":
             patch_img = arr[i*valid_size:i*valid_size + patch_size , j*valid_size: j*valid_size+patch_size, 0:3]
             patch_label = f"patch_{i:02d}_{j:02d}"
             
+            t0 = time.perf_counter() # count execution time start
             # enhanced1_patch(32x32x3)
             enhanced1_patch = run_lime(
                 out_dir=out_dir_lime1,
                 img_in=patch_img,
-                k0=30,
+                k0=20,
                 save_label=f"{patch_label}_under",
                 dump_alm=True, # if true, dump golden dat of alm
             )
+            t1 = time.perf_counter() # count execution time end
+            lime_times.append(t1 - t0)
+            print(f"[TIMING] run_lime (under) patch {i}-{j}: {(t1 - t0):.4f} sec")
+
             # enhanced1_img(24x24x3)
             enhanced1_img[i*valid_size:(i+1)*valid_size, j*valid_size:(j+1)*valid_size, 0:3] = enhanced1_patch[border:border+valid_size, border:border+valid_size, 0:3]
             
@@ -89,7 +96,7 @@ if __name__ == "__main__":
             enhanced2_patch = run_lime(
                 out_dir=out_dir_lime2,
                 img_in=arr_inv,
-                k0=30,
+                k0=20,
                 save_label=f"{patch_label}_over",
                 dump_alm=True,
             )
@@ -112,6 +119,14 @@ if __name__ == "__main__":
             print("iteration", i, "-", j, " complete")
             
             
+    lime_times = np.array(lime_times)
+
+    print("========== run_lime timing ==========")
+    print(f"calls        : {lime_times.size}")
+    print(f"avg time     : {lime_times.mean():.6f} sec")
+    print(f"std dev      : {lime_times.std():.6f} sec")
+    print(f"min / max    : {lime_times.min():.6f} / {lime_times.max():.6f} sec")
+
 
     # --------------------------------------------------------- #
     # Save Images
